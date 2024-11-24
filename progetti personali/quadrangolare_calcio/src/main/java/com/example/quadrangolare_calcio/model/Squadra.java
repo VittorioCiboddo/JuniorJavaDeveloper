@@ -26,6 +26,9 @@ public class Squadra {
     @Column
     private String capitano;
 
+    @Column
+    private String descrizione;
+
     public int getIdSquadra() {
         return idSquadra;
     }
@@ -72,5 +75,13 @@ public class Squadra {
 
     public void setCapitano(String capitano) {
         this.capitano = capitano;
+    }
+
+    public String getDescrizione() {
+        return descrizione;
+    }
+
+    public void setDescrizione(String descrizione) {
+        this.descrizione = descrizione;
     }
 }

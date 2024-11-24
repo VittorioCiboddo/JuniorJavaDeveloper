@@ -21,6 +21,10 @@ public class Ruolo {
     @JoinColumn(name = "fk_id_tipologia", referencedColumnName = "id_tipologia")
     private Tipologia tipologia;
 
+    @ManyToMany(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "fk_id_modulo", referencedColumnName = "id_modulo")
+    private Modulo modulo;
+
     public int getIdRuolo() {
         return idRuolo;
     }
