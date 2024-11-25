@@ -42,6 +42,10 @@ public class Giocatore {
     @JoinColumn(name = "fk_id_squadra", referencedColumnName = "id_squadra")
     private Squadra squadra;
 
+    @OneToMany(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "fk_id_nazionalita", referencedColumnName = "id_nazionalita")
+    private Nazionalita nazionalita;
+
     public int getIdGiocatore() {
         return idGiocatore;
     }
@@ -120,5 +124,13 @@ public class Giocatore {
 
     public void setSquadra(Squadra squadra) {
         this.squadra = squadra;
+    }
+
+    public Nazionalita getNazionalita() {
+        return nazionalita;
+    }
+
+    public void setNazionalita(Nazionalita nazionalita) {
+        this.nazionalita = nazionalita;
     }
 }
