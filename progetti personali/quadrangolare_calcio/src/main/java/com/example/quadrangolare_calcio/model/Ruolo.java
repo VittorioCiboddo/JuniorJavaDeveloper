@@ -21,7 +21,7 @@ public class Ruolo {
     @JoinColumn(name = "fk_id_tipologia", referencedColumnName = "id_tipologia")
     private Tipologia tipologia;
 
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "fk_id_modulo", referencedColumnName = "id_modulo")
     private Modulo modulo;
 
@@ -55,5 +55,13 @@ public class Ruolo {
 
     public void setTipologia(Tipologia tipologia) {
         this.tipologia = tipologia;
+    }
+
+    public Modulo getModulo() {
+        return modulo;
+    }
+
+    public void setModulo(Modulo modulo) {
+        this.modulo = modulo;
     }
 }

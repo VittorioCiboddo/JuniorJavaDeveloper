@@ -2,6 +2,8 @@ package com.example.quadrangolare_calcio.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "squadra")
 public class Squadra {
@@ -28,6 +30,13 @@ public class Squadra {
 
     @Column
     private String descrizione;
+
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "fk_id_nazionalita", referencedColumnName = "id_nazionalita")
+    private Nazionalita nazionalita;
+
+    @OneToMany(mappedBy = "squadra", cascade = CascadeType.REMOVE)
+    private List<Giocatore> giocatori; // aggiungo questa lista per mantenere la relazione
 
     public int getIdSquadra() {
         return idSquadra;
@@ -83,5 +92,21 @@ public class Squadra {
 
     public void setDescrizione(String descrizione) {
         this.descrizione = descrizione;
+    }
+
+    public Nazionalita getNazionalita() {
+        return nazionalita;
+    }
+
+    public void setNazionalita(Nazionalita nazionalita) {
+        this.nazionalita = nazionalita;
+    }
+
+    public List<Giocatore> getGiocatori() {
+        return giocatori;
+    }
+
+    public void setGiocatori(List<Giocatore> giocatori) {
+        this.giocatori = giocatori;
     }
 }

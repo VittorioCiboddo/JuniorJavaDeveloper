@@ -2,6 +2,8 @@ package com.example.quadrangolare_calcio.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "nazionalita")
 public class Nazionalita {
@@ -19,6 +21,12 @@ public class Nazionalita {
 
     @Column
     private String bandiera;
+
+    @OneToMany(mappedBy = "nazionalita", cascade = CascadeType.REMOVE)
+    private List<Squadra> squadre;
+
+    @OneToMany(mappedBy = "nazionalita", cascade = CascadeType.REMOVE)
+    private List<Giocatore> giocatori;
 
     public int getIdNazionalita() {
         return idNazionalita;
@@ -50,5 +58,21 @@ public class Nazionalita {
 
     public void setBandiera(String bandiera) {
         this.bandiera = bandiera;
+    }
+
+    public List<Squadra> getSquadre() {
+        return squadre;
+    }
+
+    public void setSquadre(List<Squadra> squadre) {
+        this.squadre = squadre;
+    }
+
+    public List<Giocatore> getGiocatori() {
+        return giocatori;
+    }
+
+    public void setGiocatori(List<Giocatore> giocatori) {
+        this.giocatori = giocatori;
     }
 }
