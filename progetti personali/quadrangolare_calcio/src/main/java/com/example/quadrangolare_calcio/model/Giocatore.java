@@ -42,7 +42,7 @@ public class Giocatore {
     @JoinColumn(name = "fk_id_squadra", referencedColumnName = "id_squadra")
     private Squadra squadra;
 
-    @OneToMany(cascade = CascadeType.REFRESH)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "fk_id_nazionalita", referencedColumnName = "id_nazionalita")
     private Nazionalita nazionalita;
 

@@ -1,10 +1,60 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generation Sport</title>
+    <link rel="stylesheet" href="homepage.css">
+    <style>
+        .hidden {
+            display: none;
+        }
+        .fade-in {
+            animation: fadeIn 1s forwards; /* Aggiungi animazione di fade-in */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
+<div class="video-container">
+    <video id="matchVideo" autoplay muted>
+        <source src="/videos/trailer-homepage.mp4" type="video/mp4">
+        Il tuo browser non supporta il video.
+    </video>
+    <div id="blackOverlay" class="overlay hidden"></div> <!-- Overlay nero -->
+
+    <div id="siteName" class="hidden">Generation Sport</div> <!-- Aggiungi qui la classe hidden -->
+    <div class="buttons hidden" id="buttonContainer"> <!-- Contenitore dei bottoni iniziato come hidden -->
+        <button onclick="location.href='scendi_in_campo.html'">Scendi in campo</button>
+        <button onclick="location.href='archivio.html'">Archivio</button>
+        <button onclick="location.href='chi_siamo.html'">Chi siamo</button>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('matchVideo');
+    const siteName = document.getElementById('siteName');
+    const blackOverlay = document.getElementById('blackOverlay');
+    const buttonContainer = document.getElementById('buttonContainer');
+
+    video.addEventListener('ended', () => {
+        // Mostra l'overlay nero
+        blackOverlay.classList.remove('hidden');
+        setTimeout(() => {
+            siteName.classList.remove('hidden');
+            siteName.classList.add('fade-in'); // Aggiunge l'animazione alla scritta
+
+            // Mostra i bottoni dopo 2.5 secondi dalla comparsa della scritta
+            setTimeout(() => {
+                buttonContainer.classList.remove('hidden'); // Rimuovi la classe hidden per mostrare i bottoni
+            }, 2500); // Ritardo di 2.5 secondi
+        }, 2000); // 2000 ms di attesa prima che appaia la scritta
+    });
+</script>
 
 </body>
 </html>
