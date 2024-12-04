@@ -25,9 +25,6 @@ public class Giocatore {
     @Column(name = "numero_maglia")
     private int numeroMaglia;
 
-    @Column(name = "heat_map")
-    private String heatMap;
-
     @Column(name = "data_nascita")
     private LocalDate dataNascita;
 
@@ -84,14 +81,6 @@ public class Giocatore {
 
     public void setNumeroMaglia(int numeroMaglia) {
         this.numeroMaglia = numeroMaglia;
-    }
-
-    public String getHeatMap() {
-        return heatMap;
-    }
-
-    public void setHeatMap(String heatMap) {
-        this.heatMap = heatMap;
     }
 
     public LocalDate getDataNascita() {

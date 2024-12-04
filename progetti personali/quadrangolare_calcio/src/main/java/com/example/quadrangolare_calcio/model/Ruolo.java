@@ -17,6 +17,9 @@ public class Ruolo {
     @Column
     private String descrizione;
 
+    @Column(name = "heat_map")
+    private String heatMap;
+
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "fk_id_tipologia", referencedColumnName = "id_tipologia")
     private Tipologia tipologia;
@@ -47,6 +50,14 @@ public class Ruolo {
 
     public void setDescrizione(String descrizione) {
         this.descrizione = descrizione;
+    }
+
+    public String getHeatMap() {
+        return heatMap;
+    }
+
+    public void setHeatMap(String heatMap) {
+        this.heatMap = heatMap;
     }
 
     public Tipologia getTipologia() {

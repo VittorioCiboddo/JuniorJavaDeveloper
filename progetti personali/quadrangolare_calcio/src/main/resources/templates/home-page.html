@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generation Sport</title>
+    <title>Home Page</title>
     <link rel="stylesheet" href="homepage.css">
     <style>
         .hidden {
@@ -23,36 +23,44 @@
 <div class="video-container">
     <video id="matchVideo" autoplay muted>
         <source src="/videos/trailer-homepage.mp4" type="video/mp4">
-        Il tuo browser non supporta il video.
     </video>
-    <div id="blackOverlay" class="overlay hidden"></div> <!-- Overlay nero -->
+    <div id="blackOverlay" class="overlay hidden visible"></div> <!-- Overlay nero -->
 
-    <div id="siteName" class="hidden">Generation Sport</div> <!-- Aggiungi qui la classe hidden -->
+    <div class="logo-container hidden" id="logoContainer"> <!-- Contenitore per il logo -->
+        <img id="logo" src="/images/logo.png" alt="Logo di Generation Sport"> <!-- Immagine del logo -->
+    </div>
+
     <div class="buttons hidden" id="buttonContainer"> <!-- Contenitore dei bottoni iniziato come hidden -->
         <button onclick="location.href='scendi_in_campo.html'">Scendi in campo</button>
-        <button onclick="location.href='archivio.html'">Archivio</button>
-        <button onclick="location.href='chi_siamo.html'">Chi siamo</button>
+        <button onclick="location.href='/archivio'">Archivio</button>
+        <button onclick="location.href='/contatti'">Chi siamo</button>
     </div>
 </div>
 
 <script>
     const video = document.getElementById('matchVideo');
     const siteName = document.getElementById('siteName');
+    const logo = document.getElementById('logo'); // Aggiungi il riferimento all'immagine del logo
     const blackOverlay = document.getElementById('blackOverlay');
     const buttonContainer = document.getElementById('buttonContainer');
 
     video.addEventListener('ended', () => {
-        // Mostra l'overlay nero
-        blackOverlay.classList.remove('hidden');
-        setTimeout(() => {
-            siteName.classList.remove('hidden');
-            siteName.classList.add('fade-in'); // Aggiunge l'animazione alla scritta
+            // Mostra l'overlay nero con fade-in
+            blackOverlay.classList.remove('hidden');
+            blackOverlay.classList.add('fade-in'); // Aggiungi la classe "fade-in" per l'overlay
 
-            // Mostra i bottoni dopo 2.5 secondi dalla comparsa della scritta
             setTimeout(() => {
-                buttonContainer.classList.remove('hidden'); // Rimuovi la classe hidden per mostrare i bottoni
-            }, 2500); // Ritardo di 2.5 secondi
-        }, 2000); // 2000 ms di attesa prima che appaia la scritta
+                // Mostra il logo
+                const logoContainer = document.getElementById('logoContainer'); // Riferimento al contenitore del logo
+                logoContainer.classList.remove('hidden'); // Rimuovi la classe hidden per il logo
+                logoContainer.classList.add('fade-in'); // Aggiungi fade-in al contenitore del logo
+
+                // Mostra i bottoni
+                setTimeout(() => {
+                    buttonContainer.classList.remove('hidden'); // Rimuovi la classe hidden per mostrare i bottoni
+                    buttonContainer.classList.add('fade-in'); // Aggiungi fade-in al contenitore dei bottoni
+                }, 3000); // Ridotto a 0.5 secondi per testare
+            }, 2000); // Ridotto a 1 secondo per testare
     });
 </script>
 

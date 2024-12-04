@@ -23,15 +23,24 @@ video {
     object-fit: cover;
 }
 
-#siteName {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 50px;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    animation: appear 2s forwards;
+
+.logo-container {
+    position: absolute; /* Posizionamento assoluto per centrare il logo */
+    top: 50%; /* Posiziona al centro verticale */
+    left: 50%; /* Posiziona al centro orizzontale */
+    transform: translate(-50%, -50%); /* Centra esattamente */
+    opacity: 0; /* Inizialmente invisibile */
+    transition: opacity 1s; /* Transizione dell'opacità */
+    z-index: 2;
+}
+
+.logo-container.fade-in {
+    opacity: 1; /* Opacità quando visibile */
+}
+
+#logo {
+    width: 500px; /* Imposta la larghezza del logo */
+    height: auto; /* Mantiene le proporzioni */
 }
 
 .overlay {
@@ -41,17 +50,23 @@ video {
     width: 100%;
     height: 100%;
     background-color: black;
-    opacity: 0;
-    transition: opacity 2s;
+    opacity: 0; /* Inizialmente invisibile */
+    transition: opacity 2s; /* Transizione dell'opacità */
+    z-index: 1;
+}
+
+.overlay.visible {
+    opacity: 0.5; /* Opacità quando è visibile */
 }
 
 .overlay.fade-in {
-    opacity: 0.8; /* Regola l'opacità al valore desiderato per l'effetto di sfumatura */
+    opacity: 0.5; /* Regola l'opacità al valore desiderato per l'effetto di sfumatura */
 }
 
 .hidden {
     display: none;
 }
+
 
 .buttons {
     margin-top: 20px;
@@ -61,13 +76,21 @@ video {
     bottom: 20px; /* Posizionamento nella parte inferiore */
     left: 50%;
     transform: translateX(-50%); /* Centra i bottoni */
+    opacity: 0; /* Inizialmente invisibili */
+    transition: opacity 1s; /* Transizione dell'opacità */
+    z-index: 2;
 }
+
+.buttons.fade-in {
+    opacity: 1; /* Opacità quando è visibile */
+}
+
 
 button {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #007BFF;
-    color: white;
+    background-color: #7ed957;
+    color: black;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -75,7 +98,7 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #00bf63;
 }
 
 @keyframes appear {
