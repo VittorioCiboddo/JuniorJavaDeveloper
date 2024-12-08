@@ -31,37 +31,63 @@
     </div>
 
     <div class="buttons hidden" id="buttonContainer"> <!-- Contenitore dei bottoni iniziato come hidden -->
-        <button onclick="location.href='scendi_in_campo.html'">Scendi in campo</button>
+        <button onclick="location.href='/registra-squadre'">Scendi in campo</button>
         <button onclick="location.href='/archivio'">Archivio</button>
         <button onclick="location.href='/contatti'">Chi siamo</button>
     </div>
+
+    <!-- Pulsante per saltare il video -->
+    <button id="skipButton" onclick="skipVideo()">Salta Video</button>
+
 </div>
 
 <script>
     const video = document.getElementById('matchVideo');
-    const siteName = document.getElementById('siteName');
-    const logo = document.getElementById('logo'); // Aggiungi il riferimento all'immagine del logo
     const blackOverlay = document.getElementById('blackOverlay');
     const buttonContainer = document.getElementById('buttonContainer');
+    const skipButton = document.getElementById('skipButton');
+
+    video.addEventListener('play', () => {
+        console.log('Video started'); // Verifica che l'evento "play" venga attivato.
+
+        // Rendi visibile il pulsante "Salta Video" dopo 3-4 secondi
+        setTimeout(() => {
+            skipButton.style.display = 'inline-block'; // Mostra il pulsante direttamente
+            skipButton.style.visibility = 'visible'; // Rendi visibile il pulsante
+            skipButton.style.opacity = 1; // Imposta opacità a 1
+            console.log('Skip button should be visible now'); // Log per vedere se viene eseguito
+        }, 3000); // Dopo 3 secondi
+    });
 
     video.addEventListener('ended', () => {
-            // Mostra l'overlay nero con fade-in
-            blackOverlay.classList.remove('hidden');
-            blackOverlay.classList.add('fade-in'); // Aggiungi la classe "fade-in" per l'overlay
-
-            setTimeout(() => {
-                // Mostra il logo
-                const logoContainer = document.getElementById('logoContainer'); // Riferimento al contenitore del logo
-                logoContainer.classList.remove('hidden'); // Rimuovi la classe hidden per il logo
-                logoContainer.classList.add('fade-in'); // Aggiungi fade-in al contenitore del logo
-
-                // Mostra i bottoni
-                setTimeout(() => {
-                    buttonContainer.classList.remove('hidden'); // Rimuovi la classe hidden per mostrare i bottoni
-                    buttonContainer.classList.add('fade-in'); // Aggiungi fade-in al contenitore dei bottoni
-                }, 3000); // Ridotto a 0.5 secondi per testare
-            }, 2000); // Ridotto a 1 secondo per testare
+        console.log('Video ended'); // Verifica che l'evento "ended" venga attivato.
+        showOverlayAndLogo(); // Chiama la funzione per mostrare l'overlay e il logo quando il video finisce
     });
+
+    function skipVideo() {
+        video.currentTime = video.duration; // Imposta il tempo corrente del video alla fine
+        showOverlayAndLogo(); // Mostra l'overlay e il logo
+    }
+
+    function showOverlayAndLogo() {
+        // Mostra l'overlay nero con fade-in
+        blackOverlay.classList.remove('hidden');
+        blackOverlay.classList.add('fade-in');
+
+        setTimeout(() => {
+            // Mostra il logo
+            const logoContainer = document.getElementById('logoContainer');
+            logoContainer.classList.remove('hidden');
+            logoContainer.classList.add('fade-in');
+
+            // Mostra i bottoni
+            setTimeout(() => {
+                buttonContainer.classList.remove('hidden');
+                buttonContainer.classList.add('fade-in');
+            }, 3000);
+        }, 2000);
+    }
+
 </script>
 
 </body>

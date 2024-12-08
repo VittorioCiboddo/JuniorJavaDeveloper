@@ -101,6 +101,33 @@ button:hover {
     background-color: #00bf63;
 }
 
+#skipButton {
+    padding: 10px 20px; /* Padding come gli altri bottoni */
+    font-size: 16px; /* Stessa dimensione font degli altri bottoni */
+    background-color: #ff4d4d; /* Colore di sfondo rosso */
+    color: white; /* Colore del testo bianco */
+    border: none; /* Nessun bordo */
+    border-radius: 5px; /* Angoli arrotondati */
+    cursor: pointer; /* Cambia il cursore al passaggio del mouse */
+    transition: background-color 0.3s; /* Transizione per il colore di sfondo */
+    position: absolute; /* Posizione assoluta per l'angolo in alto a destra */
+    top: 10px; /* Distanza dal bordo superiore */
+    right: 10px; /* Distanza dal bordo destro */
+    z-index: 9999; /* Altamente prioritario per stare sopra gli altri elementi */
+    opacity: 1; /* Assicurati che la visibilità non sia 0 */
+    visibility: visible; /* Garantisce che il pulsante sia visibile */
+    display: inline-block; /* Aggiunto per essere sicuri che sia visibile */
+    transition: opacity 1s ease-in-out; /* Transizione di opacità */
+}
+
+#skipButton:hover {
+    background-color: #ff0000; /* Colore di sfondo rosso scuro al passaggio del mouse */
+}
+
+
+
+
+
 @keyframes appear {
     from {
         opacity: 0;
