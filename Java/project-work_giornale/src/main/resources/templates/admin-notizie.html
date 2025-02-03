@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Area Admin - Gestione Notizie</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+      background-color: #fff;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f2f2f2;
+    }
+
+    a {
+      color: #e63946;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .actions {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Stili per il form */
+    form {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="text"],
+    input[type="datetime-local"],
+    select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    /* Stili per il messaggio d'errore */
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #e63946; /* rosso */
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      background-color: #d62839;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="/areaadmin" class="back-button">Torna indietro</a> <!-- Pulsante "Torna indietro" -->
+  <h1>Gestione Notizie</h1>
+  <table>
+    <thead>
+    <tr>
+      <th>Titolo Notizia</th>
+      <th>Autore</th>
+      <th>Data Pubblicazione</th>
+      <th>Categoria</th>
+      <th>Azioni</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="notizia : ${notizie}">
+      <td th:text="${notizia.titolo}"></td>
+      <td th:text="${notizia.autore}"></td>
+      <td th:text="${notizia.dataPubblicazione}"></td>
+      <td th:text="${notizia.categoria.nome}"></td>
+      <td class="actions">
+        <a th:href="@{/adminnotizie/elimina(id=${notizia.idNotizia})}">Elimina</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <hr>
+  <form action="/adminnotizie" method="post" enctype="multipart/form-data">
+    <input type="text" name="titolo" placeholder="Titolo notizia" required th:value="${notizia.titolo}">
+    <input type="text" name="descrizione" placeholder="Descrizione" required th:value="${notizia.descrizione}">
+    <input type="text" name="autore" placeholder="Autore" required th:value="${notizia.autore}">
+    <input type="file" name="immagine" accept="image/*" th:value="${notizia.immagine}">
+    <input type="text" name="linkVideo" placeholder="Link video" th:value="${notizia.linkVideo}">
+    <input type="date" name="dataPubblicazione" required th:value="${notizia.dataPubblicazione}">
+    <select name="categoria">
+      <option value="" disabled selected>Scegli la categoria</option>
+      <option th:each="categoria : ${categorie}" th:text="${categoria.nome}" th:value="${categoria.idCategoria}" th:selected="${notizia.categoria != null && notizia.categoria.idCategoria == categoria.idCategoria}"></option>
+    </select>
+    <input type="submit" value="Aggiungi">
+  </form>
+</div>
+</body>
+</html>

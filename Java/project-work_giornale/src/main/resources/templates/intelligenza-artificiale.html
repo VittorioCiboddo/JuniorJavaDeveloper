@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligenza Artificiale</title>
+
+    <!-- Collegamento a Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Includi lo script Bootstrap bundle (includendo Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+    <!-- Includo Bootstrap Icons per richiamare le icone dei social media -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+
+    <link href="generale.css" rel="stylesheet">
+
+    <style>
+        .no-wrap {
+            display: flex;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .linkz a {
+            text-decoration: none; /* Rimozione sottolineatura */
+            color: black; /* Colore dei link */
+        }
+
+        .linkz a:hover {
+            color: #0056b3; /* Colore al passaggio del mouse */
+        }
+
+        .main-article {
+            flex: 1;
+            color: black; /* Colore del testo all'interno di main-article */
+        }
+
+        .main-article a {
+            text-decoration: none; /* Rimuove la sottolineatura dai link */
+            color: inherit; /* Fa sì che i link ereditino il colore del testo genitore (nero) */
+        }
+
+        .main-article a:hover {
+            color: #0056b3; /* Colore al passaggio del mouse se vuoi mantenere l'effetto hover */
+        }
+
+        .main-article .categoria {
+            text-align: right; /* Allinea a destra */
+            margin-bottom: -1em; /* Spazio negativo per sovrapporre l'immagine */
+        }
+
+        .notizia-container {
+            padding: 20px;
+            background-color: #ffffff;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombra intorno alla notizia */
+            transition: transform 0.3s ease; /* Transizione per l'effetto di ingrandimento */
+        }
+
+        .notizia-container:hover {
+            transform: scale(1.02); /* Ingrandisce la notizia al passaggio del mouse */
+        }
+
+        .ultimora {
+            max-height: 820px; /* Imposta un'altezza massima */
+            background-color: #f8f9fa; /* Colore di sfondo chiaro per il panello laterale */
+            padding: 20px; /* Padding per un po’ di spazio interno */
+            margin-right: 20px; /* Margine a destra per separare dai contenuti principali */
+            border-radius: 8px; /* Rounding the corners */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombra leggera per enfasi */
+        }
+
+        .ultimora a {
+            text-decoration: none; /* Rimuove la sottolineatura */
+        }
+
+        .ultimora h4 {
+            border-bottom: 2px solid #007bff; /* Linea orizzontale sotto i titoli */
+            padding-bottom: 10px; /* Spazio sotto il titolo */
+            color: #007bff; /* Colore del testo del titolo */
+            margin-bottom: 15px; /* Spazio sotto il titolo */
+        }
+
+        .ultimora ul {
+            list-style-type: none; /* Rimuovi i punti dalle liste */
+            padding-left: 0; /* Rimuovi padding a sinistra */
+        }
+
+        .ultimora li {
+            padding: 5px 0; /* Spazio verticale tra le voci del menu */
+        }
+
+        .ultimora li a {
+            color: #333; /* Colore del testo dei link */
+            transition: color 0.3s; /* Transizione per l'effetto di hover */
+        }
+
+        .ultimora li a:hover {
+            color: #007bff; /* Colore del testo al passaggio del mouse */
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+<!-- Bottone cambio tema -->
+<div id="theme-toggle" class="theme-toggle">
+    <div class="theme-icon sun" style="display: none;">
+        ☀️
+    </div>
+    <div class="theme-icon moon" style="display: flex;">
+        🌙
+    </div>
+</div>
+
+
+<div class="container-fluid main-container">
+    <!-- Header stilizzato come sito giornalistico -->
+    <header class="d-flex justify-content-center align-items-center p-3 bg-dark shadow-sm rounded">
+        <img src="/images/logo.png" alt="Logo" class="logo me-3">
+        <h1 class="site-title">Tech News Daily</h1>
+    </header>
+
+    <!-- Navbar sotto l'header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary mt-3 sticky-top">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Notizie
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/notizie">Tutte le notizie</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="/intelligenzaartificiale">Intelligenza
+                                Artificiale</a></li>
+                            <li><a class="dropdown-item" href="/cybersecurity">Cyber Security</a></li>
+                            <li><a class="dropdown-item" href="/robotica">Robotica</a></li>
+                            <li><a class="dropdown-item" href="/innovazioni">Innovazioni</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tutorial">Tutorial</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contatti">Contatti</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/eventi">Eventi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/loginadmin">Area Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenuto principale -->
+    <div class="main-content d-flex mt-5">
+        <div class="ultimora sticky">
+            <h4>Notizie</h4>
+            <ul>
+                <li><a href="/notizie">Tutte le notizie</a></li>
+                <li id="list2"><a href="/intelligenzaartificiale"
+                                  style="font-size: 20px; color: rgba(20, 83, 137, 0.9);">Intelligenza
+                    Artificiale</a></li>
+                <li><a href="/cybersecurity">Cyber Security</a></li>
+                <li><a href="/robotica">Robotica</a></li>
+                <li><a href="/innovazioni">Innovazioni</a></li>
+            </ul>
+
+            <h4>Tutorial</h4>
+            <ul>
+                <li><a href="/tutorial">Guide pratiche sul web</a></li>
+            </ul>
+
+            <h4>Eventi</h4>
+            <ul>
+                <li><a href="/eventi">Fiere, congressi, conferenze</a></li>
+            </ul>
+
+            <h4>Contatti</h4>
+            <ul>
+                <li><a href="/contatti">Segnalazioni, assistenza tecnica</a></li>
+            </ul>
+            <div id="contenitore-foto" style="height: 193px; width: 90%; margin-left: 5%"></div>
+
+
+            <!--script per il banner pubbicità-->
+            <script>
+
+                const banner = [
+                    { nome: "m4f", src: "/images/m4f.png" },
+                    { nome: "just", src: "/images/just.png" },
+                    { nome: "bio", src: "/images/bio.png" },
+                    { nome: "vintage", src: "/images/vintage.png" },
+                ];
+
+                const contenitoreFoto = document.getElementById('contenitore-foto');
+                let indiceCorrente = -1;
+
+                // Funzione per visualizzare la foto del banner
+                function visualizzaFoto(indice) {
+                    if (indice >= 0 && indice < banner.length) {
+                        indiceCorrente = indice;
+                        contenitoreFoto.innerHTML = '<img src="' + banner[indice].src + '" alt="' + banner[indice].nome + '"style="height: 100%; max-width: 100%; width: 100%">';
+                    }
+                }
+
+                // Scorrimento automatico delle foto
+                function scorrimentoAutomatico() {
+                    setInterval(function () {
+                        indiceCorrente = (indiceCorrente + 1) % banner.length;
+                        visualizzaFoto(indiceCorrente);
+                    }, 3000); // Cambia immagine ogni 3 secondi
+                }
+
+                // Inizializzazione dello scorrimento automatico
+                scorrimentoAutomatico();
+
+            </script>
+
+        </div>
+
+        <div class="main-article">
+            <div class="notizia-container" th:each="notizia : ${notizie}">
+                <a th:href="@{/dettaglionotizia(id=${notizia.idNotizia})}">
+                    <h2 th:text="${notizia.titolo}"></h2>
+                    <img th:src="@{${notizia.immagine}}" alt="Immagine dell'articolo"
+                         class="img-fluid front-page-image">
+                    <p class="categoria"
+                       th:text="'Pubblicata il: ' + ${#temporals.format(notizia.dataPubblicazione, 'dd-MM-yyyy')}"></p>
+
+                    <!--<div class="author-date">
+                        <h6 th:text="${notizia.autore}" class="author"></h6>
+                        <span class="interlinea"></span>
+                        <h6 th:text="${notizia.dataPubblicazione}" class="date"></h6>
+                    </div>
+
+                    <hr class="separator">
+
+                    <p th:text="${notizia.descrizione}"></p>-->
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer bg-dark text-white py-4" style="margin-top: 60px;">
+        <div class="container">
+            <div class="row">
+                <!-- Logo e descrizione -->
+                <div class="col-md-4">
+                    <h5 class="mb-3">Tech News</h5>
+                    <p>
+                        Il tuo giornale di riferimento per tutte le ultime notizie su tecnologia, innovazione e
+                        informatica.
+                    </p>
+                </div>
+
+                <!-- Link utili -->
+                <div class="col-md-2">
+                    <h5 class="mb-3">Link utili</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/notizie" class="text-white">Notizie</a></li>
+                        <li><a href="/tutorial" class="text-white">Tutorial</a></li>
+                        <li><a href="/eventi" class="text-white">Eventi</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contatti -->
+                <div class="col-md-3">
+                    <h5 class="mb-3">Contattaci</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="mailto:info@technews.com" class="text-white">info@technews.com</a></li>
+                        <li><a href="tel:+390123456789" class="text-white">+39 012 345 6789</a></li>
+                        <li><a href="/contatti" class="text-white">Scopri tutte le info</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social Media -->
+                <div class="col-md-3">
+                    <h5 class="mb-3">Seguici</h5>
+                    <div>
+                        <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4" style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="col no-wrap"> <!-- Aggiungi la classe .no-wrap -->
+                    <p class="mb-0">
+                        <a href="#" class="text-white">Privacy Policy</a> |
+                        <a href="#" class="text-white">Termini di servizio</a>
+                    </p>
+                </div>
+                <div class="col no-wrap" style="padding-left: 50px;"> <!-- Aggiungi la classe .no-wrap -->
+                    <p class="mb-0">&copy; 2024 Tech News - Tutti i diritti riservati</p>
+                </div>
+                <div class="col text-right" style="padding-left: 50px;">
+                    <p id="datetime"></p> <!-- Elemento per la data e l'ora -->
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+</div>
+
+
+
+<!-- Script footer data/ora -->
+<script>
+    function updateDateTime() {
+        const now = new Date();
+        const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
+        document.getElementById('datetime').textContent = now.toLocaleString('it-IT', options);
+    }
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+</script>
+
+<!-- Popper.js, necessario per il dropdown di Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz4fnFO9gybBogGzFg6Z7C19p7E6huP5BBOv4YBBTVz6k7I1E2ErEsMkF6"
+        crossorigin="anonymous">
+
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous">
+
+</script>
+
+<!-- Script cambio tema -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const themeToggleButton = document.getElementById("theme-toggle");
+        const sunIcon = themeToggleButton.querySelector('.sun');
+        const moonIcon = themeToggleButton.querySelector('.moon');
+        const darkThemeClass = "dark-theme";
+
+        // Controlla se la modalità scura era attivata
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add(darkThemeClass);
+            sunIcon.style.display = "flex"; // Mostra il sole
+            moonIcon.style.display = "none"; // Nascondi la luna
+        }
+
+        // Cambia il tema al click del bottone
+        themeToggleButton.addEventListener("click", () => {
+            document.body.classList.toggle(darkThemeClass);
+
+            // Gestisce la visualizzazione delle icone
+            if (document.body.classList.contains(darkThemeClass)) {
+                sunIcon.style.display = "flex"; // Mostra il sole
+                moonIcon.style.display = "none"; // Nascondi la luna
+                localStorage.setItem("theme", "dark");
+            } else {
+                sunIcon.style.display = "none"; // Nascondi il sole
+                moonIcon.style.display = "flex"; // Mostra la luna
+                localStorage.setItem("theme", "light");
+            }
+        });
+    });
+
+</script>
+
+</div>
+</body>
+
+</html>

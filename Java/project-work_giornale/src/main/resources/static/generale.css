@@ -1,0 +1,427 @@
+body {
+    font-family: 'Merriweather', serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    background-image: url('/images/sfondo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 0.5s ease, color 0.5s ease;
+}
+
+/* Centra e isola la pagina */
+.main-container {
+    width: 70%; /* PiÃ¹ margine ai lati */
+    margin: 0 auto;
+    padding-top: 20px;
+    border-radius: 8px; /* Angoli arrotondati come il menu a sinistra */
+}
+
+header {
+    margin-top: 20px;
+    background-color: #2f2f2f;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center; /* Centra il titolo orizzontalmente */
+    align-items: center; /* Centra il titolo verticalmente */
+    position: relative; /* Posizione per il logo */
+    height: 100%;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    position: absolute;
+    left: 20px; /* Mantiene il logo a sinistra */
+    width: 110px;
+    height: auto;
+    border-radius: 55px;
+    box-shadow: 22px 8px 57px rgb(1 56 255);
+}
+
+.site-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+
+/* Navbar styling con sticky-top */
+nav.navbar {
+    background-color: rgba(30, 115, 190, 0.8) !important; /* Trasparente con sfondo blu */
+    border-radius: 5px;
+    transition: background-color 0.5s ease-in-out; /* Transizione per il cambio del colore */
+}
+
+
+nav.navbar a {
+    color: white !important;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.5s ease-in-out; /* Transizione per il colore del testo */
+}
+
+nav.navbar a:hover {
+    background-color: rgba(20, 83, 137, 0.9) !important;
+    color: #fff !important;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transizione rapida al passaggio del mouse */
+}
+
+/* Layout flessibile e margini */
+.main-content {
+    min-height: calc(100vh - 200px); /* Sottrae altezza per header e footer */
+}
+
+.ultimora {
+    width: 25%;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.main-article {
+    width: 75%;
+    margin-left: 2%;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Stile per il titolo in prima pagina */
+.front-page-title {
+    font-family: 'Impact', sans-serif;
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 25px;
+}
+
+/* Stile immagine con border-radius e ombra */
+.front-page-image {
+    width: 90%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: -16px 21px 33px rgba(0, 0, 0, 0.6);
+    margin: 75px 20px 90px 30px;
+}
+
+/* Footer */
+.footer {
+    background-color: #333; /* Colore di sfondo scuro */
+    color: #fff; /* Testo bianco */
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.footer a {
+    text-decoration: none;
+    color: #aaa; /* Colore dei link */
+}
+
+.footer a:hover {
+    color: #fff; /* Colore dei link al passaggio del mouse */
+}
+
+.footer h5 {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.footer ul {
+    padding: 0;
+    list-style: none;
+}
+
+.footer ul li {
+    margin-bottom: 10px;
+}
+
+.footer ul li a {
+    text-decoration: none;
+    color: #ccc;
+}
+
+.footer ul li a:hover {
+    color: #fff;
+}
+
+.footer .bi {
+    font-size: 1.5rem;
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.footer .bi:hover {
+    color: #fff;
+}
+
+.footer p {
+    margin-bottom: 5px;
+}
+
+.sticky {
+    position:sticky;
+    top: 70px;
+}
+
+.ultimora.sticky {
+    position: sticky;
+    top: 70px;
+}
+
+
+/* Stile del dropdown con transizione */
+.dropdown-menu {
+    background-color: rgba(30, 115, 190, 0.8); /* Stesso colore della navbar */
+    color: white;
+    transition: background-color 0.5s ease-in-out; /* Transizione per lo sfondo */
+}
+
+.dropdown-menu .dropdown-item {
+    color: white;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out; /* Transizione per ciascun item */
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: rgba(20, 83, 137, 0.9); /* Scurisce al passaggio del mouse */
+    color: white;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out; /* Transizione per hover */
+}
+
+
+
+
+/* Tema Scuro */
+
+/* Stile per il bottone del tema */
+.theme-toggle {
+    position: fixed; /* Posizione fissa */
+    right: 20px; /* Posizione a destra */
+    top: 50%; /* Centrato verticalmente */
+    transform: translateY(-50%); /* Regolazione per il centro esatto */
+    width: 60px; /* Imposta una larghezza fissa */
+    height: 60px; /* Imposta un'altezza fissa */
+    border-radius: 50%; /* Angoli arrotondati */
+    overflow: hidden;
+    cursor: pointer; /* Mostra il cursore a forma di mano */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Ombra per il bottone */
+    background-color: transparent;
+}
+
+.theme-icon {
+    width: 100%; /* Larghezza dell'icona */
+    height: 100%; /* Altezza dell'icona */
+    display: flex;
+    align-items: center; /* Centrato verticalmente */
+    justify-content: center; /* Centrato orizzontalmente */
+    font-size: 24px; /* Dimensione del carattere */
+    transition: background-color 0.3s; /* Transizione dolce per lo sfondo */
+}
+
+.sun {
+    background-color: white; /* Sfondo bianco per il sole */
+    color: black; /* Colore del sole */
+}
+
+.moon {
+    background-color: black; /* Sfondo nero per la luna */
+    color: white; /* Colore della luna */
+}
+
+/* Cambio di colore al passaggio del mouse */
+.theme-toggle:hover .sun {
+    background-color: #f0f0f0; /* Colore chiaro al passaggio del mouse */
+}
+
+.theme-toggle:hover .moon {
+    background-color: #333; /* Colore scuro al passaggio del mouse */
+}
+
+
+/* Impostazioni generali per tema scuro */
+.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+    background-image: url('/images/sfondo_dark.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.dark-theme .tutorials {
+    color: white !important;
+}
+
+.dark-theme .btn-primary {
+    background-color: #252525; /* Colore di sfondo del pulsante */
+    border-color: #252525; /* Colore del bordo */
+}
+
+.dark-theme .btn-primary:hover {
+    background-color: #333; /* Colore di sfondo del pulsante al passaggio del mouse */
+    border-color: #333; /* Colore del bordo al passaggio del mouse */
+}
+
+.dark-theme header, .dark-theme footer {
+    background-color: #252525;
+    color: white;
+}
+
+/* Nuova regola per cambiare il colore del testo con la classe "tipo" */
+.dark-theme .tipo:hover {
+    color: black; /* Cambia il colore del testo a nero */
+}
+
+/* Navbar e menu a tendina in modalità scura */
+.dark-theme .navbar {
+    background-color: rgba(37, 37, 37, 0.8) !important; /* Sfondo nero trasparente */
+}
+
+/* Hover per i link della navbar in modalità scura */
+.dark-theme .navbar a:hover {
+    background-color: rgba(30, 115, 190, 0.9) !important; /* Colore hover della navbar */
+    color: #fff !important; /* Colore del testo al passaggio del mouse */
+}
+
+.dark-theme .dropdown-menu {
+    background-color: rgba(37, 37, 37, 0.8) !important; /* Menu a tendina sfondo nero trasparente */
+}
+
+.dark-theme .dropdown-menu .dropdown-item:hover {
+    background-color: rgba(30, 115, 190, 0.9) !important; /* Hover menu a tendina */
+    color: white; /* Colore bianco al passaggio del mouse */
+}
+
+/* Main Article hover effect */
+.dark-theme .notizia-container:hover {
+    transform: scale(1.02); /* Ingrandisce la scheda */
+}
+
+.dark-theme .notizia-container:hover h2,
+.dark-theme .notizia-container:hover .categoria {
+    color: black; /* Colore del testo in nero al passaggio del mouse */
+}
+
+/* Nuova regola per modificare il colore della categoria al passaggio del mouse */
+.dark-theme .main-article .notizia-container:hover .tipo {
+    color: black; /* Colore del testo della categoria a nero */
+}
+
+
+/* Colori per sezioni principali */
+.dark-theme .main-article, .dark-theme .ultimora {
+    background-color: #252525;
+    color: white;
+}
+
+.dark-theme .front-page-title {
+    color: white;
+}
+
+/* Navbar e menu a tendina in modalità scura */
+.dark-theme .navbar, .dark-theme .dropdown-menu {
+    background-color: #252525;
+    color: white;
+}
+
+/* Link in modalità scura */
+.dark-theme a {
+    color: white;
+}
+
+.dark-theme .notizia-container {
+    background-color: #2569aa;
+}
+
+
+/* List items dark*/
+.dark-theme .ultimora li a {
+    color:white;
+}
+
+.dark-theme #list1 a {
+    color: #9dbed1 !important;
+}
+
+.dark-theme #list2 a {
+    color: #9dbed1 !important;
+}
+
+.dark-theme #list3 a {
+    color: #9dbed1 !important;
+}
+
+.dark-theme #list4 a {
+    color: #9dbed1 !important;
+}
+
+.dark-theme #list5 a {
+    color: #9dbed1 !important;
+}
+
+
+/*  */
+@media only screen and (max-width: 950px) {
+
+.site-title {
+    margin-left: 40%;
+}
+
+}
+
+
+
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+
+.main-container {
+    width: 100%;
+}
+
+.site-title {
+    display: none !important;
+}
+
+header{
+    height: 90px;
+}
+
+.logo {
+    margin-left: 30% !important;
+}
+
+.theme-toggle {
+    transform: none;
+    margin-top: 7%;
+    margin-left:84%;
+    position:static;
+    z-index: 100;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+.main-article {
+margin-left: -14px;
+    text-align: center;
+}
+
+.ultimora {
+    margin-right: 0%;
+    width: 146px;
+}
+
+
+}

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Area Admin - Gestione Eventi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+      background-color: #fff;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f2f2f2;
+    }
+
+    a {
+      color: #e63946;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .actions {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Stili per il form */
+    form {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="text"],
+    input[type="datetime-local"],
+    select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+
+    /* Stili per il messaggio d'errore */
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #e63946; /* rosso */
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      background-color: #d62839;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="/areaadmin" class="back-button">Torna indietro</a> <!-- Pulsante "Torna indietro" -->
+  <h1>Gestione Eventi</h1>
+  <table>
+    <thead>
+    <tr>
+      <th>Nome Evento</th>
+      <th>Luogo</th>
+      <th>Data Inizio Evento</th>
+      <th>Data Fine Evento</th>
+      <th>Categoria</th>
+      <th>Azioni</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="evento : ${eventi}">
+      <td th:text="${evento.nome}"></td>
+      <td th:text="${evento.luogo}"></td>
+      <td th:text="${evento.dataInizioString}"></td>
+      <td th:text="${evento.dataFineString}"></td>
+      <td th:text="${evento.categoria.nome}"></td>
+      <td class="actions">
+        <a th:href="@{/admineventi/elimina(id=${evento.idEvento})}">Elimina</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <hr>
+  <form action="/admineventi" method="post" enctype="multipart/form-data">
+    <input type="text" name="nome" placeholder="Nome Evento" required th:value="${evento.nome}">
+    <input type="text" name="descrizione" placeholder="Descrizione Evento" required th:value="${evento.descrizione}">
+    <input type="text" name="luogo" placeholder="Luogo Evento" required th:value="${evento.luogo}">
+    <input type="datetime-local" name="dataInizio" required th:value="${evento.dataInizio}">
+    <input type="datetime-local" name="dataFine" required th:value="${evento.dataFine}">
+    <input type="file" name="immagine" accept="image/*" th:value="${evento.immagine}">
+    <select name="categoria">
+      <option value="" disabled selected>Scegli la categoria</option>
+      <option th:each="categoria : ${categorie}" th:text="${categoria.nome}" th:value="${categoria.idCategoria}" th:selected="${evento.categoria != null && evento.categoria.idCategoria == categoria.idCategoria}"></option>
+    </select>
+    <input type="submit" value="Aggiungi">
+  </form>
+</div>
+</body>
+</html>
