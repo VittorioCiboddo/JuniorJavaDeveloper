@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrazione</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff;
+        color: #333;
+    }
+    header {
+        background-color: #00bf63;
+        padding: 10px 0;
+        text-align: center;
+    }
+    nav {
+        display: flex;
+        justify-content: center;
+        background-color: #7ed957;
+        padding: 10px 0;
+    }
+    nav a {
+        color: #ffffff;
+        text-decoration: none;
+        padding: 15px 20px;
+        margin: 0 10px;
+        transition: background-color 0.3s;
+    }
+    nav a:hover {
+        background-color: #00bf63;
+    }
+    .form-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+    input, select {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    input[type="submit"] {
+        background-color: #00bf63;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    input[type="submit"]:hover {
+        background-color: #7ed957;
+    }
+    footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #00bf63;
+        color: white;
+        position: relative;
+        bottom: 0;
+        width: 100%;
+    }
+  </style>
+
+  <script src="dinamicaFormGiocatori.js"></script>
+
+</head>
+<body>
+
+<header>
+  <h1>Registrazione Giocatori</h1>
+</header>
+
+<nav>
+  <a href="#">Simulive</a>
+  <a href="#">Archivio</a>
+  <a href="#">Chi Siamo</a>
+  <a href="#">Area Admin</a>
+</nav>
+
+<div class="form-container">
+  <form action="/registra-giocatori" method="post" enctype="multipart/form-data">
+
+    <!-- campo per la squadra -->
+    <select name="squadra" id="squadraSelect" required>
+      <option value="" disabled selected>Scegli la squadra</option>
+      <option th:each="squadra : ${squadre}" th:text="${squadra.nome}" th:value="${squadra.idSquadra}" th:selected="${giocatore.squadra != null && giocatore.squadra.idSquadra == squadra.idSquadra}"></option>
+    </select>
+
+    <!-- campo per il modulo (gestisci il caso quando giocatore è null) -->
+    <select name="modulo" id="moduloSelect" required disabled>
+      <option value="" disabled selected>Scegli il modulo di gioco</option>
+      <option th:each="modulo : ${moduli}" th:text="${modulo.schemaGioco}" th:value="${modulo.idModulo}"
+              th:selected="${giocatore.squadra != null && giocatore.squadra.modulo != null && giocatore.squadra.modulo.idModulo == modulo.idModulo}"></option>
+    </select>
+
+    <!-- campo per la tipologia -->
+    <select name="tipologia" id="tipologiaSelect" required disabled>
+      <option value="" disabled selected>Scegli la tipologia di giocatore</option>
+      <option th:each="tipologia : ${tipologie}"
+              th:text="${tipologia.categoria}"
+              th:value="${tipologia.idTipologia}"
+              th:selected="${giocatore.ruolo != null && giocatore.ruolo.tipologia != null && giocatore.ruolo.tipologia.idTipologia == tipologia.idTipologia}">
+      </option>
+    </select>
+
+
+    <!-- campo per il ruolo -->
+    <select name="ruolo" id="ruoloSelect" required disabled>
+      <option value="" disabled selected>Scegli il ruolo</option>
+      <option th:each="ruolo : ${ruoli}" th:text="${ruolo.descrizione} + ' (' + ${ruolo.sigla} + ')'" th:value="${ruolo.idRuolo}" th:selected="${giocatore.ruolo != null && giocatore.ruolo.idRuolo == ruolo.idRuolo}"></option>
+    </select>
+
+    <!-- resto del form -->
+    <input type="text" th:value="${giocatore.nome}" placeholder="Nome" required disabled>
+    <input type="text" th:value="${giocatore.cognome}" placeholder="Cognome" required disabled>
+    <input type="file" name="immagine" accept="image/*" required th:value="${giocatore.immagine}" disabled>
+    <select name="nazionalita" required disabled>
+      <option value="" disabled selected>Scegli la nazionalità</option>
+      <option th:each="nazionalita : ${nazionalita}" th:text="${nazionalita.nazione} + ' (' + ${nazionalita.sigla} + ')'" th:value="${nazionalita.idNazionalita}" th:selected="${giocatore.nazionalita != null && giocatore.nazionalita.idNazionalita == nazionalita.idNazionalita}"></option>
+    </select>
+    <input type="number" min="1" max="99" required th:value="${giocatore.numeroMaglia}" placeholder="Numero di maglia" disabled>
+    <input type="date" name="dataNascita" th:value="${giocatore.dataNascita}" required placeholder="Data di nascita" disabled>
+    <input type="text" th:value="${giocatore.descrizione}" placeholder="Descrizione giocatore" required disabled>
+
+    <!-- button di registrazione -->
+    <input type="submit" value="Registra la formazione">
+  </form>
+</div>
+
+<footer>
+  <p>Sprint Football Simulation</p>
+</footer>
+
+</body>
+</html>
