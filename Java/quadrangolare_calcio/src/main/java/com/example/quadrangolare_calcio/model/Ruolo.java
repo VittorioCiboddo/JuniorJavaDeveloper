@@ -28,6 +28,18 @@ public class Ruolo {
     @JoinColumn(name = "fk_id_modulo", referencedColumnName = "id_modulo")
     private Modulo modulo;
 
+    @Transient
+    private boolean giocatoreRegistrato;
+
+    public boolean isGiocatoreRegistrato() {
+        return giocatoreRegistrato;
+    }
+
+    public void setGiocatoreRegistrato(boolean giocatoreRegistrato) {
+        this.giocatoreRegistrato = giocatoreRegistrato;
+    }
+
+
     public int getIdRuolo() {
         return idRuolo;
     }

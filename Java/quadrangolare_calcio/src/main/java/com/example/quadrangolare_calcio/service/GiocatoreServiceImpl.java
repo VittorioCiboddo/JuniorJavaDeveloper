@@ -8,6 +8,8 @@ import com.example.quadrangolare_calcio.model.Squadra;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.quadrangolare_calcio.repository.GiocatoreRepository;
+
 
 import java.time.LocalDate;
 import java.util.*;
@@ -25,6 +27,10 @@ public class GiocatoreServiceImpl implements GiocatoreService{
     @Autowired
     private GiocatoreDao giocatoreDao;
 
+    @Autowired
+    private GiocatoreRepository giocatoreRepository;
+
+
     private Giocatore giocatore;
 
 
@@ -40,9 +46,9 @@ public class GiocatoreServiceImpl implements GiocatoreService{
                 String formato = immagine.getContentType();
                 String immagineCodificata = "data:" + formato + ";base64," +
                         Base64.getEncoder().encodeToString(immagine.getBytes());
-                squadra.setLogo(immagineCodificata);
+                giocatore.setImmagine(immagineCodificata); // ✅ QUESTA È LA CORRETTA ASSEGNAZIONE
             } catch (Exception e) {
-                System.out.println("Error encoding image: " + e.getMessage());
+                System.out.println("Errore durante la codifica dell'immagine: " + e.getMessage());
             }
         }
 
@@ -54,8 +60,8 @@ public class GiocatoreServiceImpl implements GiocatoreService{
         giocatore.setNazionalita(nazionalita);
 
         giocatoreDao.save(giocatore);
-
     }
+
 
     @Override
     public List<Giocatore> elencoGiocatori() {
@@ -98,4 +104,34 @@ public class GiocatoreServiceImpl implements GiocatoreService{
             return giocatoreOptional.get();
         return null;
     }
+
+    @Override
+    public boolean isRuoloGiaAssegnato(int idRuolo) {
+        return giocatoreDao.existsByRuolo_IdRuolo(idRuolo);
+    }
+
+    @Override
+    public List<Giocatore> getGiocatoriPerSquadra(Long idSquadra) {
+        return ((List<Giocatore>) giocatoreDao.findAll()).stream()
+                .filter(g -> g.getSquadra().getIdSquadra() == idSquadra)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void registraGiocatore(Giocatore giocatore, MultipartFile immagine) {
+        // salva immagine (se necessario), setta percorso o campo su giocatore
+        // esempio:
+        // giocatore.setImmaginePath("/img/" + immagine.getOriginalFilename());
+
+        // salva il giocatore nel DB
+        giocatoreRepository.save(giocatore);
+    }
+
+    @Override
+    public void registraGiocatore(Giocatore giocatore) {
+        giocatoreDao.save(giocatore);
+    }
+
+
+
 }

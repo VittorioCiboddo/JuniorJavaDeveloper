@@ -25,4 +25,10 @@ public class NazionalitaServiceImpl implements NazionalitaService{
         return nazionalita;
     }
 
+    @Override
+    public Nazionalita getByNome(String nome) {
+        return nazionalitaDao.findByNazione(nome);
+    }
+
+
 }

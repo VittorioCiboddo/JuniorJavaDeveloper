@@ -4,6 +4,7 @@ import com.example.quadrangolare_calcio.model.Giocatore;
 import org.springframework.data.repository.CrudRepository;
 
 public interface GiocatoreDao extends CrudRepository<Giocatore, Integer> {
+    boolean existsByRuolo_IdRuolo(int idRuolo);
 
 
 }

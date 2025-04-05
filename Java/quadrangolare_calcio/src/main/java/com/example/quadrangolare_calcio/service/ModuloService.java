@@ -9,5 +9,6 @@ public interface ModuloService {
 
     List<Modulo> elencoModuli();
     Modulo getModuloPerSquadra(Squadra squadra);
+    Modulo getModuloById(Long idModulo);
 
 }

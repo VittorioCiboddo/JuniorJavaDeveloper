@@ -4,16 +4,20 @@ import com.example.quadrangolare_calcio.dao.SquadraDao;
 import com.example.quadrangolare_calcio.model.*;
 import com.example.quadrangolare_calcio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/registra-giocatori")
@@ -56,24 +60,71 @@ public class RegistrazioneGiocatoriController {
         model.addAttribute("tipologie", tipologie);
         model.addAttribute("ruoli", ruoli);
 
+        if (!model.containsAttribute("idSquadra")) {
+            model.addAttribute("idSquadra", null);
+        }
+        if (!model.containsAttribute("idModulo")) {
+            model.addAttribute("idModulo", null);
+        }
+
+        if (!model.containsAttribute("conferma")) {
+            model.addAttribute("conferma", null);
+        }
+        if (!model.containsAttribute("selectedSquadraId")) {
+            model.addAttribute("selectedSquadraId", null);
+        }
+        if (!model.containsAttribute("selectedModuloId")) {
+            model.addAttribute("selectedModuloId", null);
+        }
+
+
         return "registrazione-giocatori";
 
     }
 
-    @PostMapping
-    public String formManager (@RequestParam("nome") String nome,
-                               @RequestParam("cognome") String cognome,
-                               @RequestParam("immagine") MultipartFile immagine,
-                               @RequestParam("numeroMaglia") int numeroMaglia,
-                               @RequestParam("dataNascita") LocalDate dataNascita,
-                               @RequestParam("descrizione") String descrizione,
-                               @RequestParam("ruolo")Ruolo ruolo,
-                               @RequestParam("squadra") Squadra squadra,
-                               @RequestParam("nazionalita")Nazionalita nazionalita,
-                               Model model) {
-        giocatoreService.registraGiocatore(nome, cognome, immagine, numeroMaglia, dataNascita, descrizione, ruolo, squadra, nazionalita);
+    @PostMapping("/registra-giocatori")
+    public String registraGiocatore(@RequestParam("squadraId") Long squadraId,
+                                    @RequestParam("moduloId") Long moduloId,
+                                    @RequestParam("tipologiaId") Long tipologiaId,
+                                    @RequestParam("ruoloId") Long ruoloId,
+                                    @RequestParam("nome") String nome,
+                                    @RequestParam("cognome") String cognome,
+                                    @RequestParam("immagine") MultipartFile immagine,
+                                    @RequestParam("numeroMaglia") int numeroMaglia,
+                                    @RequestParam("dataNascita") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataNascita,
+                                    @RequestParam("nazionalita") String nazionalita,
+                                    @RequestParam("descrizione") String descrizione,
+                                    RedirectAttributes redirectAttributes) {
+
+        Giocatore giocatore = new Giocatore();
+        giocatore.setNome(nome);
+        giocatore.setCognome(cognome);
+        giocatore.setNumeroMaglia(numeroMaglia);
+        giocatore.setDataNascita(dataNascita);
+        giocatore.setDescrizione(descrizione);
+        giocatore.setRuolo(ruoloService.getById(ruoloId));
+        giocatore.setSquadra(squadraService.getSquadraById(squadraId));
+        giocatore.setNazionalita(nazionalitaService.getByNome(nazionalita));
+
+        try {
+            byte[] imageBytes = immagine.getBytes();
+            String base64 = Base64.getEncoder().encodeToString(imageBytes);
+            giocatore.setImmagine(base64);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        giocatoreService.registraGiocatore(giocatore);
+
+        String conferma = nome + " " + cognome + " (" + giocatore.getRuolo().getTipologia().getCategoria() + ") è stato registrato con successo!";
+        redirectAttributes.addAttribute("squadraId", squadraId);
+        redirectAttributes.addAttribute("moduloId", moduloId);
+        redirectAttributes.addAttribute("conferma", conferma);
+
         return "redirect:/registra-giocatori";
     }
+
+
 
     @GetMapping("/getModuloPerSquadra/{idSquadra}")
     public ResponseEntity<Map<String, Object>> getModuloPerSquadra(@PathVariable Long idSquadra) {
@@ -111,7 +162,7 @@ public class RegistrazioneGiocatoriController {
 
         // Aggiungi l'informazione sul fatto che il ruolo sia già assegnato
         for (Ruolo ruolo : ruoliDisponibili) {
-            if (giocatoreService.isRuoloGiaAssegnato(ruolo.getId())) {
+            if (giocatoreService.isRuoloGiaAssegnato(ruolo.getIdRuolo())) {
                 ruolo.setGiocatoreRegistrato(true); // Imposta come già assegnato
             }
         }
@@ -121,6 +172,44 @@ public class RegistrazioneGiocatoriController {
 
         return ResponseEntity.ok(response);
     }
+
+
+    @GetMapping("/getCategorieDisponibili/{idSquadra}/{idModulo}")
+    public ResponseEntity<Map<String, Object>> getCategorieDisponibili(@PathVariable Long idSquadra, @PathVariable Long idModulo) {
+        // Recupera tutti i ruoli del modulo
+        List<Ruolo> ruoliModulo = ruoloService.getRuoliPerModulo(idModulo);
+
+        // Calcola max categorie per quel modulo
+        Map<String, Long> maxCategorie = ruoliModulo.stream()
+                .map(r -> r.getTipologia().getCategoria())
+                .collect(Collectors.groupingBy(c -> c, Collectors.counting()));
+
+        // Recupera giocatori già registrati per la squadra
+        List<Giocatore> giocatoriSquadra = giocatoreService.getGiocatoriPerSquadra(idSquadra);
+
+        // Calcola categorie già assegnate
+        Map<String, Long> giaAssegnati = giocatoriSquadra.stream()
+                .map(g -> g.getRuolo().getTipologia().getCategoria())
+                .collect(Collectors.groupingBy(c -> c, Collectors.counting()));
+
+        // Costruzione risposta
+        List<Map<String, Object>> categorie = new ArrayList<>();
+        for (String categoria : maxCategorie.keySet()) {
+            Map<String, Object> entry = new HashMap<>();
+            long max = maxCategorie.get(categoria);
+            long count = giaAssegnati.getOrDefault(categoria, 0L);
+
+            entry.put("categoria", categoria);
+            entry.put("completata", count >= max);
+
+            categorie.add(entry);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("categorieDisponibili", categorie);
+        return ResponseEntity.ok(response);
+    }
+
 
 
 

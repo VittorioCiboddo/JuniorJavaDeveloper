@@ -27,5 +27,11 @@ public class RuoloServiceImpl implements RuoloService{
         return ruoloRepository.findByModulo_IdModulo(idModulo); // Trova ruoli per modulo
     }
 
+    @Override
+    public Ruolo getById(Long id) {
+        return ruoloDao.findById(Math.toIntExact(id)).orElse(null);
+    }
+
+
 
 }

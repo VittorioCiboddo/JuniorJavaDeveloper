@@ -8,9 +8,18 @@ import java.util.List;
 
 public interface GiocatoreService {
 
+    void registraGiocatore(Giocatore giocatore);
+
     void registraGiocatore(String nome, String cognome, MultipartFile immagine, int numeroMaglia, LocalDate dataNascita, String descrizione, Ruolo ruolo, Squadra squadra, Nazionalita nazionalita);
 
     List<Giocatore> elencoGiocatori();
 
     Giocatore dettaglioGiocatore(int idGiocatore);
+
+    boolean isRuoloGiaAssegnato(int idRuolo);
+
+    List<Giocatore> getGiocatoriPerSquadra(Long idSquadra);
+
+    void registraGiocatore(Giocatore giocatore, MultipartFile immagine);
+
 }

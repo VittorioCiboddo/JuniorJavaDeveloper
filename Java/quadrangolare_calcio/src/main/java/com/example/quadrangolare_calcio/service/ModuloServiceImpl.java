@@ -28,4 +28,10 @@ public class ModuloServiceImpl implements ModuloService{
     public Modulo getModuloPerSquadra(Squadra squadra) {
         return squadra.getModulo(); // Ottieni il modulo direttamente dalla squadra
     }
+
+    @Override
+    public Modulo getModuloById(Long idModulo) {
+        return moduloRepository.findById(idModulo).orElse(null);
+    }
+
 }

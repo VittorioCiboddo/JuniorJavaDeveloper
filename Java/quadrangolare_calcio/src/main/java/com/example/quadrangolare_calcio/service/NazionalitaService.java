@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface NazionalitaService {
 
+    Nazionalita getByNome(String nome);
     List<Nazionalita> elencoNazioni();
 }

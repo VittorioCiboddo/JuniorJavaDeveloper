@@ -8,4 +8,6 @@ public interface RuoloService {
 
     List<Ruolo> elencoRuoli();
     List<Ruolo> getRuoliPerModulo(Long idModulo);
+    Ruolo getById(Long id);
+
 }
