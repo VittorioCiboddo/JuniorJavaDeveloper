@@ -24,7 +24,7 @@
 </header>
 
 <nav>
-  <a href="#">Simulive</a>
+  <a href="\registrazione-squadre">Iscrizioni</a>
   <a href="#">Archivio</a>
   <a href="#">Chi Siamo</a>
   <a href="#">Area Admin</a>
@@ -32,7 +32,12 @@
 
 <div class="form-container">
   <h2>Registrazione Giocatore</h2>
+
   <p th:if="${conferma}" th:text="${conferma}" style="color: green; font-weight: bold;"></p>
+  <p th:if="${rosaCompleta}" style="color: blue; font-weight: bold;">
+    La rosa è completa! Non è possibile aggiungere altri giocatori a questa squadra.
+  </p>
+
 
   <form th:action="@{/registra-giocatori}" method="post" enctype="multipart/form-data">
 
@@ -71,7 +76,7 @@
     <input type="hidden" name="ruolo" id="hiddenRuolo" />
 
     <!-- Dati anagrafici -->
-    <input type="text" name="nome" id="nome" placeholder="Nome" required>
+    <input type="text" name="nome" id="nome" placeholder="Nome (facoltativo)">
     <input type="text" name="cognome" id="cognome" placeholder="Cognome" required>
     <input type="file" name="immagine" id="immagine" accept="image/*" required>
     <input type="number" name="numeroMaglia" id="numeroMaglia" min="1" max="99" placeholder="Numero di maglia" required>
@@ -100,6 +105,7 @@
     document.getElementById("hiddenRuolo").value = document.getElementById("ruoloSelect").value;
   });
 </script>
+
 <script src="/js/dinamicaFormGiocatori.js"></script>
 
 <footer>

@@ -19,6 +19,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedSquadraId = document.body.getAttribute('data-selected-squadra-id');
     const selectedModuloId = document.body.getAttribute('data-selected-modulo-id');
 
+    function resetFormUI() {
+        setInvisible(tipologiaSelect);
+        setInvisible(ruoloSelect);
+        tipologiaSelect.disabled = true;
+        ruoloSelect.disabled = true;
+
+        otherFields.forEach(f => {
+            setInvisible(f);
+            f.disabled = true;
+        });
+        setInvisible(submitButton);
+    }
+
     if (selectedSquadraId && selectedModuloId) {
         squadraSelect.value = selectedSquadraId;
         squadraSelect.disabled = true;
@@ -32,6 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
         moduloSelect.disabled = true;
         hiddenModulo.value = selectedModuloId;
         setVisible(moduloSelect);
+
+        resetFormUI(); // nasconde tutti i campi al caricamento, anche se modulo e squadra sono già selezionati
 
         fetch(`/registra-giocatori/getModuloPerSquadra/${selectedSquadraId}`)
             .then(response => response.json())
@@ -84,13 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     } else {
         setInvisible(moduloSelect);
-        setInvisible(tipologiaSelect);
-        setInvisible(ruoloSelect);
-        otherFields.forEach(f => {
-            setInvisible(f);
-            f.disabled = true;
-        });
-        setInvisible(submitButton);
+        resetFormUI();
     }
 
     squadraSelect.addEventListener('change', function () {

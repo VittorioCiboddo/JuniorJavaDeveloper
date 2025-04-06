@@ -91,6 +91,11 @@ public class RegistrazioneGiocatoriController {
         redirectAttributes.addAttribute("selectedSquadraId", squadraId);
         redirectAttributes.addAttribute("selectedModuloId", moduloId);
 
+        List<Giocatore> rosa = giocatoreService.getGiocatoriPerSquadra(squadraId);
+        if (rosa.size() == 11) {
+            redirectAttributes.addFlashAttribute("rosaCompleta", true);
+        }
+
         return "redirect:/registra-giocatori";
     }
 
