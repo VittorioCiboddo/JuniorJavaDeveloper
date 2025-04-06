@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface GiocatoreService {
 
-    void registraGiocatore(String nome, String cognome, MultipartFile immagine, int numeroMaglia, LocalDate dataNascita, String descrizione, Ruolo ruolo, Squadra squadra, Nazionalita nazionalita);
-
     List<Giocatore> elencoGiocatori();
 
     Giocatore dettaglioGiocatore(int idGiocatore);
@@ -19,4 +17,5 @@ public interface GiocatoreService {
     List<Giocatore> getGiocatoriPerSquadra(Long idSquadra);
 
 
+    void registraGiocatore(Giocatore giocatore);
 }

@@ -2,7 +2,7 @@ package com.example.quadrangolare_calcio.service;
 
 import com.example.quadrangolare_calcio.dao.NazionalitaDao;
 import com.example.quadrangolare_calcio.model.Nazionalita;
-import com.example.quadrangolare_calcio.model.Squadra;
+import com.example.quadrangolare_calcio.repository.NazionalitaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 public class NazionalitaServiceImpl implements NazionalitaService{
 
     @Autowired
+    private NazionalitaRepository nazionalitaRepository;
+
+    @Autowired
     NazionalitaDao nazionalitaDao;
 
     @Override
@@ -23,6 +26,11 @@ public class NazionalitaServiceImpl implements NazionalitaService{
         nazionalita = nazionalita.stream().sorted(comparator).collect(Collectors.toList());
 
         return nazionalita;
+    }
+
+    @Override
+    public Nazionalita getNazionalitaById(Long id) {
+        return nazionalitaRepository.findById(id).orElse(null);
     }
 
     @Override

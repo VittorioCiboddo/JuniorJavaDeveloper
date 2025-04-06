@@ -8,4 +8,6 @@ public interface TipologiaService {
 
     List<Tipologia> elencoTipologie();
     List<Tipologia> getTipologiePerModulo(Long idModulo);
+    Tipologia getById(Long id);
+
 }

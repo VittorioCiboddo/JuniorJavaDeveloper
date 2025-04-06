@@ -5,11 +5,10 @@ import com.example.quadrangolare_calcio.model.Giocatore;
 import com.example.quadrangolare_calcio.model.Nazionalita;
 import com.example.quadrangolare_calcio.model.Ruolo;
 import com.example.quadrangolare_calcio.model.Squadra;
+import com.example.quadrangolare_calcio.repository.GiocatoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.example.quadrangolare_calcio.repository.GiocatoreRepository;
-
 
 import java.time.LocalDate;
 import java.util.*;
@@ -34,34 +33,34 @@ public class GiocatoreServiceImpl implements GiocatoreService{
     private Giocatore giocatore;
 
 
-    @Override
-    public void registraGiocatore(String nome, String cognome, MultipartFile immagine, int numeroMaglia, LocalDate dataNascita, String descrizione, Ruolo ruolo, Squadra squadra, Nazionalita nazionalita) {
-        Giocatore giocatore = new Giocatore();
-
-        giocatore.setNome(nome);
-        giocatore.setCognome(cognome);
-
-        if (immagine != null && !immagine.isEmpty()) {
-            try {
-                String formato = immagine.getContentType();
-                String immagineCodificata = "data:" + formato + ";base64," +
-                        Base64.getEncoder().encodeToString(immagine.getBytes());
-                giocatore.setImmagine(immagineCodificata); // ✅ QUESTA È LA CORRETTA ASSEGNAZIONE
-            } catch (Exception e) {
-                System.out.println("Errore durante la codifica dell'immagine: " + e.getMessage());
-            }
-        }
-
-        giocatore.setNumeroMaglia(numeroMaglia);
-        giocatore.setDataNascita(dataNascita);
-        giocatore.setDescrizione(descrizione);
-        giocatore.setRuolo(ruolo);
-        giocatore.setSquadra(squadra);
-        giocatore.setNazionalita(nazionalita);
-
-        giocatoreDao.save(giocatore);
-    }
-
+//    @Override
+//    public void registraGiocatore(String nome, String cognome, MultipartFile immagine, int numeroMaglia, LocalDate dataNascita, String descrizione, Ruolo ruolo, Squadra squadra, Nazionalita nazionalita) {
+//        Giocatore giocatore = new Giocatore();
+//
+//        giocatore.setNome(nome);
+//        giocatore.setCognome(cognome);
+//
+//        if (immagine != null && !immagine.isEmpty()) {
+//            try {
+//                String formato = immagine.getContentType();
+//                String immagineCodificata = "data:" + formato + ";base64," +
+//                        Base64.getEncoder().encodeToString(immagine.getBytes());
+//                squadra.setLogo(immagineCodificata);
+//            } catch (Exception e) {
+//                System.out.println("Error encoding image: " + e.getMessage());
+//            }
+//        }
+//
+//        giocatore.setNumeroMaglia(numeroMaglia);
+//        giocatore.setDataNascita(dataNascita);
+//        giocatore.setDescrizione(descrizione);
+//        giocatore.setRuolo(ruolo);
+//        giocatore.setSquadra(squadra);
+//        giocatore.setNazionalita(nazionalita);
+//
+//        giocatoreDao.save(giocatore);
+//
+//    }
 
     @Override
     public List<Giocatore> elencoGiocatori() {
@@ -117,6 +116,10 @@ public class GiocatoreServiceImpl implements GiocatoreService{
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void registraGiocatore(Giocatore giocatore) {
+        giocatoreRepository.save(giocatore);
+    }
 
 
 }

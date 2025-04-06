@@ -2,6 +2,7 @@ package com.example.quadrangolare_calcio.service;
 
 import com.example.quadrangolare_calcio.dao.TipologiaDao;
 import com.example.quadrangolare_calcio.model.Tipologia;
+import com.example.quadrangolare_calcio.repository.TipologiaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.quadrangolare_calcio.model.Ruolo;
@@ -18,6 +19,9 @@ public class TipologiaServiceImpl implements TipologiaService{
     @Autowired
     private RuoloService ruoloService;
 
+    @Autowired
+    private TipologiaRepository tipologiaRepository;
+
     @Override
     public List<Tipologia> elencoTipologie() {
         return (List<Tipologia>) tipologiaDao.findAll();
@@ -32,5 +36,11 @@ public class TipologiaServiceImpl implements TipologiaService{
                 .distinct()
                 .toList();
     }
+
+    @Override
+    public Tipologia getById(Long id) {
+        return tipologiaRepository.findById(id).orElse(null);
+    }
+
 
 }

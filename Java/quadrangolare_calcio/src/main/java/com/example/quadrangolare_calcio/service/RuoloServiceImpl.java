@@ -29,7 +29,7 @@ public class RuoloServiceImpl implements RuoloService{
 
     @Override
     public Ruolo getById(Long id) {
-        return ruoloDao.findById(Math.toIntExact(id)).orElse(null);
+        return ruoloRepository.findById(id).orElse(null);
     }
 
 
