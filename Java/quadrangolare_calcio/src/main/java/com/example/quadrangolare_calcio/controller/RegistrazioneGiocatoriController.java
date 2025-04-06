@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import java.time.LocalDate;
 
 @Controller
-@RequestMapping("/registra-giocatori")
 public class RegistrazioneGiocatoriController {
 
     @Autowired
@@ -82,7 +81,7 @@ public class RegistrazioneGiocatoriController {
 
     }
 
-    @PostMapping("")
+    @PostMapping("/registra-giocatori")
     public String registraGiocatore(@RequestParam("squadraId") Long squadraId,
                                     @RequestParam("moduloId") Long moduloId,
                                     @RequestParam("tipologiaId") Long tipologiaId,
