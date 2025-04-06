@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.time.LocalDate;
 
 @Controller
+@RequestMapping("/registra-giocatori")
 public class RegistrazioneGiocatoriController {
 
     @Autowired
@@ -59,66 +60,44 @@ public class RegistrazioneGiocatoriController {
         model.addAttribute("tipologie", tipologie);
         model.addAttribute("ruoli", ruoli);
 
-        if (!model.containsAttribute("idSquadra")) {
-            model.addAttribute("idSquadra", null);
-        }
-        if (!model.containsAttribute("idModulo")) {
-            model.addAttribute("idModulo", null);
-        }
-
-        if (!model.containsAttribute("conferma")) {
-            model.addAttribute("conferma", null);
-        }
-        if (!model.containsAttribute("selectedSquadraId")) {
-            model.addAttribute("selectedSquadraId", null);
-        }
-        if (!model.containsAttribute("selectedModuloId")) {
-            model.addAttribute("selectedModuloId", null);
-        }
+//        if (!model.containsAttribute("idSquadra")) {
+//            model.addAttribute("idSquadra", null);
+//        }
+//        if (!model.containsAttribute("idModulo")) {
+//            model.addAttribute("idModulo", null);
+//        }
+//
+//        if (!model.containsAttribute("conferma")) {
+//            model.addAttribute("conferma", null);
+//        }
+//        if (!model.containsAttribute("selectedSquadraId")) {
+//            model.addAttribute("selectedSquadraId", null);
+//        }
+//        if (!model.containsAttribute("selectedModuloId")) {
+//            model.addAttribute("selectedModuloId", null);
+//        }
 
 
         return "registrazione-giocatori";
 
     }
 
-    @PostMapping("/registra-giocatori")
-    public String registraGiocatore(@RequestParam("squadraId") Long squadraId,
-                                    @RequestParam("moduloId") Long moduloId,
-                                    @RequestParam("tipologiaId") Long tipologiaId,
-                                    @RequestParam("ruoloId") Long ruoloId,
+    @PostMapping
+    public String registraGiocatore(@RequestParam("squadra")  Squadra squadra,
+                                    @RequestParam("modulo") Modulo modulo,
+                                    @RequestParam("tipologia") Tipologia tipologia,
+                                    @RequestParam("ruolo") Ruolo ruolo,
                                     @RequestParam("nome") String nome,
                                     @RequestParam("cognome") String cognome,
                                     @RequestParam("immagine") MultipartFile immagine,
                                     @RequestParam("numeroMaglia") int numeroMaglia,
-                                    @RequestParam("dataNascita") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataNascita,
-                                    @RequestParam("nazionalita") String nazionalita,
+                                    @RequestParam("dataNascita") LocalDate dataNascita,
+                                    @RequestParam("nazionalita") Nazionalita nazionalita,
                                     @RequestParam("descrizione") String descrizione,
-                                    RedirectAttributes redirectAttributes) {
+                                    Model model) {
 
-        Giocatore giocatore = new Giocatore();
-        giocatore.setNome(nome);
-        giocatore.setCognome(cognome);
-        giocatore.setNumeroMaglia(numeroMaglia);
-        giocatore.setDataNascita(dataNascita);
-        giocatore.setDescrizione(descrizione);
-        giocatore.setRuolo(ruoloService.getById(ruoloId));
-        giocatore.setSquadra(squadraService.getSquadraById(squadraId));
-        giocatore.setNazionalita(nazionalitaService.getByNome(nazionalita));
-
-        try {
-            byte[] imageBytes = immagine.getBytes();
-            String base64 = Base64.getEncoder().encodeToString(imageBytes);
-            giocatore.setImmagine(base64);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        giocatoreService.registraGiocatore(giocatore);
-
-        String conferma = nome + " " + cognome + " (" + giocatore.getRuolo().getTipologia().getCategoria() + ") è stato registrato con successo!";
-        redirectAttributes.addAttribute("squadraId", squadraId);
-        redirectAttributes.addAttribute("moduloId", moduloId);
-        redirectAttributes.addAttribute("conferma", conferma);
+        giocatoreService.registraGiocatore(nome, cognome, immagine, numeroMaglia, dataNascita, descrizione, ruolo, squadra, nazionalita);
+        model.addAttribute("message", "Giocatore registrato con successo!");
 
         return "redirect:/registra-giocatori";
     }

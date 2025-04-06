@@ -117,21 +117,6 @@ public class GiocatoreServiceImpl implements GiocatoreService{
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void registraGiocatore(Giocatore giocatore, MultipartFile immagine) {
-        // salva immagine (se necessario), setta percorso o campo su giocatore
-        // esempio:
-        // giocatore.setImmaginePath("/img/" + immagine.getOriginalFilename());
-
-        // salva il giocatore nel DB
-        giocatoreRepository.save(giocatore);
-    }
-
-    @Override
-    public void registraGiocatore(Giocatore giocatore) {
-        giocatoreDao.save(giocatore);
-    }
-
 
 
 }
