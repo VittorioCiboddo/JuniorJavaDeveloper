@@ -92,8 +92,8 @@
 
   <form th:action="@{/registra-giocatori}" method="post" enctype="multipart/form-data">
 
-    <!-- STEP 1: Squadra -->
-    <select name="squadra" id="squadraSelect"
+  <!-- STEP 1: Squadra -->
+    <select name="squadraId" id="squadraSelect"
             th:disabled="${selectedModuloId != null}"
             required>
       <option value="">Scegli la squadra</option>
@@ -106,7 +106,7 @@
 
 
     <!-- STEP 2: Modulo -->
-    <select name="modulo" id="moduloSelect"
+    <select name="moduloId" id="moduloSelect"
             th:disabled="${selectedModuloId != null}"
             required>
       <option value="">Scegli il modulo di gioco</option>
@@ -119,12 +119,12 @@
 
 
     <!-- STEP 3: Tipologia -->
-    <select name="tipologia" id="tipologiaSelect" required>
+    <select name="tipologiaId" id="tipologiaSelect" required>
       <option value="">Scegli la tipologia di giocatore</option>
     </select>
 
     <!-- STEP 4: Ruolo -->
-    <select name="ruolo" id="ruoloSelect" required>
+    <select name="ruoloId" id="ruoloSelect" required>
       <option value="">Scegli il ruolo del giocatore</option>
     </select>
 

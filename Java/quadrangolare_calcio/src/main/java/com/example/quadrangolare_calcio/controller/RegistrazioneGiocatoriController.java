@@ -82,7 +82,7 @@ public class RegistrazioneGiocatoriController {
 
     }
 
-    @PostMapping("/registra-giocatori")
+    @PostMapping("")
     public String registraGiocatore(@RequestParam("squadraId") Long squadraId,
                                     @RequestParam("moduloId") Long moduloId,
                                     @RequestParam("tipologiaId") Long tipologiaId,
