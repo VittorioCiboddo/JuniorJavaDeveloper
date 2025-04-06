@@ -99,9 +99,9 @@ public class RegistrazioneGiocatoriController {
         // Recupera gli oggetti dai rispettivi ID
         Squadra squadra = squadraService.getSquadraById(squadraId);
         Modulo modulo = moduloService.getModuloById(moduloId);
-        Tipologia tipologia = tipologiaService.getById(id);
+        Tipologia tipologia = tipologiaService.getById(tipologiaId);
         Ruolo ruolo = ruoloService.getById(ruoloId);
-        Nazionalita nazionalita = nazionalitaService.getNazionalitaById(id);
+        Nazionalita nazionalita = nazionalitaService.getNazionalitaById(nazionalitaId);
 
         // Crea il giocatore
         Giocatore giocatore = new Giocatore();
