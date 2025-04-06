@@ -4,73 +4,18 @@
   <meta charset="UTF-8">
   <title>Registrazione</title>
   <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #ffffff;
-        color: #333;
-    }
-    header {
-        background-color: #00bf63;
-        padding: 10px 0;
-        text-align: center;
-    }
-    nav {
-        display: flex;
-        justify-content: center;
-        background-color: #7ed957;
-        padding: 10px 0;
-    }
-    nav a {
-        color: #ffffff;
-        text-decoration: none;
-        padding: 15px 20px;
-        margin: 0 10px;
-        transition: background-color 0.3s;
-    }
-    nav a:hover {
-        background-color: #00bf63;
-    }
-    .form-container {
-        max-width: 600px;
-        margin: 20px auto;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        background-color: #f9f9f9;
-    }
-    form {
-        display: flex;
-        flex-direction: column;
-    }
-    input, select {
-        margin: 10px 0;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-    input[type="submit"] {
-        background-color: #00bf63;
-        color: white;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    input[type="submit"]:hover {
-        background-color: #7ed957;
-    }
-    footer {
-        text-align: center;
-        padding: 20px;
-        background-color: #00bf63;
-        color: white;
-        position: relative;
-        bottom: 0;
-        width: 100%;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff; color: #333; }
+    header { background-color: #00bf63; padding: 10px 0; text-align: center; }
+    nav { display: flex; justify-content: center; background-color: #7ed957; padding: 10px 0; }
+    nav a { color: #ffffff; text-decoration: none; padding: 15px 20px; margin: 0 10px; transition: background-color 0.3s; }
+    nav a:hover { background-color: #00bf63; }
+    .form-container { max-width: 600px; margin: 20px auto; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); background-color: #f9f9f9; }
+    form { display: flex; flex-direction: column; }
+    input, select, textarea { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+    input[type="submit"] { background-color: #00bf63; color: white; border: none; cursor: pointer; transition: background-color 0.3s; }
+    input[type="submit"]:hover { background-color: #7ed957; }
+    footer { text-align: center; padding: 20px; background-color: #00bf63; color: white; position: relative; bottom: 0; width: 100%; }
   </style>
-
 </head>
 <body th:attr="data-selected-squadra-id=${selectedSquadraId}, data-selected-modulo-id=${selectedModuloId}">
 
@@ -89,13 +34,10 @@
   <h2>Registrazione Giocatore</h2>
   <p th:if="${conferma}" th:text="${conferma}" style="color: green; font-weight: bold;"></p>
 
-
   <form th:action="@{/registra-giocatori}" method="post" enctype="multipart/form-data">
 
-  <!-- STEP 1: Squadra -->
-    <select name="squadra" id="squadraSelect"
-            th:disabled="${selectedModuloId != null}"
-            required>
+    <!-- Squadra -->
+    <select id="squadraSelect" required>
       <option value="">Scegli la squadra</option>
       <option th:each="squadra : ${squadre}"
               th:value="${squadra.idSquadra}"
@@ -103,38 +45,39 @@
               th:selected="${selectedSquadraId != null and selectedSquadraId == squadra.idSquadra}">
       </option>
     </select>
+    <input type="hidden" name="squadra" id="hiddenSquadra" />
 
-
-    <!-- STEP 2: Modulo -->
-    <select name="modulo" id="moduloSelect"
-            th:disabled="${selectedModuloId != null}"
-            required>
+    <!-- Modulo -->
+    <select id="moduloSelect" required>
       <option value="">Scegli il modulo di gioco</option>
-      <option th:if="${selectedModuloId != null}"
-              th:value="${selectedModuloId}"
-              th:text="${moduli.?[idModulo == selectedModuloId].![schemaGioco][0]}"
-              selected>
+      <option th:each="modulo : ${moduli}"
+              th:value="${modulo.idModulo}"
+              th:text="${modulo.schemaGioco}"
+              th:selected="${selectedModuloId != null and selectedModuloId == modulo.idModulo}">
       </option>
     </select>
+    <input type="hidden" name="modulo" id="hiddenModulo" />
 
-
-    <!-- STEP 3: Tipologia -->
-    <select name="tipologia" id="tipologiaSelect" required>
+    <!-- Tipologia -->
+    <select id="tipologiaSelect" required>
       <option value="">Scegli la tipologia di giocatore</option>
     </select>
+    <input type="hidden" name="tipologia" id="hiddenTipologia" />
 
-    <!-- STEP 4: Ruolo -->
-    <select name="ruolo" id="ruoloSelect" required>
+    <!-- Ruolo -->
+    <select id="ruoloSelect" required>
       <option value="">Scegli il ruolo del giocatore</option>
     </select>
+    <input type="hidden" name="ruolo" id="hiddenRuolo" />
 
-    <!-- STEP 5: Dati giocatore -->
+    <!-- Dati anagrafici -->
     <input type="text" name="nome" id="nome" placeholder="Nome" required>
     <input type="text" name="cognome" id="cognome" placeholder="Cognome" required>
     <input type="file" name="immagine" id="immagine" accept="image/*" required>
     <input type="number" name="numeroMaglia" id="numeroMaglia" min="1" max="99" placeholder="Numero di maglia" required>
     <input type="date" name="dataNascita" id="dataNascita" required>
 
+    <!-- Nazionalità -->
     <select name="nazionalita" id="nazionalita" required>
       <option value="">Scegli la nazionalità</option>
       <option th:each="naz : ${nazionalita}"
@@ -149,8 +92,15 @@
   </form>
 </div>
 
+<script>
+  document.addEventListener("submit", function () {
+    document.getElementById("hiddenSquadra").value = document.getElementById("squadraSelect").value;
+    document.getElementById("hiddenModulo").value = document.getElementById("moduloSelect").value;
+    document.getElementById("hiddenTipologia").value = document.getElementById("tipologiaSelect").value;
+    document.getElementById("hiddenRuolo").value = document.getElementById("ruoloSelect").value;
+  });
+</script>
 <script src="/js/dinamicaFormGiocatori.js"></script>
-
 
 <footer>
   <p>Sprint Football Simulation</p>
@@ -158,4 +108,3 @@
 
 </body>
 </html>
-

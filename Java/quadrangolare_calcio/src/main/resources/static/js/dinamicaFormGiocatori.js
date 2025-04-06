@@ -8,16 +8,21 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     const submitButton = document.querySelector('input[type="submit"]');
 
+    const hiddenSquadra = document.getElementById('hiddenSquadra');
+    const hiddenModulo = document.getElementById('hiddenModulo');
+    const hiddenTipologia = document.getElementById('hiddenTipologia');
+    const hiddenRuolo = document.getElementById('hiddenRuolo');
+
     let moduloBloccato = false;
     let tipologiaBloccata = false;
 
     const selectedSquadraId = document.body.getAttribute('data-selected-squadra-id');
     const selectedModuloId = document.body.getAttribute('data-selected-modulo-id');
 
-    // STEP 5 - Se siamo al giocatore successivo
     if (selectedSquadraId && selectedModuloId) {
         squadraSelect.value = selectedSquadraId;
         squadraSelect.disabled = true;
+        hiddenSquadra.value = selectedSquadraId;
 
         moduloSelect.innerHTML = '';
         const option = document.createElement('option');
@@ -25,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
         option.text = 'Caricamento modulo...';
         moduloSelect.appendChild(option);
         moduloSelect.disabled = true;
+        hiddenModulo.value = selectedModuloId;
         setVisible(moduloSelect);
 
         fetch(`/registra-giocatori/getModuloPerSquadra/${selectedSquadraId}`)
@@ -36,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     fixedOption.value = data.modulo.idModulo;
                     fixedOption.text = data.modulo.schemaGioco;
                     moduloSelect.appendChild(fixedOption);
+                    hiddenModulo.value = data.modulo.idModulo;
                 }
 
                 setVisible(tipologiaSelect);
@@ -76,7 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
             });
     } else {
-        // Primo giocatore - visibilità iniziale
         setInvisible(moduloSelect);
         setInvisible(tipologiaSelect);
         setInvisible(ruoloSelect);
@@ -87,12 +93,12 @@ document.addEventListener("DOMContentLoaded", function () {
         setInvisible(submitButton);
     }
 
-    // STEP 1 - Squadra scelta
     squadraSelect.addEventListener('change', function () {
         if (moduloBloccato) return;
 
         const squadraId = this.value;
         if (!squadraId) return;
+        hiddenSquadra.value = squadraId;
 
         setVisible(moduloSelect);
         moduloSelect.innerHTML = `<option value="">Scegli il modulo di gioco</option>`;
@@ -110,10 +116,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
-    // STEP 2 - Modulo scelto
     moduloSelect.addEventListener('change', function () {
         const moduloId = this.value;
         if (!moduloId) return;
+        hiddenModulo.value = moduloId;
 
         moduloBloccato = true;
         squadraSelect.disabled = true;
@@ -159,7 +165,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
-    // STEP 3 - Tipologia scelta
     tipologiaSelect.addEventListener('change', function () {
         if (tipologiaBloccata) return;
 
@@ -167,6 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const tipologiaText = this.options[this.selectedIndex].text;
         const moduloId = moduloSelect.value;
         if (!tipologiaId || !moduloId) return;
+        hiddenTipologia.value = tipologiaId;
 
         ruoloSelect.innerHTML = `<option value="">Scegli il ruolo del giocatore</option>`;
         setVisible(ruoloSelect);
@@ -196,10 +202,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
-    // STEP 4 - Ruolo scelto
     ruoloSelect.addEventListener('change', function () {
         const ruoloId = this.value;
         if (!ruoloId) return;
+        hiddenRuolo.value = ruoloId;
 
         tipologiaBloccata = true;
         tipologiaSelect.disabled = true;
