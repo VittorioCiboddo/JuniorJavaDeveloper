@@ -28,6 +28,9 @@ public class Nazionalita {
     @OneToMany(mappedBy = "nazionalita", cascade = CascadeType.REMOVE)
     private List<Giocatore> giocatori;
 
+    @OneToMany(mappedBy = "nazionalita", cascade = CascadeType.REMOVE)
+    private List<Allenatore> allenatori;
+
     public int getIdNazionalita() {
         return idNazionalita;
     }
@@ -74,5 +77,13 @@ public class Nazionalita {
 
     public void setGiocatori(List<Giocatore> giocatori) {
         this.giocatori = giocatori;
+    }
+
+    public List<Allenatore> getAllenatori() {
+        return allenatori;
+    }
+
+    public void setAllenatori(List<Allenatore> allenatori) {
+        this.allenatori = allenatori;
     }
 }

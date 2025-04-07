@@ -39,6 +39,12 @@ public class Squadra {
     @OneToMany(mappedBy = "squadra", cascade = CascadeType.REMOVE)
     private List<Giocatore> giocatori; // aggiungo questa lista per mantenere la relazione
 
+    @OneToOne(mappedBy = "squadra", cascade = CascadeType.REMOVE)
+    private Stadio stadio;
+
+    @OneToMany(mappedBy = "squadra", cascade = CascadeType.REMOVE)
+    private List<Allenatore> allenatori;
+
     public long getIdSquadra() {
         return idSquadra;
     }
@@ -109,5 +115,21 @@ public class Squadra {
 
     public void setGiocatori(List<Giocatore> giocatori) {
         this.giocatori = giocatori;
+    }
+
+    public Stadio getStadio() {
+        return stadio;
+    }
+
+    public void setStadio(Stadio stadio) {
+        this.stadio = stadio;
+    }
+
+    public List<Allenatore> getAllenatori() {
+        return allenatori;
+    }
+
+    public void setAllenatori(List<Allenatore> allenatori) {
+        this.allenatori = allenatori;
     }
 }
