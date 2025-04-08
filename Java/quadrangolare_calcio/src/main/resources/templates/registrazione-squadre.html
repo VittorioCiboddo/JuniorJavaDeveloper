@@ -86,28 +86,45 @@
 
 <div class="form-container">
     <form action="/registra-squadre" method="post" enctype="multipart/form-data">
-        <input type="text" name="nome" th:value="${squadra.nome}" placeholder="Nome" required>
-        <input type="file" name="logo" accept="image/*" th:value="${squadra.logo}" placeholder="Logo squadra" required>
-        <input type="text" name="nomeAllenatore" th:value="${allenatore.nome}" placeholder="Nome allenatore (facoltativo)">
-        <input type="text" name="cognomeAllenatore" th:value="${allenatore.cognome}" placeholder="Cognome allenatore" required>
-        <input type="file" name="immagine" accept="image/*" th:value="${allenatore.immagine}" placeholder="Immagine allenatore" required>
-        <select name="nazionalita" required>
-            <option value="" disabled selected>Scegli la nazionalità dell'allenatore</option>
-            <option th:each="nazionalita : ${nazionalita}" th:text="${nazionalita.nazione} + ' (' + ${nazionalita.sigla} + ')'" th:value="${nazionalita.idNazionalita}" th:selected="${allenatore.nazionalita != null && allenatore.nazionalita.idNazionalita == nazionalita.idNazionalita}"></option>
-        </select>
-        <input type="text" name="descrizione" th:value="${allenatore.descrizione}" placeholder="Descrizione allenatore" required>
-        <input type="text" name="capitano" th:value="${squadra.capitano}" placeholder="Capitano" required>
-        <input type="text" name="nomeStadio" th:value="${stadio.nome}" placeholder="Nome stadio" required>
-        <input type="file" name="immagineStadio" accept="image/*" th:value="${stadio.immagine}" placeholder="Immagine stadio" required>
-        <input type="text" name="descrizione" th:value="${squadra.descrizione}" placeholder="Descrizione squadra" required>
-        <select name="modulo" required>
-            <option value="" disabled selected>Scegli il modulo di gioco</option>
-            <option th:each="modulo : ${modulo}" th:text="${modulo.schemaGioco}" th:value="${modulo.idModulo}" th:selected="${squadra.modulo != null && squadra.modulo.idModulo == modulo.idModulo}"></option>
-        </select>
-        <select name="nazionalita" required>
-            <option value="" disabled selected>Scegli la nazionalità</option>
-            <option th:each="nazionalita : ${nazionalita}" th:text="${nazionalita.nazione} + ' (' + ${nazionalita.sigla} + ')'" th:value="${nazionalita.idNazionalita}" th:selected="${squadra.nazionalita != null && squadra.nazionalita.idNazionalita == nazionalita.idNazionalita}"></option>
-        </select>
+        <fieldset>
+            <legend>Squadra</legend>
+            <input type="text" name="nome" th:value="${squadra.nome}" placeholder="Nome" required>
+            <input type="file" name="logo" accept="image/*" th:value="${squadra.logo}" placeholder="Logo squadra" required>
+            <input type="text" name="capitano" th:value="${squadra.capitano}" placeholder="Capitano" required>
+            <input type="text" name="descrizione" th:value="${squadra.descrizione}" placeholder="Descrizione squadra" required>
+            <select name="nazionalita" required>
+                <option value="" disabled selected>Scegli la nazionalità</option>
+                <option th:each="nazionalita : ${nazionalita}" th:text="${nazionalita.nazione} + ' (' + ${nazionalita.sigla} + ')'" th:value="${nazionalita.idNazionalita}" th:selected="${squadra.nazionalita != null && squadra.nazionalita.idNazionalita == nazionalita.idNazionalita}"></option>
+            </select>
+        </fieldset>
+
+        <fieldset>
+            <legend>Allenatore</legend>
+            <input type="text" name="nomeAllenatore" th:value="${allenatore.nome}" placeholder="Nome allenatore (facoltativo)">
+            <input type="text" name="cognomeAllenatore" th:value="${allenatore.cognome}" placeholder="Cognome allenatore" required>
+            <input type="file" name="immagineAllenatore" accept="image/*" th:value="${allenatore.immagine}" placeholder="Immagine allenatore" required>
+            <select name="nazionalitaAllenatore" required>
+                <option value="" disabled selected>Scegli la nazionalità dell'allenatore</option>
+                <option th:each="nazionalita : ${nazionalita}"
+                        th:text="${nazionalita.nazione} + ' (' + ${nazionalita.sigla} + ')'"
+                        th:value="${nazionalita.idNazionalita}"
+                        th:selected="${allenatore.nazionalita != null && allenatore.nazionalita.idNazionalita == nazionalita.idNazionalita}">
+                </option>
+            </select>
+            <input type="text" name="descrizioneAllenatore" th:value="${allenatore.descrizione}" placeholder="Descrizione allenatore" required>
+            <select name="modulo" required>
+                <option value="" disabled selected>Scegli il modulo di gioco</option>
+                <option th:each="modulo : ${modulo}" th:text="${modulo.schemaGioco}" th:value="${modulo.idModulo}" th:selected="${squadra.modulo != null && squadra.modulo.idModulo == modulo.idModulo}"></option>
+            </select>
+        </fieldset>
+
+        <fieldset>
+            <legend>Stadio</legend>
+            <input type="text" name="nomeStadio" th:value="${stadio.nome}" placeholder="Nome stadio" required>
+            <input type="number" name="capienza" id="capienza" min="10000" max="100000" step="500" placeholder="Capienza stadio" required>
+            <input type="file" name="immagineStadio" accept="image/*" th:value="${stadio.immagine}" placeholder="Immagine stadio" required>
+        </fieldset>
+
         <input type="submit" value="Registra la squadra">
         <input type="button" value="Componi la formazione" onclick="window.location.href='/registra-giocatori'">
     </form>

@@ -54,15 +54,19 @@ public class RegistrazioneSquadreController {
     @PostMapping
     public String formManager(@RequestParam("nome") String nome,
                               @RequestParam("logo") MultipartFile logo,
-                              @RequestParam("nazionalita") Nazionalita nazionalita,
-                              @RequestParam("modulo") Modulo modulo,
                               @RequestParam("capitano") String capitano,
                               @RequestParam("descrizione") String descrizione,
+                              @RequestParam("nazionalita") Nazionalita nazionalita,
+
                               @RequestParam(value = "nomeAllenatore", required = false) String nomeAllenatore,
                               @RequestParam("cognomeAllenatore") String cognomeAllenatore,
-                              @RequestParam("nazionalitaAllenatore") Long idNazionalitaAllenatore,
                               @RequestParam("immagineAllenatore") MultipartFile immagineAllenatore,
+                              @RequestParam("nazionalitaAllenatore") Long idNazionalitaAllenatore,
+                              @RequestParam("descrizioneAllenatore") String descrizioneAllenatore,
+                              @RequestParam("modulo") Modulo modulo,
+
                               @RequestParam("nomeStadio") String nomeStadio,
+                              @RequestParam("capienza") int capienza,
                               @RequestParam("immagineStadio") MultipartFile immagineStadio,
                               Model model) {
 
@@ -73,6 +77,8 @@ public class RegistrazioneSquadreController {
         allenatore.setNome(nomeAllenatore);
         allenatore.setCognome(cognomeAllenatore);
         Nazionalita nazionalitaAllenatore = nazionalitaService.getNazionalitaById(idNazionalitaAllenatore);
+        allenatore.setNazionalita(nazionalitaAllenatore);
+        allenatore.setDescrizione(descrizioneAllenatore);
         allenatore.setSquadra(squadra);
         if (immagineAllenatore != null && !immagineAllenatore.isEmpty()) {
             try {
@@ -88,6 +94,7 @@ public class RegistrazioneSquadreController {
 
         Stadio stadio = new Stadio();
         stadio.setNome(nomeStadio);
+        stadio.setCapienza(capienza);
         stadio.setSquadra(squadra);
         if (immagineStadio != null && !immagineStadio.isEmpty()) {
             try {
