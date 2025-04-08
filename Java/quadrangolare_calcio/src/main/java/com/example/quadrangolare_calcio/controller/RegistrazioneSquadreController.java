@@ -39,9 +39,13 @@ public class RegistrazioneSquadreController {
     @GetMapping
     public String getPage(Model model) {
         Squadra squadra = new Squadra();
+        Allenatore allenatore = new Allenatore();
+        Stadio stadio = new Stadio();
         List<Modulo> moduli = moduloService.elencoModuli();
         List<Nazionalita> nazionalita = nazionalitaService.elencoNazioni();
         model.addAttribute("squadra", squadra);
+        model.addAttribute("allenatore", allenatore);
+        model.addAttribute("stadio", stadio);
         model.addAttribute("modulo", moduli);
         model.addAttribute("nazionalita", nazionalita);
         return "registrazione-squadre";
@@ -56,7 +60,7 @@ public class RegistrazioneSquadreController {
                               @RequestParam("descrizione") String descrizione,
                               @RequestParam(value = "nomeAllenatore", required = false) String nomeAllenatore,
                               @RequestParam("cognomeAllenatore") String cognomeAllenatore,
-                              @RequestParam("nazionalitaAllenatore") Nazionalita nazionalitaAllenatore,
+                              @RequestParam("nazionalitaAllenatore") Long idNazionalitaAllenatore,
                               @RequestParam("immagineAllenatore") MultipartFile immagineAllenatore,
                               @RequestParam("nomeStadio") String nomeStadio,
                               @RequestParam("immagineStadio") MultipartFile immagineStadio,
@@ -68,7 +72,7 @@ public class RegistrazioneSquadreController {
         Allenatore allenatore = new Allenatore();
         allenatore.setNome(nomeAllenatore);
         allenatore.setCognome(cognomeAllenatore);
-        allenatore.setNazionalita(nazionalitaAllenatore);
+        Nazionalita nazionalitaAllenatore = nazionalitaService.getNazionalitaById(idNazionalitaAllenatore);
         allenatore.setSquadra(squadra);
         if (immagineAllenatore != null && !immagineAllenatore.isEmpty()) {
             try {
