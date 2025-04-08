@@ -1,9 +1,7 @@
 package com.example.quadrangolare_calcio.controller;
 
 import com.example.quadrangolare_calcio.model.*;
-import com.example.quadrangolare_calcio.service.ModuloService;
-import com.example.quadrangolare_calcio.service.NazionalitaService;
-import com.example.quadrangolare_calcio.service.SquadraService;
+import com.example.quadrangolare_calcio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +23,12 @@ public class RegistrazioneSquadreController {
 
     @Autowired
     private NazionalitaService nazionalitaService;
+
+    @Autowired
+    private AllenatoreService allenatoreService;
+
+    @Autowired
+    private StadioService stadioService;
 
     private Allenatore allenatore;
 
@@ -66,18 +70,32 @@ public class RegistrazioneSquadreController {
         allenatore.setCognome(cognomeAllenatore);
         allenatore.setNazionalita(nazionalitaAllenatore);
         allenatore.setSquadra(squadra);
-        allenatore.setImmagine("data:" + immagineAllenatore.getContentType() + ";base64," +
-                Base64.getEncoder().encodeToString(immagineAllenatore.getBytes()));
+        if (immagineAllenatore != null && !immagineAllenatore.isEmpty()) {
+            try {
+                String formato = immagineAllenatore.getContentType();
+                String immagineCodificata = "data:" + formato + ";base64," +
+                        Base64.getEncoder().encodeToString(immagineAllenatore.getBytes());
+                allenatore.setImmagine(immagineCodificata);
+            } catch (Exception e) {
+                System.out.println("Error encoding image: " + e.getMessage());
+            }
+        }
         allenatoreService.salvaAllenatore(allenatore);
 
         Stadio stadio = new Stadio();
         stadio.setNome(nomeStadio);
         stadio.setSquadra(squadra);
-        stadio.setImmagine("data:" + immagineStadio.getContentType() + ";base64," +
-                Base64.getEncoder().encodeToString(immagineStadio.getBytes()));
+        if (immagineStadio != null && !immagineStadio.isEmpty()) {
+            try {
+                String formato = immagineStadio.getContentType();
+                String immagineCodificata = "data:" + formato + ";base64," +
+                        Base64.getEncoder().encodeToString(immagineStadio.getBytes());
+                stadio.setImmagine(immagineCodificata);
+            } catch (Exception e) {
+                System.out.println("Error encoding image: " + e.getMessage());
+            }
+        }
         stadioService.salvaStadio(stadio);
-
-
 
         model.addAttribute("message", "Squadra registrata con successo!");
         return "redirect:/registra-squadre";
