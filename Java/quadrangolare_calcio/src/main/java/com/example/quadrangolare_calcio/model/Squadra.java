@@ -20,9 +20,6 @@ public class Squadra {
     private String logo;
 
     @Column
-    private String allenatore;
-
-    @Column
     private String capitano;
 
     @Column
@@ -67,14 +64,6 @@ public class Squadra {
 
     public void setLogo(String logo) {
         this.logo = logo;
-    }
-
-    public String getAllenatore() {
-        return allenatore;
-    }
-
-    public void setAllenatore(String allenatore) {
-        this.allenatore = allenatore;
     }
 
     public String getCapitano() {

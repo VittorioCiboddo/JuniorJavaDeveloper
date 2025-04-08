@@ -33,7 +33,7 @@ public class SquadraServiceImpl implements SquadraService{
     private RuoloService ruoloService;
 
     @Override
-    public void registraSquadra(String nome, MultipartFile logo, Nazionalita nazionalita, String allenatore, Modulo modulo, String capitano, String descrizione) {
+    public Squadra registraSquadra(String nome, MultipartFile logo, Nazionalita nazionalita, Modulo modulo, String capitano, String descrizione) {
         Squadra squadra = new Squadra();
         squadra.setNome(nome);
 
@@ -49,11 +49,11 @@ public class SquadraServiceImpl implements SquadraService{
         }
 
         squadra.setNazionalita(nazionalita);
-        squadra.setAllenatore(allenatore);
         squadra.setModulo(modulo);
         squadra.setCapitano(capitano);
         squadra.setDescrizione(descrizione);
         squadraDao.save(squadra);
+        return squadra;
     }
 
     @Override

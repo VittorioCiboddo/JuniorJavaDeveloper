@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface SquadraService {
 
-    void registraSquadra(String nome, MultipartFile logo, Nazionalita nazionalita, String allenatore, Modulo modulo, String capitano, String descrizione);
+    Squadra registraSquadra(String nome, MultipartFile logo, Nazionalita nazionalita, Modulo modulo, String capitano, String descrizione);
 
     List<Squadra> elencoSquadre();
 
