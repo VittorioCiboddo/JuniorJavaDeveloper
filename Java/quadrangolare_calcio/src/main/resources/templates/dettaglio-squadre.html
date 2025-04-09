@@ -1,10 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Dettaglio squadra</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333;6
+        }
+
+        header {
+            background-color: #00bf63;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #7ed957;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 20px;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #00bf63;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #00bf63;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    CIAO CIAO
+<header>
+    <h1>Registrazione Giocatori</h1>
+</header>
+
+<nav>
+    <a href="/registra-squadre">Registra rose</a>
+    <a href="#">Archivio</a>
+    <a href="#">Chi Siamo</a>
+    <a href="#">Area Admin</a>
+</nav>
+
+<h2 th:text="${squadra.nome} + ' ' + ${squadra.nazionalita.bandiera}">Nome squadra</h2>
+<img th:src="${squadra.logo}" alt="Logo squadra">
+<ul>
+    <li th:text="Nazionalità: ' + ${nazionalita.nazione} + ' (' + ${nazionalita.sigla} + ')'"></li>
+    <li th:text="Allenatore: ' + ${allenatore.nome} + ' ' + ${allenatore.cognome}">Allenatore</li>
+    <li th:text="Capitano: ' + ${squadra.capitano}">Capitano squadra</li>
+    <li th:text="Stadio: ' + ${stadio.nome} + ' (' + ${stadio.capienza} + ' spettatori' + ')'">Stadio</li>
+</ul>
+<p th:text=" 'Descrizione: ' + ${squadra.descrizione}">Descrizione squadra</p>
+<img th:src="${giocatore.ruolo.heatMap}" alt="Heat Map ruolo">
+
+<footer>
+    <p>Sprint Football Simulation</p>
+</footer>
+
 </body>
 </html>

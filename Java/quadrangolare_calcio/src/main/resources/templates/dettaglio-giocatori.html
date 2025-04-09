@@ -2,9 +2,80 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Dettaglio squadra</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        header {
+            background-color: #00bf63;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #7ed957;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 20px;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #00bf63;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #00bf63;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
+<header>
+    <h1>Registrazione Giocatori</h1>
+</header>
+
+<nav>
+    <a href="/registra-squadre">Registra rose</a>
+    <a href="#">Archivio</a>
+    <a href="#">Chi Siamo</a>
+    <a href="#">Area Admin</a>
+</nav>
+
+<h2 th:text="${giocatore.nome} + ' ' + ${giocatore.cognome} + ' (' + ${giocatore.nazionalita.bandiera} + ')' ">Nome giocatore</h2>
+<img th:src="${giocatore.immagine}" alt="Figurina giocatore">
+<ul>
+    <li th:text=" 'Data di nascita: ' + ${giocatore.dataNascita}">Data di nascita giocator</li>
+    <li th:text=" 'Squadra: ' + ${giocatore.squadra.nome}">Squadra di appartenenza</li>
+    <li th:text=" 'Numero di maglia: ' + ${giocatore.numeroMaglia}">Numero di maglia</li>
+    <li th:text=" 'Nazionalità: ' + ${giocatore.nazionalita.nome} + ' (' + ${giocatore.nazionalita.sigla} + ')' "> Nazionalità (sigla)</li>
+    <li th:text=" 'Ruolo: ' + ${giocatore.ruolo.descrizione} + ' (' + ${giocatore.ruolo.sigla} + ')'"></li>
+</ul>
+<p th:text=" 'Descrizione: ' + ${giocatore.descrizione}">Descrizione giocatore</p>
+<img th:src="${giocatore.ruolo.heatMap}" alt="Heat Map ruolo">
+
+<footer>
+    <p>Sprint Football Simulation</p>
+</footer>
 
 </body>
 </html>

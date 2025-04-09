@@ -54,20 +54,34 @@
     </style>
 </head>
 <body>
+
+<header>
+    <h1>Registrazione Giocatori</h1>
+</header>
+
+<nav>
+    <a href="/registra-squadre">Registra rose</a>
+    <a href="#">Archivio</a>
+    <a href="#">Chi Siamo</a>
+    <a href="#">Area Admin</a>
+</nav>
+
 <div class="main-content d-flex flex-wrap mt-5" style="justify-content: space-around;">
 
-    <a th:each="squadra : ${squadra}" th:href="@{/dettaglisquadre(id=${squadra.idSquadra})}"
+    <a th:each="squadra : ${squadra}" th:href="@{/dettagliosquadre(id=${squadra.idSquadra})}"
        class="text-decoration-none text-dark" style="width: 18rem; display: flex; flex-direction: column;">
         <div class="card m-3 card-hover" style="display: block;">
             <img th:src="${squadra.logo}" class="card-img-top rounded" alt="Squadra card">
             <div class="card-body">
                 <h5 class="card-title" th:text="${squadra.nome}">Nome squadra</h5>
             </div>
-            <div class="card-footer">
-                <img th:src="${squadra.nazionalita.bandiera}" class="card-img-top rounded" alt="Squadra bandiera nazione">
-            </div>
         </div>
     </a>
 </div>
+
+<footer>
+    <p>Sprint Football Simulation</p>
+</footer>
+
 </body>
 </html>
