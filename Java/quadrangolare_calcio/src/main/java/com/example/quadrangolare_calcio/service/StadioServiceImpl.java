@@ -16,4 +16,10 @@ public class StadioServiceImpl implements StadioService {
         stadioDao.save(stadio);
 
     }
+
+    @Override
+    public Stadio getStadioBySquadraId(Long idSquadra) {
+        return stadioDao.findBySquadraId(idSquadra);
+    }
+
 }

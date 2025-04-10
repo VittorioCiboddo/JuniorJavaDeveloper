@@ -64,7 +64,7 @@ public class SquadraServiceImpl implements SquadraService{
     }
 
     @Override
-    public Squadra dettaglioSquadra(int idSquadra) {
+    public Squadra dettaglioSquadra(Long idSquadra) {
         Optional<Squadra> squadraOptional = squadraDao.findById(idSquadra);
         return squadraOptional.orElse(null);
     }

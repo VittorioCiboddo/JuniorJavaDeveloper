@@ -11,10 +11,15 @@ public class AllenatoreServiceImpl implements AllenatoreService {
     @Autowired
     private AllenatoreDao allenatoreDao;
 
-
     @Override
     public void salvaAllenatore(Allenatore allenatore) {
         allenatoreDao.save(allenatore);
 
     }
+
+    @Override
+    public Allenatore getAllenatoreBySquadraId(Long idSquadra) {
+        return allenatoreDao.findBySquadraId(idSquadra);
+    }
+
 }
