@@ -58,22 +58,22 @@
         .ALL { top: 60px; left: 50px; width: 80px; }
         .STADIO { top: 60px; right: 50px; width: 80px; }
 
-        /* Posizionamento realistico 4-2-3-1 */
-        .PT { top: 1080px; left: 405px; }
+        /* Posizionamento 4-2-3-1 */
+        .PT { top: 1080px; left: 405px; }  // FISSATO
 
-        .DD { top: 900px; left: 560px; }
-        .TD { top: 900px; left: 710px; }
-        .TS { top: 900px; left: 100px; }
+        .TS { top: 900px; left: 100px; border: 2px solid red; /* SOLO PER DEBUG */}
         .DS { top: 900px; left: 250px; }
+        .DD { top: 900px; left: 560px; }
+        .TD { top: 800px; left: 710px; }
 
-        .MED  { top: 550px; left: 250px; }
-        .MED  { top: 700px; left: 550px; }
+        .CDS { top: 760px; left: 280px; }
+        .CDD { top: 760px; left: 530px; }
 
-        .EOD { top: 350px; left: 600px; }
-        .TRQ { top: 350px; left: 405px; }
-        .EOS { top: 350px; left: 200px; }
+        .EOD { top: 590px; left: 120px; }
+        .TRQ { top: 590px; left: 405px; }
+        .EOS { top: 590px; left: 690px; }
 
-        .P { top: 200px; left: 405px; }
+        .P { top: 430px; left: 405px; }
     </style>
 </head>
 <body>
@@ -89,16 +89,18 @@
 </nav>
 
 <div class="campo-container">
-    <div th:each="giocatore, iter : ${giocatori}">
-        <img th:src="|data:image/png;base64,${giocatore.immagine}|"
-             th:class="${giocatore.ruolo.sigla == 'MED' ? 'figurina ' + giocatore.ruolo.sigla + (iter.index + 1) : 'figurina ' + giocatore.ruolo.sigla}"
-             th:alt="${giocatore.nome + ' ' + giocatore.cognome}" />
+    <div th:each="giocatore : ${giocatori}">
+        <p th:text="'Giocatore: ' + ${giocatore.nome} + ' - Ruolo: ' + (${giocatore.ruolo != null ? giocatore.ruolo.sigla : 'null'})"></p>
+        <img th:src="'data:image/png;base64,' + ${giocatore.immagine}"
+             th:alt="${giocatore.nome + ' ' + giocatore.cognome}"
+             th:class="'figurina ' + ${giocatore.ruolo.sigla}" />
     </div>
 
-    <img th:src="|data:image/png;base64,${allenatore.immagine}|" class="figurina ALL"
+
+    <img th:src="@{${allenatore.immagine}}" class="figurina ALL"
          th:alt="${allenatore.nome + ' ' + allenatore.cognome}" />
 
-    <img th:src="|data:image/png;base64,${stadio.immagine}|" class="figurina STADIO"
+    <img th:src="@{${stadio.immagine}}" class="figurina STADIO"
          th:alt="${stadio.nome}" />
 </div>
 
@@ -107,3 +109,4 @@
 </footer>
 </body>
 </html>
+
