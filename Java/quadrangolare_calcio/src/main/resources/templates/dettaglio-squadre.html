@@ -184,8 +184,9 @@
 
     <div class="button-row">
         <button onclick="window.location.href='/squadre'">Indietro</button>
-        <button onclick="window.location.href='/rose-complete'">Vedi la formazione</button>
+        <button th:attr="onclick=|window.location.href='/formazioni/${squadra.idSquadra}'|">Vedi la formazione</button>
     </div>
+
 </div>
 
 <footer>

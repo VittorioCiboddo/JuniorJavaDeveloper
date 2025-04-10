@@ -1,24 +1,53 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
 <head>
     <meta charset="UTF-8">
     <title>Formazione squadra</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background: url('images/bg-campo.png') no-repeat center center fixed;
-            background-size: cover;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0 auto;
+            padding: 0 5%;
+            background-color: #eaf5ea;
+            color: #222;
         }
 
-        .campo {
+        header, footer {
+            background-color: #00bf63;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #7ed957;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .campo-container {
             position: relative;
-            width: 100%;
-            max-width: 800px;
-            height: 1000px;
-            margin: auto;
-            padding-top: 50px;
+            max-width: 900px;
+            margin: 40px auto;
+            background: url('/images/bg-campo.png') no-repeat center center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            padding-top: 30px;
+            height: 1300px;
         }
 
         .figurina {
@@ -26,37 +55,55 @@
             width: 90px;
         }
 
-        /* Posizioni per modulo 4-2-3-1 */
-        .PT { top: 800px; left: 355px; }
-        .DD { top: 650px; left: 150px; }
-        .DS { top: 650px; left: 570px; }
-        .TD { top: 650px; left: 270px; }
-        .TS { top: 650px; left: 450px; }
-        .MED1 { top: 530px; left: 300px; }
-        .MED2 { top: 530px; left: 420px; }
-        .EOS { top: 400px; left: 200px; }
-        .TRQ { top: 400px; left: 350px; }
-        .EOD { top: 400px; left: 500px; }
-        .P   { top: 270px; left: 350px; }
-        .ALL { top: 80px; left: 50px; width: 80px; }
-        .STADIO { top: 80px; left: 670px; width: 80px; }
+        .ALL { top: 60px; left: 50px; width: 80px; }
+        .STADIO { top: 60px; right: 50px; width: 80px; }
 
+        /* Posizionamento realistico 4-2-3-1 */
+        .PT { top: 1080px; left: 405px; }
+
+        .DD { top: 900px; left: 560px; }
+        .TD { top: 900px; left: 710px; }
+        .TS { top: 900px; left: 100px; }
+        .DS { top: 900px; left: 250px; }
+
+        .MED  { top: 550px; left: 250px; }
+        .MED  { top: 700px; left: 550px; }
+
+        .EOD { top: 350px; left: 600px; }
+        .TRQ { top: 350px; left: 405px; }
+        .EOS { top: 350px; left: 200px; }
+
+        .P { top: 200px; left: 405px; }
     </style>
 </head>
 <body>
-<div class="campo">
-    <!-- Figurine dei giocatori -->
-    <div th:each="giocatore : ${giocatori}">
-        <img th:src="${giocatore.immagine}"
-             th:class="'figurina ' + ${giocatore.ruolo}"
+<header>
+    <h1>Formazione in campo</h1>
+</header>
+
+<nav>
+    <a href="/registra-squadre">Registra rose</a>
+    <a href="/squadre">Archivio</a>
+    <a href="#">Chi Siamo</a>
+    <a href="#">Area Admin</a>
+</nav>
+
+<div class="campo-container">
+    <div th:each="giocatore, iter : ${giocatori}">
+        <img th:src="|data:image/png;base64,${giocatore.immagine}|"
+             th:class="${giocatore.ruolo.sigla == 'MED' ? 'figurina ' + giocatore.ruolo.sigla + (iter.index + 1) : 'figurina ' + giocatore.ruolo.sigla}"
              th:alt="${giocatore.nome + ' ' + giocatore.cognome}" />
     </div>
 
-    <!-- Allenatore -->
-    <img th:src="${allenatore.immagine}" class="figurina ALL" th:alt="${allenatore.nome + ' ' + allenatore.cognome}" />
+    <img th:src="|data:image/png;base64,${allenatore.immagine}|" class="figurina ALL"
+         th:alt="${allenatore.nome + ' ' + allenatore.cognome}" />
 
-    <!-- Stadio -->
-    <img th:src="${stadio.immagine}" class="figurina STADIO" th:alt="${stadio.nome}" />
+    <img th:src="|data:image/png;base64,${stadio.immagine}|" class="figurina STADIO"
+         th:alt="${stadio.nome}" />
 </div>
+
+<footer>
+    <p>Sprint Football Simulation</p>
+</footer>
 </body>
 </html>
