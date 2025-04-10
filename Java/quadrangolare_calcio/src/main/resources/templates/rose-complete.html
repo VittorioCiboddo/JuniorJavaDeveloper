@@ -1,10 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Formazione squadra</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('images/bg-campo.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        .campo {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 1000px;
+            margin: auto;
+            padding-top: 50px;
+        }
+
+        .figurina {
+            position: absolute;
+            width: 90px;
+        }
+
+        /* Posizioni per modulo 4-2-3-1 */
+        .PT { top: 800px; left: 355px; }
+        .DD { top: 650px; left: 150px; }
+        .DS { top: 650px; left: 570px; }
+        .TD { top: 650px; left: 270px; }
+        .TS { top: 650px; left: 450px; }
+        .MED1 { top: 530px; left: 300px; }
+        .MED2 { top: 530px; left: 420px; }
+        .EOS { top: 400px; left: 200px; }
+        .TRQ { top: 400px; left: 350px; }
+        .EOD { top: 400px; left: 500px; }
+        .P   { top: 270px; left: 350px; }
+        .ALL { top: 80px; left: 50px; width: 80px; }
+        .STADIO { top: 80px; left: 670px; width: 80px; }
+
+    </style>
 </head>
 <body>
+<div class="campo">
+    <!-- Figurine dei giocatori -->
+    <div th:each="giocatore : ${giocatori}">
+        <img th:src="${giocatore.immagine}"
+             th:class="'figurina ' + ${giocatore.ruolo}"
+             th:alt="${giocatore.nome + ' ' + giocatore.cognome}" />
+    </div>
 
+    <!-- Allenatore -->
+    <img th:src="${allenatore.immagine}" class="figurina ALL" th:alt="${allenatore.nome + ' ' + allenatore.cognome}" />
+
+    <!-- Stadio -->
+    <img th:src="${stadio.immagine}" class="figurina STADIO" th:alt="${stadio.nome}" />
+</div>
 </body>
 </html>
