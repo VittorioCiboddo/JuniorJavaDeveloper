@@ -21,6 +21,12 @@ public class Stadio {
     @Column
     private int capienza;
 
+    @Column
+    private String ultras;
+
+    @Column
+    private String descrizione;
+
     @OneToOne
     @JoinColumn(name = "fk_id_squadra", referencedColumnName = "id_squadra")
     private Squadra squadra;
@@ -55,6 +61,22 @@ public class Stadio {
 
     public void setCapienza(int capienza) {
         this.capienza = capienza;
+    }
+
+    public String getUltras() {
+        return ultras;
+    }
+
+    public void setUltras(String ultras) {
+        this.ultras = ultras;
+    }
+
+    public String getDescrizione() {
+        return descrizione;
+    }
+
+    public void setDescrizione(String descrizione) {
+        this.descrizione = descrizione;
     }
 
     public Squadra getSquadra() {

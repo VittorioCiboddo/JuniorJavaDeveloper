@@ -92,12 +92,15 @@
 
     </div>
 
+        <a th:href="@{'/dettaglioallenatore?id=' + ${allenatore.idAllenatore}}">
+            <img th:src="@{${allenatore.immagine}}" class="figurina ALL"
+                 th:alt="${allenatore.nome + ' ' + allenatore.cognome}" />
+        </a>
 
-    <img th:src="@{${allenatore.immagine}}" class="figurina ALL"
-         th:alt="${allenatore.nome + ' ' + allenatore.cognome}" />
-
-    <img th:src="@{${stadio.immagine}}" class="figurina STADIO"
-         th:alt="${stadio.nome}" />
+        <a th:href="@{'/dettagliostadio?id=' + ${stadio.idStadio}}">
+            <img th:src="@{${stadio.immagine}}" class="figurina STADIO"
+                 th:alt="${stadio.nome}" />
+        </a>
 </div>
 
 <footer>

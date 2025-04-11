@@ -6,6 +6,6 @@ public interface StadioService {
 
     void salvaStadio(Stadio stadio);
     Stadio getStadioBySquadraId(Long idSquadra);
-
+    Stadio dettaglioStadio(int idStadio);
 
 }

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-public interface AllenatoreDao extends CrudRepository<Allenatore, Integer> {
+public interface AllenatoreDao extends CrudRepository<Allenatore, Long> {
 
     @Query("SELECT a FROM Allenatore a WHERE a.squadra.idSquadra = :idSquadra")
     Allenatore findBySquadraId(@Param("idSquadra") Long idSquadra);
