@@ -26,6 +26,8 @@ public class RoseCompleteController {
     @Autowired
     private SquadraService squadraService;
 
+    Modulo modulo;
+
     @GetMapping("/{id}")
     public String mostraFormazione(@PathVariable("id") Long idSquadra, Model model) {
         Squadra squadra = squadraService.getSquadraById(idSquadra);
@@ -33,7 +35,7 @@ public class RoseCompleteController {
         Stadio stadio = stadioService.getStadioBySquadraId(idSquadra);
         List<Giocatore> tuttiGiocatori = giocatoreService.getGiocatoriPerSquadra(idSquadra);
 
-        // Ordina per categoria: portiere, difensore, centrocampista, attaccante
+        // Ordine dei ruoli
         Map<String, Integer> ordineCategoria = Map.of(
                 "Portiere", 1,
                 "Difensore", 2,
@@ -48,12 +50,17 @@ public class RoseCompleteController {
                         .thenComparing(Giocatore::getCognome))
                 .collect(Collectors.toList());
 
+        // Recupera modulo della squadra
+        String modulo = squadra.getModulo().getSchemaGioco();
+
         model.addAttribute("squadra", squadra);
         model.addAttribute("allenatore", allenatore);
         model.addAttribute("stadio", stadio);
         model.addAttribute("giocatori", giocatoriOrdinati);
+        model.addAttribute("modulo", modulo);
 
-        return "rose-complete"; // nome del template HTML
+        return "rose-complete";
     }
+
 }
 

@@ -1,15 +1,15 @@
 /* Posizionamento 3-4-3 */
-        .PT { top: 1080px; left: 405px; }
+        .PT { top: 1040px; left: 405px; }
 
-        .DCS { top: ; left: ; }
-        .DC { top: ; left: ; }
-        .DCD { top: ; left: ; }
+        .DCS { top: 850px; left: 215px; }
+        .DC { top: 850px; left: 405px; }
+        .DCD { top: 850px; left: 590px; }
 
-        .ES { top: ; left: ; }
-        .CS { top: ; left: ; }
-        .CD { top: ; left: ; }
-        .ED { top: ; left: ; }
+        .ECS { top: 420px; left: 120px; }
+        .CS { top: 590px; left: 300px; }
+        .CD { top: 590px; left: 510px; }
+        .ECD {top: 420px; left: 690px; }
 
-        .AS { top: ; left: ; }
+        .AS { top: 240px; left: 230px; }
         .P { top: 230px; left: 405px; }
-        .AD { top: ; left: ; }
+        .AD { top: 240px; left: 570px; }
