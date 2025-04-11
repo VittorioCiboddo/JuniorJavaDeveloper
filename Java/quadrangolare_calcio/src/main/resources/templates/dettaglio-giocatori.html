@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Dettaglio squadra</title>
-
+    <title>Dettaglio Giocatore</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
             margin: 0 auto;
             padding: 0 5%;
-            background: url('images/bg-campo.png') no-repeat center top fixed;
+            background: url('/images/bg-campo.png') no-repeat center top fixed;
             background-size: cover;
             color: #222;
         }
@@ -56,6 +55,7 @@
         .top-section h2 {
             font-size: 2.2em;
             margin: 0;
+            font-weight: bold;
         }
 
         .top-section img {
@@ -94,76 +94,94 @@
             margin-right: 10px;
         }
 
-        .logo-squadra-dx {
+        .figurina-giocatore {
             flex: 0 0 auto;
             display: flex;
             justify-content: center;
             align-items: center;
             margin-left: 10px;
-            margin-right: 50px;
+            margin-right: 30px;
         }
 
-        .logo-big-dx {
+        .figurina-img {
             max-width: 350px;
             max-height: 350px;
         }
 
-        .description {
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-top: 40px;
-            font-size: 1.1em;
-            text-align: justify;
         }
 
-<!--        .button-row {-->
-<!--            margin-top: 50px;-->
-<!--            display: flex;-->
-<!--            justify-content: center;-->
-<!--            gap: 20px;-->
-<!--        }-->
+        .description {
+            flex: 1;
+            font-size: 1.1em;
+            text-align: justify;
+            margin-right: 30px;
+        }
 
-<!--        .button-row button {-->
-<!--            padding: 10px 25px;-->
-<!--            font-size: 1em;-->
-<!--            font-weight: bold;-->
-<!--            border: none;-->
-<!--            background-color: #00bf63;-->
-<!--            color: white;-->
-<!--            border-radius: 5px;-->
-<!--            cursor: pointer;-->
-<!--        }-->
-
-<!--        .button-row button:hover {-->
-<!--            background-color: #00994d;-->
-<!--        }-->
+        .heatmap {
+            flex: 0 0 auto;
+            max-width: 280px;
+            max-height: 280px;
+        }
     </style>
 </head>
 <body>
 <header>
-    <h1>Dettaglio Giocatori</h1>
+    <h1>Dettaglio Giocatore</h1>
 </header>
 
 <nav>
     <a href="/registra-squadre">Registra rose</a>
-    <a href="#">Archivio</a>
+    <a href="/squadre">Archivio</a>
     <a href="#">Chi Siamo</a>
     <a href="#">Area Admin</a>
 </nav>
 
-<h2 th:text="${giocatore.nome} + ' ' + ${giocatore.cognome} + ' (' + ${giocatore.nazionalita.bandiera} + ')' ">Nome giocatore</h2>
-<img th:src="${giocatore.immagine}" alt="Figurina giocatore">
-<ul>
-    <li th:text=" 'Data di nascita: ' + ${giocatore.dataNascita}">Data di nascita giocator</li>
-    <li th:text=" 'Squadra: ' + ${giocatore.squadra.nome}">Squadra di appartenenza</li>
-    <li th:text=" 'Numero di maglia: ' + ${giocatore.numeroMaglia}">Numero di maglia</li>
-    <li th:text=" 'Nazionalità: ' + ${giocatore.nazionalita.nome} + ' (' + ${giocatore.nazionalita.sigla} + ')' "> Nazionalità (sigla)</li>
-    <li th:text=" 'Ruolo: ' + ${giocatore.ruolo.descrizione} + ' (' + ${giocatore.ruolo.sigla} + ')'"></li>
-</ul>
-<p th:text=" 'Descrizione: ' + ${giocatore.descrizione}">Descrizione giocatore</p>
-<img th:src="${giocatore.ruolo.heatMap}" alt="Heat Map ruolo">
+<div class="container">
+    <div class="top-section">
+        <h2 th:text="${giocatore.nome != null ? giocatore.nome + ' ' : ''} + ${giocatore.cognome.toUpperCase()}">COGNOME</h2>
+        <img th:src="${giocatore.nazionalita.bandiera}" alt="Bandiera">
+    </div>
+
+    <div class="middle-section">
+        <div class="info-list">
+            <ul>
+                <li><img class="icon" src="images/icona-data-trasparente.png" alt="Data nascita">
+                    <span th:text="${'Data di nascita: ' + giocatore.dataNascita}"></span>
+                </li>
+                <li><img class="icon" src="images/icona-squadra-trasparente.png" alt="Squadra">
+                    <span th:text="${'Squadra: ' + giocatore.squadra.nome}"></span>
+                </li>
+                <li><img class="icon" src="images/icona-numeromaglia-trasparente.png" alt="Maglia">
+                    <span th:text="${'Numero di maglia: ' + giocatore.numeroMaglia}"></span>
+                </li>
+                <li><img class="icon" src="images/icona-globo-trasparente.png" alt="Nazionalità">
+                    <span th:text="${'Nazionalità: ' + giocatore.nazionalita.nazione} + ' (' + giocatore.nazionalita.sigla + ')'}"></span>
+                </li>
+                <li><img class="icon" src="images/icona-ruolo-trasparente.png" alt="Ruolo">
+                    <span th:text="${'Ruolo: ' + giocatore.ruolo.descrizione + ' (' + giocatore.ruolo.sigla + ')'}"></span>
+                </li>
+            </ul>
+        </div>
+        <div class="figurina-giocatore">
+            <img th:src="${giocatore.immagine}" alt="Figurina" class="figurina-img">
+        </div>
+    </div>
+
+    <div class="bottom-section">
+        <div class="description">
+            <p th:text="${giocatore.descrizione}">Descrizione del giocatore...</p>
+        </div>
+        <img th:src="@{'images/hm_' + ${giocatore.ruolo.sigla} + '.png'}" alt="Heatmap ruolo" class="heatmap" />
+    </div>
+</div>
 
 <footer>
     <p>Sprint Football Simulation</p>
 </footer>
-
 </body>
 </html>
