@@ -53,6 +53,14 @@
         .figurina {
             position: absolute;
             width: 90px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+            z-index: 10;
+        }
+
+        .figurina:hover {
+            transform: scale(1.25); /* Zoom del 25% */
+            z-index: 999; /* Porta l'immagine sopra alle altre */
         }
 
         .ALL { top: 60px; left: 50px; width: 80px; }
@@ -76,9 +84,12 @@
 
 <div class="campo-container">
     <div th:each="giocatore : ${giocatori}">
-        <img th:src="'data:image/png;base64,' + ${giocatore.immagine}"
-             th:alt="${giocatore.nome + ' ' + giocatore.cognome}"
-             th:class="'figurina ' + ${giocatore.ruolo.sigla}" />
+        <a th:href="@{'/dettagliogiocatori?id=' + ${giocatore.idGiocatore}}">
+            <img th:src="'data:image/png;base64,' + ${giocatore.immagine}"
+                 th:alt="${giocatore.nome + ' ' + giocatore.cognome}"
+                 th:class="'figurina ' + ${giocatore.ruolo.sigla}" />
+        </a>
+
     </div>
 
 

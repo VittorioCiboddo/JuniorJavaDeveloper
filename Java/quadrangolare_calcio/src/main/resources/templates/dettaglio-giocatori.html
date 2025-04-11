@@ -160,7 +160,7 @@
                     <span th:text="${'Numero di maglia: ' + giocatore.numeroMaglia}"></span>
                 </li>
                 <li><img class="icon" src="images/icona-globo-trasparente.png" alt="Nazionalità">
-                    <span th:text="${'Nazionalità: ' + giocatore.nazionalita.nazione} + ' (' + giocatore.nazionalita.sigla + ')'}"></span>
+                    <span th:text="${'Nazionalità: ' + giocatore.nazionalita.nazione + ' (' + giocatore.nazionalita.sigla + ')'}"></span>
                 </li>
                 <li><img class="icon" src="images/icona-ruolo-trasparente.png" alt="Ruolo">
                     <span th:text="${'Ruolo: ' + giocatore.ruolo.descrizione + ' (' + giocatore.ruolo.sigla + ')'}"></span>
@@ -168,7 +168,9 @@
             </ul>
         </div>
         <div class="figurina-giocatore">
-            <img th:src="${giocatore.immagine}" alt="Figurina" class="figurina-img">
+            <img th:attr="src=${'data:image/png;base64,'} + ${giocatore.immagine}"
+                 class="figurina-img"
+                 alt="Figurina" />
         </div>
     </div>
 
