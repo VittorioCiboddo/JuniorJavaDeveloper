@@ -183,7 +183,7 @@
     </div>
 
     <div class="button-row">
-        <button onclick="window.location.href='/squadre'">Indietro</button>
+        <button th:attr="onclick=|window.location.href='/squadre-disponibili'|">Indietro</button>
         <button th:attr="onclick=|window.location.href='/formazioni/${squadra.idSquadra}'|">Vedi la formazione</button>
     </div>
 

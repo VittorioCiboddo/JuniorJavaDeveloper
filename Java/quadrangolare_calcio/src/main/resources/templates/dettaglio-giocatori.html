@@ -151,7 +151,7 @@
         <div class="info-list">
             <ul>
                 <li><img class="icon" src="images/icona-data-trasparente.png" alt="Data nascita">
-                    <span th:text="${'Data di nascita: ' + giocatore.dataNascita}"></span>
+                    <span th:text="${'Data di nascita: ' + #temporals.format(giocatore.dataNascita, 'dd/MM/yyyy')}"></span>
                 </li>
                 <li><img class="icon" src="images/icona-squadra-trasparente.png" alt="Squadra">
                     <span th:text="${'Squadra: ' + giocatore.squadra.nome}"></span>
