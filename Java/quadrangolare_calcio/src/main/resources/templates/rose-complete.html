@@ -61,19 +61,19 @@
         /* Posizionamento 4-2-3-1 */
         .PT { top: 1080px; left: 405px; }  // FISSATO
 
-        .TS { top: 900px; left: 100px; border: 2px solid red; /* SOLO PER DEBUG */}
-        .DS { top: 900px; left: 250px; }
-        .DD { top: 900px; left: 560px; }
+        .TS { top: 800px; left: 100px; }
+        .DS { top: 900px; left: 260px; }
+        .DD { top: 900px; left: 550px; }
         .TD { top: 800px; left: 710px; }
 
-        .CDS { top: 760px; left: 280px; }
-        .CDD { top: 760px; left: 530px; }
+        .CDS { top: 650px; left: 280px; }
+        .CDD { top: 650px; left: 530px; }
 
-        .EOD { top: 590px; left: 120px; }
-        .TRQ { top: 590px; left: 405px; }
-        .EOS { top: 590px; left: 690px; }
+        .EOD { top: 400px; left: 690px; }
+        .TRQ { top: 400px; left: 405px; }
+        .EOS { top: 400px; left: 120px; }
 
-        .P { top: 430px; left: 405px; }
+        .P { top: 230px; left: 405px; }
     </style>
 </head>
 <body>
@@ -90,7 +90,6 @@
 
 <div class="campo-container">
     <div th:each="giocatore : ${giocatori}">
-        <p th:text="'Giocatore: ' + ${giocatore.nome} + ' - Ruolo: ' + (${giocatore.ruolo != null ? giocatore.ruolo.sigla : 'null'})"></p>
         <img th:src="'data:image/png;base64,' + ${giocatore.immagine}"
              th:alt="${giocatore.nome + ' ' + giocatore.cognome}"
              th:class="'figurina ' + ${giocatore.ruolo.sigla}" />
