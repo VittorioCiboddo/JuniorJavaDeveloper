@@ -6,16 +6,18 @@
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff;
-            color: #333;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0 auto;
+            padding: 0 5%;
+            background: url('images/bg-campo.png') no-repeat center top fixed;
+            background-size: cover;
+            color: #222;
         }
 
-        header {
+        header, footer {
             background-color: #00bf63;
-            padding: 10px 0;
+            color: white;
+            padding: 15px 0;
             text-align: center;
         }
 
@@ -27,31 +29,117 @@
         }
 
         nav a {
-            color: #ffffff;
+            color: white;
             text-decoration: none;
-            padding: 15px 20px;
-            margin: 0 10px;
-            transition: background-color 0.3s;
+            margin: 0 15px;
+            font-weight: bold;
         }
 
         nav a:hover {
-            background-color: #00bf63;
+            text-decoration: underline;
         }
 
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #00bf63;
-            color: white;
-            position: relative;
-            bottom: 0;
-            width: 100%;
+        .container {
+            margin-top: 30px;
+            background-color: rgba(255, 255, 255, 0.75);
+            padding: 30px;
+            border-radius: 12px;
         }
+
+        .top-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .top-section h2 {
+            font-size: 2.2em;
+            margin: 0;
+        }
+
+        .top-section img {
+            height: 2.2em;
+            vertical-align: middle;
+        }
+
+        .middle-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 30px;
+        }
+
+        .info-list {
+            flex: 1;
+            margin-top: 50px;
+            margin-left: 30px;
+        }
+
+        .info-list ul {
+            list-style: none;
+            padding: 0;
+            font-size: 1.1em;
+        }
+
+        .info-list ul li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .info-list ul li img.icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-squadra-dx {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10px;
+            margin-right: 50px;
+        }
+
+        .logo-big-dx {
+            max-width: 350px;
+            max-height: 350px;
+        }
+
+        .description {
+            margin-top: 40px;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+
+<!--        .button-row {-->
+<!--            margin-top: 50px;-->
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            gap: 20px;-->
+<!--        }-->
+
+<!--        .button-row button {-->
+<!--            padding: 10px 25px;-->
+<!--            font-size: 1em;-->
+<!--            font-weight: bold;-->
+<!--            border: none;-->
+<!--            background-color: #00bf63;-->
+<!--            color: white;-->
+<!--            border-radius: 5px;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+
+<!--        .button-row button:hover {-->
+<!--            background-color: #00994d;-->
+<!--        }-->
     </style>
 </head>
 <body>
 <header>
-    <h1>Registrazione Giocatori</h1>
+    <h1>Dettaglio Giocatori</h1>
 </header>
 
 <nav>
