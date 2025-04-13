@@ -18,4 +18,12 @@ public interface GiocatoreService {
 
 
     void registraGiocatore(Giocatore giocatore);
+
+    List<Giocatore> getByTipologia(String tipologia);
+
+    void salvaGiocatore(Giocatore giocatore);
+
+    void aggiornaGiocatore(Giocatore giocatore);
+
+    void eliminaGiocatore(int id);
 }

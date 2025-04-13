@@ -86,4 +86,19 @@ public class SquadraServiceImpl implements SquadraService{
         }
         return Collections.emptyList();
     }
+
+    @Override
+    public Modulo getModuloBySquadra(int id) {
+        return squadraDao.findById((long) id).get().getModulo();
+    }
+
+    @Override
+    public List<Squadra> getSquadreConSpazioPerCategoria(String tipologia) {
+        return squadraDao.findSquadreConSpazioPerCategoria(tipologia);
+    }
+
+    @Override
+    public List<Squadra> getAllSquadre() {
+        return (List<Squadra>) squadraDao.findAll();
+    }
 }

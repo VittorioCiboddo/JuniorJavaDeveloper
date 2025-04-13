@@ -29,5 +29,13 @@ public class AreaAdminController {
         return "redirect:/loginadmin";
     }
 
+    @GetMapping("/admingiocatori-selezione")
+    public String getSelezioneGiocatori(HttpSession session, Model model) {
+        if (session.getAttribute("admin") == null)
+            return "redirect:/loginadmin";
+        return "admin-giocatori-selezione";
+    }
+
+
 
 }

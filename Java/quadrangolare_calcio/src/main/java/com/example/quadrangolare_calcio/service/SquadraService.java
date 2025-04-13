@@ -20,4 +20,9 @@ public interface SquadraService {
 
     List<Ruolo> getRuoliPerSquadra(Long idSquadra);
 
+    Modulo getModuloBySquadra(int id);
+
+    List<Squadra> getSquadreConSpazioPerCategoria(String tipologia);
+
+    Object getAllSquadre();
 }

@@ -2,6 +2,7 @@ package com.example.quadrangolare_calcio.service;
 
 import com.example.quadrangolare_calcio.dao.RuoloDao;
 import com.example.quadrangolare_calcio.model.Ruolo;
+import com.example.quadrangolare_calcio.model.Tipologia;
 import com.example.quadrangolare_calcio.repository.RuoloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,15 @@ public class RuoloServiceImpl implements RuoloService{
         return ruoloRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public List<Ruolo> getRuoliDisponibiliPerCategoriaEModulo(String categoria, int moduloId) {
+        return ruoloDao.findDisponibiliByCategoriaAndModulo(categoria, moduloId);
+    }
+
+    @Override
+    public List<Ruolo> getRuoliPerCategoria(Tipologia tipologia) {
+        return ruoloDao.findByTipologia(tipologia);
+    }
 
 
 }

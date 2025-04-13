@@ -11,4 +11,5 @@ public interface ModuloService {
     Modulo getModuloPerSquadra(Squadra squadra);
     Modulo getModuloById(Long idModulo);
 
+    Object getAllModuli();
 }

@@ -34,4 +34,9 @@ public class ModuloServiceImpl implements ModuloService{
         return moduloRepository.findById(idModulo).orElse(null);
     }
 
+    @Override
+    public List<Modulo> getAllModuli() {
+        return (List<Modulo>) moduloDao.findAll();
+    }
+
 }
