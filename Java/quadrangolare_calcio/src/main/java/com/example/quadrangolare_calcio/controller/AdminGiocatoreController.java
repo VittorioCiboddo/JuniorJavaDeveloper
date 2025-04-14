@@ -38,7 +38,7 @@ public class AdminGiocatoreController {
         model.addAttribute("giocatori", giocatori);
         model.addAttribute("squadreDisponibili", squadreConSlotDisponibili);
 
-        return "admin-giocatori";
+        return "admin-giocatori-form";
     }
 
     @PostMapping("/giocatore/aggiungi")
