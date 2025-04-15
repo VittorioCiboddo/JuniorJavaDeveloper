@@ -44,6 +44,14 @@ public class AdminGiocatoreController {
         return "admin-giocatori-form";
     }
 
+    @GetMapping("/giocatori")
+    public String selezioneTipologiaGiocatori(HttpSession session) {
+        if (session.getAttribute("admin") == null)
+            return "redirect:/loginadmin";
+        return "admin-giocatori-selezione";
+    }
+
+
     @GetMapping("/giocatore/nuovo")
     public String nuovoGiocatore(@RequestParam("tipologia") String tipologia, Model model, HttpSession session) {
         if (session.getAttribute("admin") == null)
