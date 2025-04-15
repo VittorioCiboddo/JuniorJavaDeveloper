@@ -128,9 +128,12 @@ public class GiocatoreServiceImpl implements GiocatoreService{
 
     @Override
     public List<Giocatore> getByTipologia(String tipologia) {
-        Tipologia tipologiaEntity = tipologiaDao.findByCategoria(tipologia);
-        return giocatoreDao.findByRuoloTipologia(tipologiaEntity);
+
+        System.out.println(">>> [DEBUG] Chiamata findByRuoloTipologia con: " + tipologia);
+
+        return giocatoreDao.findByRuoloTipologia(tipologia);
     }
+
 
     @Override
     public void salvaGiocatore(Giocatore giocatore) {
