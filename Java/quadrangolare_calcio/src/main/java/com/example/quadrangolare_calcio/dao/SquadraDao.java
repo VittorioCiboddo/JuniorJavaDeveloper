@@ -11,19 +11,19 @@ public interface SquadraDao extends CrudRepository<Squadra, Long> {
 
 
     @Query("""
-    SELECT s
-    FROM Squadra s
-    WHERE EXISTS (
-        SELECT r
-        FROM Ruolo r
-        WHERE r.tipologia = :tipologia
-        AND r.modulo = s.modulo
-        AND r NOT IN (
-            SELECT g.ruolo
-            FROM Giocatore g
-            WHERE g.squadra = s
-        )
-    ) """)
-    List<Squadra> findSquadreConSpazioPerCategoria(@Param("tipologia") String tipologia);
+        SELECT s
+        FROM Squadra s
+        WHERE EXISTS (
+            SELECT r
+            FROM Ruolo r
+            WHERE r.tipologia.categoria = :categoria
+            AND r.modulo = s.modulo
+            AND r NOT IN (
+                SELECT g.ruolo
+                FROM Giocatore g
+                WHERE g.squadra = s
+            ) )""")
+            List<Squadra> findSquadreConSpazioPerCategoria(@Param("categoria") String categoria);
+
 
 }

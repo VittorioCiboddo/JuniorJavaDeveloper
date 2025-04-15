@@ -44,13 +44,26 @@ public class AdminGiocatoreController {
         return "admin-giocatori-form";
     }
 
+    @GetMapping("/giocatore/nuovo")
+    public String nuovoGiocatore(@RequestParam("tipologia") String tipologia, Model model, HttpSession session) {
+        if (session.getAttribute("admin") == null)
+            return "redirect:/loginadmin";
+
+        List<Squadra> squadreDisponibili = squadraService.getSquadreConSpazioPerCategoria(tipologia);
+        model.addAttribute("tipologiaFissata", tipologia);
+        model.addAttribute("squadreDisponibili", squadreDisponibili);
+
+        return "admin-giocatori-aggiungi";
+    }
+
+
     @PostMapping("/giocatore/aggiungi")
-    public String aggiungiGiocatore(@ModelAttribute Giocatore giocatore, HttpSession session) {
+    public String aggiungiGiocatore(@ModelAttribute Giocatore giocatore, @RequestParam("ruolo.tipologia.categoria") String tipologia, HttpSession session) {
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
 
         giocatoreService.salvaGiocatore(giocatore);
-        return "redirect:/areaadmin/admingiocatori?tipologia=" + giocatore.getRuolo().getTipologia();
+        return "redirect:/areaadmin/admingiocatori?tipologia=" + tipologia;
     }
 
     @GetMapping("/giocatore/modifica")
@@ -64,7 +77,7 @@ public class AdminGiocatoreController {
         model.addAttribute("moduli", moduloService.getAllModuli());
         model.addAttribute("ruoli", ruoloService.getRuoliPerCategoria(giocatore.getRuolo().getTipologia()));
 
-        return "admin-modifica-giocatore";
+        return "admin-modifica-giocatori";
     }
 
     @PostMapping("/giocatore/modifica")

@@ -94,7 +94,7 @@ public class SquadraServiceImpl implements SquadraService{
 
     @Override
     public List<Squadra> getSquadreConSpazioPerCategoria(String tipologia) {
-        return squadraDao.findSquadreConSpazioPerCategoria(tipologia);
+        return squadraDao.findSquadreConSpazioPerCategoria(tipologia); // ora tipologia è la categoria
     }
 
     @Override

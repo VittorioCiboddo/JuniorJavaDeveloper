@@ -41,7 +41,7 @@
     <div class="mb-3">
       <label>Modulo:</label>
       <select class="form-select" name="modulo.idModulo" required>
-        <option th:each="m : ${moduli}" th:value="${m.idModulo}" th:selected="${m.idModulo == giocatore.modulo.idModulo}" th:text="${m.nome}"></option>
+        <option th:each="m : ${moduli}" th:value="${m.idModulo}" th:text="${m.schemaGioco}"></option>
       </select>
     </div>
 

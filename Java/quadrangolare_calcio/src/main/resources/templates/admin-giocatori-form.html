@@ -48,73 +48,15 @@
         </tbody>
     </table>
 
-    <!-- Form aggiunta -->
-    <div class="form-section">
-        <h4>Aggiungi nuovo giocatore</h4>
-
-        <form th:action="@{/areaadmin/giocatore/aggiungi}" method="post">
-            <!-- Categoria (fissata) -->
-            <div class="mb-3">
-                <label>Categoria:</label>
-                <input type="text" class="form-control" th:value="${tipologiaFissata}" name="categoria" readonly />
-            </div>
-
-            <!-- Squadra -->
-            <div class="mb-3">
-                <label>Squadra:</label>
-                <select id="squadraSelect" name="squadraId" class="form-select" required>
-                    <option value="">Scegli una squadra</option>
-                    <option th:each="squadra : ${squadreDisponibili}" th:value="${squadra.idSquadra}" th:text="${squadra.nome}"></option>
-                </select>
-            </div>
-
-            <!-- Modulo -->
-            <div class="mb-3" id="moduloContainer" style="display:none">
-                <label>Modulo:</label>
-                <select id="moduloSelect" name="moduloId" class="form-select" required>
-                    <!-- Solo un'opzione, dinamica -->
-                </select>
-            </div>
-
-            <!-- Ruolo -->
-            <div class="mb-3" id="ruoloContainer" style="display:none">
-                <label>Ruolo:</label>
-                <select id="ruoloSelect" name="ruoloId" class="form-select" required>
-                    <!-- Popolato dinamicamente in base a categoria+modulo -->
-                </select>
-            </div>
-
-            <!-- Campi personali -->
-            <div id="campiPersonali" style="display:none">
-                <div class="mb-3">
-                    <label>Nome:</label>
-                    <input type="text" class="form-control" name="nome" required>
-                </div>
-                <div class="mb-3">
-                    <label>Cognome:</label>
-                    <input type="text" class="form-control" name="cognome" required>
-                </div>
-                <div class="mb-3">
-                    <label>Numero di maglia:</label>
-                    <input type="number" class="form-control" name="numeroMaglia" required>
-                </div>
-                <div class="mb-3">
-                    <label>Data di nascita:</label>
-                    <input type="date" class="form-control" name="dataNascita" required>
-                </div>
-                <div class="mb-3">
-                    <label>Immagine:</label>
-                    <input type="file" class="form-control" name="immagineFile" accept="image/png">
-                </div>
-                <div class="mb-3">
-                    <label>Descrizione:</label>
-                    <textarea class="form-control" name="descrizione" rows="3"></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-success">Aggiungi giocatore</button>
-            </div>
-        </form>
+    <div class="d-flex justify-content-between mt-4">
+        <a th:href="@{'/areaadmin/giocatore/nuovo?tipologia=' + ${tipologiaFissata}}" class="btn btn-success">
+            Aggiungi nuovo giocatore
+        </a>
+        <a href="/areaadmin/giocatori" class="btn btn-outline-secondary">
+            Indietro
+        </a>
     </div>
+
 </div>
 </body>
 </html>
