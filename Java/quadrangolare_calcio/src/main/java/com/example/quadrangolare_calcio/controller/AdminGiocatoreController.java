@@ -35,8 +35,6 @@ public class AdminGiocatoreController {
     @GetMapping("/admingiocatori")
     public String gestisciGiocatori(@RequestParam("tipologia") String tipologia, Model model, HttpSession session) {
 
-        System.out.println(">>> [DEBUG] tipologia ricevuta: " + tipologia);
-
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
 
