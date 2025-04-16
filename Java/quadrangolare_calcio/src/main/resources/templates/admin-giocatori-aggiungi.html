@@ -103,7 +103,7 @@
       </div>
       <div class="mb-3">
         <label>Nazionalità:</label>
-        <select name="nazionalita" id="nazionalita" required>
+        <select class="form-select" name="nazionalita" id="nazionalita" required>
           <option value="">Scegli la nazionalità</option>
           <option th:each="naz : ${nazionalita}"
                   th:value="${naz.idNazionalita}"
