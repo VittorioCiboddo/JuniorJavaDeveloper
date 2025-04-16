@@ -89,8 +89,9 @@ public class SquadraServiceImpl implements SquadraService{
 
     @Override
     public Modulo getModuloBySquadra(int id) {
-        return squadraDao.findById((long) id).get().getModulo();
+        return squadraDao.findById((long) id).map(Squadra::getModulo).orElse(null);
     }
+
 
     @Override
     public List<Squadra> getSquadreConSpazioPerCategoria(String tipologia) {

@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -66,13 +69,30 @@ public class AdminGiocatoreController {
 
 
     @PostMapping("/giocatore/aggiungi")
-    public String aggiungiGiocatore(@ModelAttribute Giocatore giocatore, @RequestParam("ruolo.tipologia.categoria") String tipologia, HttpSession session) {
+    public String aggiungiGiocatore(@ModelAttribute Giocatore giocatore,
+                                    @RequestParam("ruolo.tipologia.categoria") String tipologia,
+                                    @RequestParam("immagineFile") MultipartFile immagineFile,
+                                    HttpSession session) {
+
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
+
+        if (immagineFile != null && !immagineFile.isEmpty()) {
+            try {
+                String formato = immagineFile.getContentType();
+                String immagineCodificata = "data:" + formato + ";base64," +
+                        Base64.getEncoder().encodeToString(immagineFile.getBytes());
+                giocatore.setImmagine(immagineCodificata);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         giocatoreService.salvaGiocatore(giocatore);
         return "redirect:/areaadmin/admingiocatori?tipologia=" + tipologia;
     }
+
+
 
     @GetMapping("/giocatore/modifica")
     public String modificaGiocatore(@RequestParam("id") int id, Model model, HttpSession session) {
@@ -98,12 +118,15 @@ public class AdminGiocatoreController {
     }
 
     @GetMapping("/giocatore/elimina")
-    public String eliminaGiocatore(@RequestParam("id") int id, HttpSession session) {
+    public String eliminaGiocatore(@RequestParam("id") int id,
+                                   @RequestParam("tipologia") String tipologia,
+                                   HttpSession session) {
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
 
         giocatoreService.eliminaGiocatore(id);
-        return "redirect:/areaadmin/admingiocatori";
+        return "redirect:/areaadmin/admingiocatori?tipologia=" + tipologia;
     }
+
 }
 

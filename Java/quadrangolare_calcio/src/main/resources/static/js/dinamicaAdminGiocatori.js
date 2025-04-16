@@ -1,64 +1,72 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     const squadraSelect = document.getElementById("squadraSelect");
     const moduloContainer = document.getElementById("moduloContainer");
     const moduloSelect = document.getElementById("moduloSelect");
     const ruoloContainer = document.getElementById("ruoloContainer");
     const ruoloSelect = document.getElementById("ruoloSelect");
     const campiPersonali = document.getElementById("campiPersonali");
-    const categoria = document.querySelector("input[name='categoria']").value;
-
-    // Reset iniziale
-    moduloContainer.style.display = "none";
-    ruoloContainer.style.display = "none";
-    campiPersonali.style.display = "none";
+    const categoria = document.getElementById("categoriaInput").value;
 
     squadraSelect.addEventListener("change", function () {
         const squadraId = this.value;
-        if (squadraId) {
-            // Chiamata AJAX per ottenere il modulo della squadra
-            fetch(`/api/squadra/${squadraId}/modulo`)
-                .then(response => response.json())
-                .then(modulo => {
-                    moduloContainer.style.display = "block";
-                    moduloSelect.innerHTML = `<option value="${modulo.id}">${modulo.nome}</option>`;
-                });
+        if (!squadraId) return;
 
-            // Reset successivi
-            ruoloContainer.style.display = "none";
-            ruoloSelect.innerHTML = "";
-            campiPersonali.style.display = "none";
-        } else {
-            moduloContainer.style.display = "none";
-            ruoloContainer.style.display = "none";
-            campiPersonali.style.display = "none";
-        }
-    });
+        // Reset
+        hide(moduloContainer);
+        hide(ruoloContainer);
+        hide(campiPersonali);
+        moduloSelect.innerHTML = '';
+        ruoloSelect.innerHTML = '';
 
-    moduloSelect.addEventListener("change", function () {
-        const moduloId = this.value;
-        if (moduloId) {
-            // Carica i ruoli disponibili per quella categoria e quel modulo
-            fetch(`/api/ruoliDisponibili?categoria=${categoria}&moduloId=${moduloId}`)
-                .then(response => response.json())
-                .then(ruoli => {
-                    ruoloContainer.style.display = "block";
-                    ruoloSelect.innerHTML = "<option value=''>Scegli il ruolo</option>";
-                    ruoli.forEach(ruolo => {
-                        const option = document.createElement("option");
-                        option.value = ruolo.id;
-                        option.textContent = `${ruolo.descrizione} (${ruolo.sigla})`;
-                        ruoloSelect.appendChild(option);
+        // Fetch modulo
+        fetch(`/api/squadra/${squadraId}/modulo`)
+            .then(response => response.json())
+            .then(modulo => {
+                if (!modulo || !modulo.idModulo) {
+                    alert("Modulo non disponibile per questa squadra.");
+                    return;
+                }
+
+                moduloSelect.innerHTML = `<option value="${modulo.idModulo}">${modulo.schemaGioco}</option>`;
+                show(moduloContainer);
+                moduloSelect.disabled = true;
+
+                // Fetch ruoli
+                fetch(`/api/ruoliDisponibili?categoria=${categoria}&moduloId=${modulo.idModulo}`)
+                    .then(response => response.json())
+                    .then(ruoli => {
+                        ruoloSelect.innerHTML = "<option value=''>Scegli il ruolo</option>";
+
+                        ruoli.forEach(ruolo => {
+                            const option = document.createElement("option");
+                            option.value = ruolo.idRuolo;
+                            option.textContent = `${ruolo.descrizione} (${ruolo.sigla})`;
+                            if (ruolo.giocatoreRegistrato) {
+                                option.disabled = true;
+                                option.textContent += " (già assegnato)";
+                            }
+                            ruoloSelect.appendChild(option);
+                        });
+
+                        show(ruoloContainer);
                     });
-                });
-        }
+            });
     });
 
     ruoloSelect.addEventListener("change", function () {
         if (this.value) {
-            campiPersonali.style.display = "block";
+            show(campiPersonali);
         } else {
-            campiPersonali.style.display = "none";
+            hide(campiPersonali);
         }
     });
+
+    function show(el) {
+        el.classList.add("visibile");
+    }
+
+    function hide(el) {
+        el.classList.remove("visibile");
+    }
 });
+

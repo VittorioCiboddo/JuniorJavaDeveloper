@@ -42,7 +42,10 @@
             <td th:text="${giocatore.squadra.nome}">Nome Squadra</td>
             <td>
                 <a th:href="@{'/areaadmin/giocatore/modifica?id=' + ${giocatore.idGiocatore}}" class="btn btn-warning btn-sm">Modifica</a>
-                <a th:href="@{'/areaadmin/giocatore/elimina?id=' + ${giocatore.idGiocatore}}" class="btn btn-danger btn-sm ms-2">Elimina</a>
+                <a th:href="@{'/areaadmin/giocatore/elimina?id=' + ${giocatore.idGiocatore} + '&tipologia=' + ${tipologiaFissata}}" class="btn btn-danger btn-sm ms-2">
+                    Elimina
+                </a>
+
             </td>
         </tr>
         </tbody>

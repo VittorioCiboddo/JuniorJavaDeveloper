@@ -10,4 +10,5 @@ public interface TipologiaService {
     List<Tipologia> getTipologiePerModulo(Long idModulo);
     Tipologia getById(Long id);
 
+
 }

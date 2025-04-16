@@ -12,15 +12,16 @@ public interface RuoloDao extends CrudRepository<Ruolo, Integer> {
 
 
     @Query("""
-    SELECT r
-    FROM Ruolo r
-    WHERE r.tipologia = :categoria
-    AND r.modulo.idModulo = :moduloId
-    AND r NOT IN (
-        SELECT g.ruolo FROM Giocatore g WHERE g.ruolo = r
-    ) """)
+        SELECT r
+        FROM Ruolo r
+        WHERE r.tipologia.categoria = :categoria
+        AND r.modulo.idModulo = :moduloId
+        AND r NOT IN (
+            SELECT g.ruolo FROM Giocatore g WHERE g.ruolo = r
+        ) """)
     List<Ruolo> findDisponibiliByCategoriaAndModulo(@Param("categoria") String categoria,
                                                     @Param("moduloId") int moduloId);
+
 
 
     List<Ruolo> findByTipologia(Tipologia tipologia);
