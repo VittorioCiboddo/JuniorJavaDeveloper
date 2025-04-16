@@ -30,6 +30,7 @@
         <tr>
             <th>Nome e Cognome</th>
             <th>Squadra</th>
+            <th>Modulo</th>
             <th>Azioni</th>
         </tr>
         </thead>
@@ -37,9 +38,10 @@
         <tr th:each="allenatore : ${allenatori}">
             <td th:text="${allenatore.nome + ' ' + allenatore.cognome}">Nome Cognome</td>
             <td th:text="${allenatore.squadra.nome}">Nome Squadra</td>
+            <td th:text="${allenatore.squadra.modulo.schemaGioco}">Modulo</td>
             <td>
-                <a th:href="@{'/areaadmin/giocatore/modifica?id=' + ${giocatore.idGiocatore}}" class="btn btn-warning btn-sm">Modifica</a>
-                <a th:href="@{'/areaadmin/giocatore/elimina?id=' + ${giocatore.idGiocatore} + '&tipologia=' + ${tipologiaFissata}}" class="btn btn-danger btn-sm ms-2">
+                <a th:href="@{'/areaadmin/allenatore/modifica?id=' + ${allenatore.idAllenatore}}" class="btn btn-warning btn-sm">Modifica</a>
+                <a th:href="@{'/areaadmin/allenatore/elimina?id=' + ${allenatore.idAllenatore}}" class="btn btn-danger btn-sm ms-2">
                     Elimina
                 </a>
 
@@ -49,10 +51,10 @@
     </table>
 
     <div class="d-flex justify-content-between mt-4">
-        <a th:href="@{'/areaadmin/giocatore/nuovo?tipologia=' + ${tipologiaFissata}}" class="btn btn-success">
-            Aggiungi nuovo giocatore
+        <a th:href="@{'/areaadmin/allenatore/nuovo}" class="btn btn-success">
+            Aggiungi nuovo allenatore
         </a>
-        <a href="/areaadmin/giocatori" class="btn btn-outline-secondary">
+        <a href="/areaadmin" class="btn btn-outline-secondary">
             Indietro
         </a>
     </div>

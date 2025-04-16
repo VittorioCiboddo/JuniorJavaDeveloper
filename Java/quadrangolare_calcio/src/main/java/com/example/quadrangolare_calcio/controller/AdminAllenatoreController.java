@@ -24,6 +24,6 @@ public class AdminAllenatoreController {
 
     @GetMapping("/adminallenatori")
     public String gestisciAllenatori(@RequestParam) {
-        
+
     }
 }
