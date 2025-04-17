@@ -102,4 +102,10 @@ public class SquadraServiceImpl implements SquadraService{
     public List<Squadra> getAllSquadre() {
         return (List<Squadra>) squadraDao.findAll();
     }
+
+    @Override
+    public List<Squadra> getSquadreSenzaAllenatore() {
+        return squadraDao.findSquadreSenzaAllenatore();
+    }
+
 }

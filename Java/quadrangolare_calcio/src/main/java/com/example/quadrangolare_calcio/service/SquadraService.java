@@ -25,4 +25,7 @@ public interface SquadraService {
     List<Squadra> getSquadreConSpazioPerCategoria(String tipologia);
 
     Object getAllSquadre();
+
+    List<Squadra> getSquadreSenzaAllenatore();
+
 }

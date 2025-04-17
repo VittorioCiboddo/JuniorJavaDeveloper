@@ -26,4 +26,10 @@ public interface SquadraDao extends CrudRepository<Squadra, Long> {
             List<Squadra> findSquadreConSpazioPerCategoria(@Param("categoria") String categoria);
 
 
+    @Query(value = "SELECT * FROM squadra s WHERE s.id_squadra NOT IN (SELECT fk_id_squadra FROM allenatore)", nativeQuery = true)
+    List<Squadra> findSquadreSenzaAllenatore();
+
+
+
+
 }

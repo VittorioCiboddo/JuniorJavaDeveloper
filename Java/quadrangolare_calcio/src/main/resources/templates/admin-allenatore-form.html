@@ -50,14 +50,52 @@
         </tbody>
     </table>
 
-    <div class="d-flex justify-content-between mt-4">
-        <a th:href="@{'/areaadmin/allenatore/nuovo}" class="btn btn-success">
-            Aggiungi nuovo allenatore
-        </a>
-        <a href="/areaadmin" class="btn btn-outline-secondary">
-            Indietro
-        </a>
+    <!-- form per aggiungere un nuovo allenatore -->
+    <div class="form-section mt-5" th:if="${#lists.isEmpty(squadreDisponibili)}">
+        <p class="text-danger">Tutte le squadre hanno già un allenatore assegnato.</p>
     </div>
+
+    <div class="form-section mt-5" th:if="${!#lists.isEmpty(squadreDisponibili)}">
+        <form method="post" th:action="@{/areaadmin/allenatore/aggiungi}" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label>Nome</label>
+                <input type="text" name="nome" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Cognome</label>
+                <input type="text" name="cognome" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Età</label>
+                <input type="number" name="descrizione" class="form-control" placeholder="Età o descrizione">
+            </div>
+
+            <div class="mb-3">
+                <label>Squadra</label>
+                <select name="squadra.idSquadra" class="form-control" required>
+                    <option th:each="s : ${squadreDisponibili}" th:value="${s.idSquadra}" th:text="${s.nome}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Nazionalità</label>
+                <select name="nazionalita.idNazionalita" class="form-control" required>
+                    <option th:each="n : ${nazionalita}" th:value="${n.idNazionalita}" th:text="${n.nome}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Immagine</label>
+                <input type="file" name="immagineFile" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-success">Salva Allenatore</button>
+        </form>
+    </div>
+
 
 </div>
 </body>
