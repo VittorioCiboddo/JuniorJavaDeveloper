@@ -1,8 +1,11 @@
 package com.example.quadrangolare_calcio.controller;
 
 import com.example.quadrangolare_calcio.model.Allenatore;
+import com.example.quadrangolare_calcio.model.Modulo;
+import com.example.quadrangolare_calcio.model.Nazionalita;
 import com.example.quadrangolare_calcio.model.Squadra;
 import com.example.quadrangolare_calcio.service.AllenatoreService;
+import com.example.quadrangolare_calcio.service.ModuloService;
 import com.example.quadrangolare_calcio.service.NazionalitaService;
 import com.example.quadrangolare_calcio.service.SquadraService;
 import jakarta.servlet.http.HttpSession;
@@ -28,6 +31,9 @@ public class AdminAllenatoreController {
 
     @Autowired
     private NazionalitaService nazionalitaService;
+
+    @Autowired
+    private ModuloService moduloService;
 
     @GetMapping("/adminallenatori")
     public String gestisciAllenatori(Model model, HttpSession session) {
@@ -73,49 +79,61 @@ public class AdminAllenatoreController {
             return "redirect:/loginadmin";
 
         Allenatore allenatore = allenatoreService.dettaglioAllenatore((long) id);
+        List<Squadra> squadre = (List<Squadra>) squadraService.getAllSquadre();
+        List<Nazionalita> nazionalita = nazionalitaService.elencoNazioni();
+        List<Modulo> moduli = (List<Modulo>) moduloService.getAllModuli();
+
         model.addAttribute("allenatore", allenatore);
-        model.addAttribute("nazionalita", nazionalitaService.elencoNazioni());
-        model.addAttribute("squadre", squadraService.getAllSquadre());
+        model.addAttribute("squadre", squadre);
+        model.addAttribute("moduli", moduli);
+        model.addAttribute("nazionalita", nazionalita);
+
         return "admin-allenatore-modifica";
     }
 
+
     @PostMapping("/allenatore/modifica")
     public String salvaModificheAllenatore(@ModelAttribute Allenatore allenatore,
-                                           @RequestParam("immagineFile") MultipartFile immagineFile,
+                                           @RequestParam("modulo.idModulo") Integer idModulo,
+                                           @RequestParam("nazionalita.idNazionalita") Integer idNazionalita,
                                            HttpSession session) {
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
 
-        Allenatore esistente = allenatoreService.dettaglioAllenatore((long) allenatore.getIdAllenatore());
+        Allenatore esistente = allenatoreService.dettaglioAllenatore(allenatore.getIdAllenatore());
 
-        if (allenatore.getNome() != null && !allenatore.getNome().isBlank())
+        // NOME
+        if (allenatore.getNome() != null && !allenatore.getNome().isBlank()) {
             esistente.setNome(allenatore.getNome());
-
-        if (allenatore.getCognome() != null && !allenatore.getCognome().isBlank())
-            esistente.setCognome(allenatore.getCognome());
-
-        if (allenatore.getDescrizione() != null)
-            esistente.setDescrizione(allenatore.getDescrizione());
-
-        if (allenatore.getNazionalita() != null)
-            esistente.setNazionalita(allenatore.getNazionalita());
-
-        if (allenatore.getSquadra() != null)
-            esistente.setSquadra(allenatore.getSquadra());
-
-        if (!immagineFile.isEmpty()) {
-            try {
-                String base64 = "data:" + immagineFile.getContentType() + ";base64," +
-                        Base64.getEncoder().encodeToString(immagineFile.getBytes());
-                esistente.setImmagine(base64);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
-        allenatoreService.salvaAllenatore(esistente);
+        // COGNOME
+        if (allenatore.getCognome() != null && !allenatore.getCognome().isBlank()) {
+            esistente.setCognome(allenatore.getCognome());
+        }
+
+        // SQUADRA
+        if (allenatore.getSquadra() != null) {
+            esistente.setSquadra(allenatore.getSquadra());
+        }
+
+        // NAZIONALITA
+        Nazionalita nazionalita = nazionalitaService.getNazionalitaById(idNazionalita);
+        if (nazionalita != null) {
+            esistente.setNazionalita(nazionalita);
+        }
+
+        // MODULO tramite la squadra
+        Modulo modulo = moduloService.getById(idModulo);
+        if (modulo != null && esistente.getSquadra() != null) {
+            esistente.getSquadra().setModulo(modulo);
+        }
+
+        allenatoreService.aggiornaAllenatore(esistente);
+
         return "redirect:/areaadmin/adminallenatori";
     }
+
 
 
 

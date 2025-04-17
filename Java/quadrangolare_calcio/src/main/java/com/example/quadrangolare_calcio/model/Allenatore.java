@@ -2,8 +2,6 @@ package com.example.quadrangolare_calcio.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "allenatore")
 public class Allenatore {
@@ -33,7 +31,7 @@ public class Allenatore {
     @JoinColumn(name = "fk_id_nazionalita", referencedColumnName = "id_nazionalita")
     private Nazionalita nazionalita;
 
-    public int getIdAllenatore() {
+    public long getIdAllenatore() {
         return idAllenatore;
     }
 

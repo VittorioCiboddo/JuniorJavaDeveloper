@@ -31,15 +31,23 @@
     <div class="mb-3">
       <label>Modulo:</label>
       <select class="form-select" name="modulo.idModulo" required>
-        <option th:each="m : ${moduli}" th:value="${m.idModulo}" th:text="${m.schemaGioco}"></option>
+        <option th:each="m : ${moduli}"
+                th:value="${m.idModulo}"
+                th:selected="${allenatore.squadra.modulo != null and m.idModulo == allenatore.squadra.modulo.idModulo}"
+                th:text="${m.schemaGioco}"></option>
       </select>
+
     </div>
 
     <div class="mb-3">
       <label>Nazionalità:</label>
       <select name="nazionalita.idNazionalita" class="form-control" required>
-        <option th:each="n : ${nazionalita}" th:value="${n.idNazionalita}" th:text="${n.nazione} + ' (' + ${n.sigla} + ')'"></option>
+        <option th:each="n : ${nazionalita}"
+                th:value="${n.idNazionalita}"
+                th:selected="${n.idNazionalita == allenatore.nazionalita.idNazionalita}"
+                th:text="${n.nazione + ' (' + n.sigla + ')'}"></option>
       </select>
+
     </div>
 
     <div class="mb-3">
