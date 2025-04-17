@@ -30,9 +30,9 @@ public class AdminStadioController {
             return "redirect:/loginadmin";
 
         List<Stadio> stadio = stadioService.getAllStadi();
-        List<Squadra> squadreDisponibili = squadraService.getSquadreSenzaAllenatore();
+        List<Squadra> squadreDisponibili = squadraService.getSquadreSenzaStadio();
 
-        model.addAttribute("stadio", stadio);
+        model.addAttribute("stadi", stadio);
         model.addAttribute("squadreDisponibili", squadreDisponibili);
 
 

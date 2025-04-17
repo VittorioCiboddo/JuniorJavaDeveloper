@@ -26,12 +26,12 @@
 
         <div class="mb-3">
             <label>Capienza (spettatori):</label>
-            <input type="number" class="form-control" name="capienza" min="10000" max="25000" step="500">
+            <input type="number" class="form-control" name="capienza" min="10000" max="25000" step="500" th:value="${stadio.capienza}">
         </div>
 
         <div class="mb-3">
             <label>Nome ultras:</label>
-            <input type="text" class="form-control" name="ultras">
+            <input type="text" class="form-control" name="ultras" th:value="${stadio.ultras}">
         </div>
 
         <div class="mb-3">

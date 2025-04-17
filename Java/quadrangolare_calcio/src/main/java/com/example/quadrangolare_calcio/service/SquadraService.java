@@ -28,4 +28,5 @@ public interface SquadraService {
 
     List<Squadra> getSquadreSenzaAllenatore();
 
+    List<Squadra> getSquadreSenzaStadio();
 }
