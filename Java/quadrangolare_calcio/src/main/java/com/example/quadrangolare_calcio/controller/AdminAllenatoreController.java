@@ -76,7 +76,7 @@ public class AdminAllenatoreController {
         model.addAttribute("allenatore", allenatore);
         model.addAttribute("nazionalita", nazionalitaService.elencoNazioni());
         model.addAttribute("squadre", squadraService.getAllSquadre());
-        return "admin-modifica-allenatore";
+        return "admin-allenatore-modifica";
     }
 
     @PostMapping("/allenatore/modifica")
