@@ -41,9 +41,7 @@
             <td th:text="${allenatore.squadra.modulo.schemaGioco}">Modulo</td>
             <td>
                 <a th:href="@{'/areaadmin/allenatore/modifica?id=' + ${allenatore.idAllenatore}}" class="btn btn-warning btn-sm">Modifica</a>
-                <a th:href="@{'/areaadmin/allenatore/elimina?id=' + ${allenatore.idAllenatore}}" class="btn btn-danger btn-sm ms-2">
-                    Elimina
-                </a>
+                <a th:href="@{'/areaadmin/allenatore/elimina'(id=${allenatore.idAllenatore})}" class="btn btn-danger">Elimina</a>
 
             </td>
         </tr>
@@ -56,6 +54,7 @@
     </div>
 
     <div class="form-section mt-5" th:if="${!#lists.isEmpty(squadreDisponibili)}">
+        <h4>Aggiungi Nuovo Allenatore</h4>
         <form method="post" th:action="@{/areaadmin/allenatore/aggiungi}" enctype="multipart/form-data">
 
             <div class="mb-3">
@@ -77,9 +76,22 @@
             </div>
 
             <div class="mb-3">
+                <label>Modulo</label>
+                <select class="form-select" name="modulo.idModulo" required>
+                    <option th:if="${#lists.size(squadreDisponibili) == 1}"
+                            th:value="${squadreDisponibili.get(0).modulo.idModulo}"
+                            th:text="${squadreDisponibili.get(0).modulo.schemaGioco}"></option>
+                    <option th:if="${#lists.size(squadreDisponibili) > 1}"
+                            th:each="s : ${squadreDisponibili}"
+                            th:value="${s.modulo.idModulo}"
+                            th:text="${s.nome + ' - ' + s.modulo.schemaGioco}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
                 <label>Nazionalità</label>
                 <select name="nazionalita.idNazionalita" class="form-control" required>
-                    <option th:each="n : ${nazionalita}" th:value="${n.idNazionalita}" th:text="${n.nome}"></option>
+                    <option th:each="n : ${nazionalita}" th:value="${n.idNazionalita}" th:text="${n.nazione} + ' (' + ${n.sigla} + ')'"></option>
                 </select>
             </div>
 
@@ -88,6 +100,16 @@
                 <input type="file" name="immagineFile" class="form-control">
             </div>
 
+            <div class="mb-3">
+                <label>Descrizione:</label>
+                <textarea class="form-control" name="descrizione" rows="4"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/areaadmin" class="btn btn-outline-secondary">
+                    Indietro
+                </a>
+            </div>
             <button type="submit" class="btn btn-success">Salva Allenatore</button>
         </form>
     </div>

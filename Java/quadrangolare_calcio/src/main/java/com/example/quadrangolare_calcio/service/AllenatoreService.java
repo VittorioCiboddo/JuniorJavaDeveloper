@@ -12,4 +12,5 @@ public interface AllenatoreService {
     List<Allenatore> getAllAllenatori();
 
 
+    void eliminaAllenatore(int id);
 }

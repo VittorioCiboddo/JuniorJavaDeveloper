@@ -46,6 +46,7 @@ public class AdminAllenatoreController {
         model.addAttribute("allenatori", allenatori);
         model.addAttribute("squadreDisponibili", squadreDisponibili);
         model.addAttribute("nazionalita", nazionalitaService.elencoNazioni());
+        model.addAttribute("moduli", moduloService.getAllModuli());
 
         return "admin-allenatore-form";
     }
@@ -93,10 +94,9 @@ public class AdminAllenatoreController {
 
 
     @PostMapping("/allenatore/modifica")
-    public String salvaModificheAllenatore(@ModelAttribute Allenatore allenatore,
-                                           @RequestParam("modulo.idModulo") Integer idModulo,
-                                           @RequestParam("nazionalita.idNazionalita") Integer idNazionalita,
-                                           HttpSession session) {
+    public String modificaAllenatorePost(@ModelAttribute Allenatore allenatore,
+                                         @RequestParam("immagineFile") MultipartFile immagineFile,
+                                         HttpSession session) {
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
 
@@ -112,27 +112,55 @@ public class AdminAllenatoreController {
             esistente.setCognome(allenatore.getCognome());
         }
 
+        // DESCRIZIONE
+        if (allenatore.getDescrizione() != null) {
+            esistente.setDescrizione(allenatore.getDescrizione());
+        }
+
         // SQUADRA
         if (allenatore.getSquadra() != null) {
             esistente.setSquadra(allenatore.getSquadra());
         }
 
-        // NAZIONALITA
-        Nazionalita nazionalita = nazionalitaService.getNazionalitaById(idNazionalita);
-        if (nazionalita != null) {
-            esistente.setNazionalita(nazionalita);
+        // NAZIONALITÀ
+        if (allenatore.getNazionalita() != null) {
+            esistente.setNazionalita(allenatore.getNazionalita());
         }
 
-        // MODULO tramite la squadra
-        Modulo modulo = moduloService.getById(idModulo);
-        if (modulo != null && esistente.getSquadra() != null) {
-            esistente.getSquadra().setModulo(modulo);
+        // MODULO (aggiornato tramite la squadra)
+        if (allenatore.getSquadra() != null && allenatore.getSquadra().getModulo() != null) {
+            esistente.getSquadra().setModulo(allenatore.getSquadra().getModulo());
         }
 
-        allenatoreService.aggiornaAllenatore(esistente);
+        // IMMAGINE
+        if (immagineFile != null && !immagineFile.isEmpty()) {
+            try {
+                String formato = immagineFile.getContentType();
+                String immagineCodificata = "data:" + formato + ";base64," +
+                        Base64.getEncoder().encodeToString(immagineFile.getBytes());
+                esistente.setImmagine(immagineCodificata);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        allenatoreService.salvaAllenatore(esistente);
 
         return "redirect:/areaadmin/adminallenatori";
     }
+
+
+    // Controllo per ELIMINA allenatore
+    @GetMapping("/allenatore/elimina")
+    public String eliminaAllenatore(@RequestParam("id") int id, HttpSession session) {
+        if (session.getAttribute("admin") == null)
+            return "redirect:/loginadmin";
+
+        allenatoreService.eliminaAllenatore(id);
+
+        return "redirect:/areaadmin/adminallenatori";
+    }
+
 
 
 

@@ -39,4 +39,9 @@ public class AllenatoreServiceImpl implements AllenatoreService {
         return (List<Allenatore>) allenatoreDao.findAll();
     }
 
+    @Override
+    public void eliminaAllenatore(int id) {
+        allenatoreDao.deleteById((long) id);
+    }
+
 }
