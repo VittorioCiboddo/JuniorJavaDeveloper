@@ -6,6 +6,7 @@ import com.example.quadrangolare_calcio.model.Stadio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +32,16 @@ public class StadioServiceImpl implements StadioService {
         if(stadioOptional.isPresent())
             return stadioOptional.get();
         return null;
+    }
+
+    @Override
+    public List<Stadio> getAllStadi() {
+        return (List<Stadio>) stadioDao.findAll();
+    }
+
+    @Override
+    public void eliminaStadio(int id) {
+        stadioDao.deleteById((long) id);
     }
 
 }

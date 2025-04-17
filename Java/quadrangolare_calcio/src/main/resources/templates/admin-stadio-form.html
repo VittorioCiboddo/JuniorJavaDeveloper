@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestione Stadi - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .form-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .disabled-select {
+            background-color: #e9ecef;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mt-4 mb-4">Gestione Stadi</h2>
+
+    <!-- Tabella stadi -->
+    <table class="table table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Squadra</th>
+            <th>Capienza (spettatori)</th>
+            <th>Azioni</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="stadio : ${stadi}">
+            <td th:text="${stadio.nome}">Nome stadio</td>
+            <td th:text="${stadio.squadra.nome}">Nome Squadra</td>
+            <td th:text="${stadio.capienza}">Capienza (spettatori)</td>
+            <td>
+                <a th:href="@{'/areaadmin/stadio/modifica?id=' + ${stadio.idStadio}}" class="btn btn-warning btn-sm">Modifica</a>
+                <a th:href="@{'/areaadmin/stadio/elimina'(id=${stadio.idStadio})}" class="btn btn-danger">Elimina</a>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- form per aggiungere un nuovo stadio -->
+    <div class="form-section mt-5" th:if="${#lists.isEmpty(squadreDisponibili)}">
+        <p class="text-danger">Tutte le squadre hanno già uno stadio assegnato.</p>
+    </div>
+
+    <div class="form-section mt-5" th:if="${!#lists.isEmpty(squadreDisponibili)}">
+        <h4>Aggiungi Nuovo Stadio</h4>
+        <form method="post" th:action="@{/areaadmin/stadio/aggiungi}" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label>Nome</label>
+                <input type="text" name="nome" class="form-control">
+            </div>
+
+
+            <div class="mb-3">
+                <label>Squadra</label>
+                <select name="squadra.idSquadra" class="form-control" required>
+                    <option th:each="s : ${squadreDisponibili}" th:value="${s.idSquadra}" th:text="${s.nome}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Capienza (spettatori)</label>
+                <input type="number" min="10000" max="25000" step="500" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Nome ultras</label>
+                <input type="text" name="ultras" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Immagine</label>
+                <input type="file" name="immagineFile" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Descrizione</label>
+                <textarea class="form-control" name="descrizione" rows="4"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Salva Stadio</button>
+        </form>
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+        <a href="/areaadmin" class="btn btn-outline-secondary">Indietro</a>
+    </div>
+
+</div>
+</body>
+</html>
