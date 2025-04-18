@@ -33,4 +33,8 @@ public interface SquadraService {
     void salvaSquadra(Squadra squadra);
 
     void eliminaSquadra(int id);
+
+    List<Nazionalita> getAllNazionalita();
+
+    Nazionalita getNazionalitaById(Long idNazionalitaAllenatore);
 }

@@ -1,10 +1,12 @@
 package com.example.quadrangolare_calcio.service;
 
+import com.example.quadrangolare_calcio.dao.NazionalitaDao;
 import com.example.quadrangolare_calcio.dao.SquadraDao;
 import com.example.quadrangolare_calcio.model.Modulo;
 import com.example.quadrangolare_calcio.model.Nazionalita;
 import com.example.quadrangolare_calcio.model.Ruolo;
 import com.example.quadrangolare_calcio.model.Squadra;
+import com.example.quadrangolare_calcio.repository.NazionalitaRepository;
 import com.example.quadrangolare_calcio.repository.SquadraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,11 @@ import java.util.stream.Collectors;
 @Service
 public class SquadraServiceImpl implements SquadraService{
 
+    @Autowired
+    private NazionalitaRepository nazionalitaRepository;
+
+    @Autowired
+    private NazionalitaDao nazionalitaDao;
 
     @Autowired
     private SquadraDao squadraDao;
@@ -122,5 +129,18 @@ public class SquadraServiceImpl implements SquadraService{
     public void eliminaSquadra(int id) {
         squadraDao.deleteById((long) id);
     }
+
+    @Override
+    public List<Nazionalita> getAllNazionalita() {
+        return (List<Nazionalita>) nazionalitaDao.findAll();
+    }
+
+    @Override
+    public Nazionalita getNazionalitaById(Long id) {
+        return nazionalitaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Nazionalità con ID " + id + " non trovata."));
+    }
+
+
 
 }
