@@ -29,4 +29,8 @@ public interface SquadraService {
     List<Squadra> getSquadreSenzaAllenatore();
 
     List<Squadra> getSquadreSenzaStadio();
+
+    void salvaSquadra(Squadra squadra);
+
+    void eliminaSquadra(int id);
 }

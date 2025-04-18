@@ -38,7 +38,16 @@
         <tr th:each="squadra : ${squadre}">
             <td th:text="${squadra.nome}">Nome Squadra</td>
             <td th:text="${allenatore.nome} + ' ' + ${allenatore.cognome}">Allenatore</td>
-            <td th:text="${squadra.capitano}">Capitano</td>
+            <td>
+                <span th:if="${s.capitano != null}" th:text="${s.capitano}">Nome Capitano</span>
+
+                <!-- Mostra il bottone solo se il capitano è null -->
+                <a th:if="${s.capitano == null}"
+                   th:href="@{'/areaadmin/squadra/modifica?id=' + ${s.idSquadra}}"
+                   class="btn btn-outline-warning btn-sm">
+                    Scegli Capitano
+                </a>
+            </td>
             <td th:text="${squadra.nazionalita.nazione} + ' (' + ${squadra.nazionalita.sigla} + ')'">Nazionalità</td>
             <td>
                 <a th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}" class="btn btn-warning btn-sm">Modifica</a>

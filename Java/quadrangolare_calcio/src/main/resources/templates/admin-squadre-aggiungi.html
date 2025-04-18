@@ -31,7 +31,20 @@
       <br>
       <label for="logo_squadra">Logo squadra:</label>
       <input type="file" name="logo" accept="image/*" th:value="${squadra.logo}" id="logo_squadra" required>
-      <input type="text" name="capitano" th:value="${squadra.capitano}" placeholder="Capitano (nome e cognome giocatore)" required>
+      <div class="mb-3">
+        <label for="capitano">Capitano</label>
+        <input type="text"
+               name="capitano"
+               id="capitano"
+               class="form-control"
+               value="Il capitano sarà scelto successivamente"
+               readonly
+               style="background-color: #e9ecef; font-style: italic; color: #6c757d;">
+        <small class="form-text text-muted">
+          Dopo aver registrato i giocatori per questa squadra, potrai tornare nella sezione "Squadre" e selezionare il capitano.
+        </small>
+      </div>
+
       <br>
       <input type="text" name="descrizione" th:value="${squadra.descrizione}" placeholder="Descrizione squadra" required>
       <br>

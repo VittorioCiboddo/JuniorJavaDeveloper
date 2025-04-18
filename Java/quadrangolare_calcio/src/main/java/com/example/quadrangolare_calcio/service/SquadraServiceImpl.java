@@ -113,4 +113,14 @@ public class SquadraServiceImpl implements SquadraService{
         return squadraDao.findSquadreSenzaStadio();
     }
 
+    @Override
+    public void salvaSquadra(Squadra squadra) {
+        squadraDao.save(squadra);
+    }
+
+    @Override
+    public void eliminaSquadra(int id) {
+        squadraDao.deleteById((long) id);
+    }
+
 }
