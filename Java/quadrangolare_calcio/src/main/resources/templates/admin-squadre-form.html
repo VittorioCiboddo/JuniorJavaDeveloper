@@ -46,21 +46,40 @@
         <tbody>
         <tr th:each="squadra : ${squadre}">
             <td th:text="${squadra.nome}">Nome Squadra</td>
-            <td th:text="${squadra.nazionalita.nazione} + ' (' + ${squadra.nazionalita.sigla} + ')'">Nazionalità</td>
-            <td th:text="${allenatoriPerSquadra[squadra.idSquadra]?.nome + ' ' + allenatoriPerSquadra[squadra.idSquadra]?.cognome}">Allenatore</td>
+            <td th:text="${squadra.nazionalita != null ? squadra.nazionalita.nazione + ' (' + squadra.nazionalita.sigla + ')' : '—'}">Nazionalità</td>
             <td>
-                <span th:if="${squadra.capitano != null and !#strings.isEmpty(squadra.capitano)}" th:text="${squadra.capitano}">Nome Capitano</span>
+                <span th:if="${allenatoriPerSquadra[squadra.idSquadra] != null}"
+                      th:text="${allenatoriPerSquadra[squadra.idSquadra].nome + ' ' + allenatoriPerSquadra[squadra.idSquadra].cognome}">Allenatore</span>
 
-                <!-- Mostra il bottone solo se il capitano è null o stringa vuota -->
-                <a th:if="${squadra.capitano == null or #strings.isEmpty(squadra.capitano)}"
+                            <a th:if="${allenatoriPerSquadra[squadra.idSquadra] == null}"
+                               th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}"
+                               class="btn btn-outline-warning btn-sm">
+                                Scegli Allenatore
+                            </a>
+            </td>
+            <td>
+                <span th:if="${squadra.capitano != null and
+                              !#strings.isEmpty(squadra.capitano) and
+                              nomiGiocatoriPerSquadra[squadra.idSquadra]?.contains(squadra.capitano)}"
+                      th:text="${squadra.capitano}">Nome Capitano</span>
+
+                <a th:if="${squadra.capitano == null or
+                           #strings.isEmpty(squadra.capitano) or
+                           !nomiGiocatoriPerSquadra[squadra.idSquadra]?.contains(squadra.capitano)}"
                    th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}"
                    class="btn btn-outline-warning btn-sm">
                     Scegli Capitano
                 </a>
+
             </td>
             <td>
                 <a th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}" class="btn btn-warning btn-sm">Modifica</a>
-                <a th:href="@{'/areaadmin/squadra/elimina'(id=${squadra.idSquadra})}" class="btn btn-danger">Elimina</a>
+                <a href="#" class="btn btn-danger btn-sm"
+                   th:attr="data-id=${squadra.idSquadra}, data-nome=${squadra.nome}"
+                   onclick="confermaEliminazioneSquadra(this)">
+                    Elimina
+                </a>
+
             </td>
         </tr>
         </tbody>
@@ -76,5 +95,37 @@
     </div>
 
 </div>
+
+<!-- Modale di conferma eliminazione -->
+<div class="modal fade" id="confermaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="modal-body text-center">
+                <p id="testoConferma" class="mb-4 fw-bold"></p>
+                <button type="button" class="btn btn-danger me-2" id="btnConfermaElimina">Sì</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confermaEliminazioneSquadra(el) {
+        const id = el.getAttribute('data-id');
+        const nome = el.getAttribute('data-nome');
+
+        const url = `/areaadmin/squadra/elimina?id=${id}`;
+        const messaggio = `Vuoi davvero eliminare ${nome}?`;
+
+        document.getElementById('testoConferma').textContent = messaggio;
+        document.getElementById('btnConfermaElimina').onclick = () => {
+            window.location.href = url;
+        };
+
+        new bootstrap.Modal(document.getElementById('confermaModal')).show();
+    }
+</script>
+
 </body>
 </html>

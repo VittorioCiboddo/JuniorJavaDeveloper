@@ -42,7 +42,14 @@
             <td th:text="${giocatore.squadra.nome}">Nome Squadra</td>
             <td>
                 <a th:href="@{'/areaadmin/giocatore/modifica?id=' + ${giocatore.idGiocatore}}" class="btn btn-warning btn-sm">Modifica</a>
-                <a th:href="@{'/areaadmin/giocatore/elimina?id=' + ${giocatore.idGiocatore} + '&tipologia=' + ${tipologiaFissata}}" class="btn btn-danger btn-sm ms-2">
+                <a href="#"
+                   class="btn btn-danger btn-sm ms-2"
+                   th:attr="data-id=${giocatore.idGiocatore},
+                            data-nome=${giocatore.nome},
+                            data-cognome=${giocatore.cognome},
+                            data-sigla=${giocatore.ruolo.sigla},
+                            data-tipologia=${tipologiaFissata}"
+                   onclick="confermaEliminazioneGiocatore(this)">
                     Elimina
                 </a>
 
@@ -61,5 +68,41 @@
     </div>
 
 </div>
+
+<!-- Modale di conferma eliminazione -->
+<div class="modal fade" id="confermaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="modal-body text-center">
+                <p id="testoConferma" class="mb-4 fw-bold"></p>
+                <button type="button" class="btn btn-danger me-2" id="btnConfermaElimina">Sì</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confermaEliminazioneGiocatore(el) {
+        const id = el.getAttribute('data-id');
+        const nome = el.getAttribute('data-nome');
+        const cognome = el.getAttribute('data-cognome');
+        const sigla = el.getAttribute('data-sigla');
+        const tipologia = el.getAttribute('data-tipologia');
+
+        const url = `/areaadmin/giocatore/elimina?id=${id}&tipologia=${tipologia}`;
+        const messaggio = `Vuoi davvero eliminare ${nome} ${cognome} (${sigla})?`;
+
+        document.getElementById('testoConferma').textContent = messaggio;
+        document.getElementById('btnConfermaElimina').onclick = () => {
+            window.location.href = url;
+        };
+
+        new bootstrap.Modal(document.getElementById('confermaModal')).show();
+    }
+</script>
+
+
 </body>
 </html>

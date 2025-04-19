@@ -14,6 +14,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/areaadmin")
@@ -45,7 +46,6 @@ public class AdminSquadraController {
         List<Squadra> squadre = (List<Squadra>) squadraService.getAllSquadre();
         List<Allenatore> allenatori = allenatoreService.getAllAllenatori();
 
-        // Mappa che associa idSquadra → allenatore
         Map<Long, Allenatore> allenatoriPerSquadra = new HashMap<>();
         for (Allenatore a : allenatori) {
             if (a.getSquadra() != null) {
@@ -53,8 +53,18 @@ public class AdminSquadraController {
             }
         }
 
+        Map<Long, List<String>> nomiGiocatoriPerSquadra = new HashMap<>();
+        for (Squadra s : squadre) {
+            List<Giocatore> giocatori = giocatoreService.getGiocatoriPerSquadra(s.getIdSquadra());
+            List<String> nomiCompleti = giocatori.stream()
+                    .map(g -> g.getNome() + " " + g.getCognome())
+                    .collect(Collectors.toList());
+            nomiGiocatoriPerSquadra.put(s.getIdSquadra(), nomiCompleti);
+        }
+
         model.addAttribute("squadre", squadre);
         model.addAttribute("allenatoriPerSquadra", allenatoriPerSquadra);
+        model.addAttribute("nomiGiocatoriPerSquadra", nomiGiocatoriPerSquadra);
 
         return "admin-squadre-form";
     }
@@ -73,8 +83,6 @@ public class AdminSquadraController {
         return "admin-squadre-aggiungi";
     }
 
-
-
     @PostMapping("/squadra/aggiungi")
     public String salvaSquadra(@ModelAttribute Squadra squadra,
                                @RequestParam("immagineFile") MultipartFile immagineFile,
@@ -92,7 +100,6 @@ public class AdminSquadraController {
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
 
-        // Salva logo squadra
         if (!immagineFile.isEmpty()) {
             try {
                 String base64 = "data:" + immagineFile.getContentType() + ";base64," +
@@ -103,20 +110,17 @@ public class AdminSquadraController {
             }
         }
 
-        // Rimuove testo placeholder del capitano
         if (squadra.getCapitano() != null && squadra.getCapitano().equalsIgnoreCase("Il capitano sarà scelto successivamente")) {
             squadra.setCapitano(null);
         }
 
-        // Salva prima la squadra per ottenere ID
         squadraService.salvaSquadra(squadra);
 
-        // Crea e salva Allenatore
         Allenatore allenatore = new Allenatore();
         allenatore.setNome(nomeAllenatore);
         allenatore.setCognome(cognomeAllenatore);
         allenatore.setDescrizione(descrizioneAllenatore);
-        allenatore.setSquadra(squadra); // Associazione
+        allenatore.setSquadra(squadra);
 
         Nazionalita nazionalitaAllenatore = squadraService.getNazionalitaById(idNazionalitaAllenatore);
         allenatore.setNazionalita(nazionalitaAllenatore);
@@ -133,7 +137,6 @@ public class AdminSquadraController {
 
         allenatoreService.salvaAllenatore(allenatore);
 
-        // Crea e salva Stadio
         Stadio stadio = new Stadio();
         stadio.setNome(nomeStadio);
         stadio.setCapienza(capienza);
@@ -156,7 +159,6 @@ public class AdminSquadraController {
         return "redirect:/areaadmin/adminsquadra";
     }
 
-
     @GetMapping("/squadra/modifica")
     public String modificaSquadra(@RequestParam("id") int id, Model model, HttpSession session) {
         if (session.getAttribute("admin") == null)
@@ -166,7 +168,9 @@ public class AdminSquadraController {
         List<Modulo> moduli = (List<Modulo>) moduloService.getAllModuli();
         List<Giocatore> giocatoriSquadra = giocatoreService.getGiocatoriPerSquadra((long) id);
         Allenatore allenatore = allenatoreService.getAllenatoreBySquadraId((long) id);
+        if (allenatore == null) allenatore = new Allenatore();
         Stadio stadio = stadioService.getStadioBySquadraId((long) id);
+        if (stadio == null) stadio = new Stadio();
         List<Nazionalita> nazionalita = nazionalitaService.elencoNazioni();
 
         model.addAttribute("squadra", squadra);
@@ -179,29 +183,27 @@ public class AdminSquadraController {
         return "admin-squadre-modifica";
     }
 
-
     @PostMapping("/squadra/modifica")
-    public String modificaSquadraPost(@RequestParam("idSquadra") Long idSquadra,
-                                      @RequestParam("nome") String nome,
-                                      @RequestParam("descrizione") String descrizione,
-                                      @RequestParam("capitano") String capitano,
-                                      @RequestParam("nazionalita") Long idNazionalita,
-                                      @RequestParam("modulo") Long idModulo,
-                                      @RequestParam(value = "immagineFile", required = false) MultipartFile immagineFile,
-
-                                      @RequestParam("nomeAllenatore") String nomeAllenatore,
-                                      @RequestParam("cognomeAllenatore") String cognomeAllenatore,
-                                      @RequestParam("nazionalitaAllenatore") Long idNazAllenatore,
-                                      @RequestParam("descrizioneAllenatore") String descrizioneAllenatore,
-                                      @RequestParam(value = "immagineAllenatore", required = false) MultipartFile immagineAllenatore,
-
-                                      @RequestParam("nomeStadio") String nomeStadio,
-                                      @RequestParam("descrizioneStadio") String descrizioneStadio,
-                                      @RequestParam("capienza") Integer capienza,
-                                      @RequestParam("ultras") String ultras,
-                                      @RequestParam(value = "immagineStadio", required = false) MultipartFile immagineStadio,
-
-                                      HttpSession session) {
+    public String modificaSquadraPost(
+            @RequestParam("idSquadra") Long idSquadra,
+            @RequestParam("nome") String nome,
+            @RequestParam("descrizione") String descrizione,
+            @RequestParam("capitano") String capitano,
+            @RequestParam("nazionalita") Long idNazionalita,
+            @RequestParam("modulo") Long idModulo,
+            @RequestParam(value = "immagineFile", required = false) MultipartFile immagineFile,
+            @RequestParam("nomeAllenatore") String nomeAllenatore,
+            @RequestParam("cognomeAllenatore") String cognomeAllenatore,
+            @RequestParam("nazionalitaAllenatore") Long idNazAllenatore,
+            @RequestParam("descrizioneAllenatore") String descrizioneAllenatore,
+            @RequestParam(value = "immagineAllenatore", required = false) MultipartFile immagineAllenatore,
+            @RequestParam("nomeStadio") String nomeStadio,
+            @RequestParam("descrizioneStadio") String descrizioneStadio,
+            @RequestParam("capienza") Integer capienza,
+            @RequestParam("ultras") String ultras,
+            @RequestParam(value = "immagineStadio", required = false) MultipartFile immagineStadio,
+            HttpSession session
+    ) {
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
 
@@ -211,7 +213,14 @@ public class AdminSquadraController {
 
         esistente.setNome(nome);
         esistente.setDescrizione(descrizione);
-        esistente.setCapitano(capitano);
+
+        List<Giocatore> giocatoriSquadra = giocatoreService.getGiocatoriPerSquadra(idSquadra);
+        if (capitano != null && !capitano.isBlank() && !giocatoriSquadra.isEmpty()) {
+            esistente.setCapitano(capitano);
+        } else {
+            esistente.setCapitano(null);
+        }
+
         esistente.setNazionalita(nazionalitaService.getNazionalitaById(idNazionalita));
         esistente.setModulo(moduloService.getModuloById(idModulo));
 
@@ -270,10 +279,6 @@ public class AdminSquadraController {
         return "redirect:/areaadmin/adminsquadra";
     }
 
-
-
-
-
     @GetMapping("/squadra/elimina")
     public String eliminaSquadra(@RequestParam("id") int id, HttpSession session) {
         if (session.getAttribute("admin") == null)
@@ -284,4 +289,3 @@ public class AdminSquadraController {
     }
 
 }
-

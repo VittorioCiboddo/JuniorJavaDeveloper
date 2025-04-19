@@ -143,20 +143,17 @@
             <input type="file" name="immagineStadio" accept="image/*" id="immagine_stadio">
         </fieldset>
 
-        <button type="submit" class="btn btn-primary">Salva modifiche</button>
-        <a href="javascript:history.back()" class="btn btn-secondary ms-2">Annulla</a>
+        <div class="row">
+            <div class="col-6 pe-1">
+                <button type="submit" class="btn btn-primary w-100">Salva modifiche</button>
+            </div>
+            <div class="col-6 ps-1">
+                <button type="button" class="btn btn-secondary w-100" onclick="history.back()">Annulla</button>
+            </div>
+        </div>
+
     </form>
 </div>
-
-<script>
-    document.querySelector("form").addEventListener("submit", function (e) {
-        console.log("🔵 FORM STA PER ESSERE INVIATA");
-        const data = new FormData(this);
-        for (let pair of data.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
-        }
-    });
-</script>
 
 </body>
 </html>
