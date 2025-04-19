@@ -17,6 +17,15 @@
             background-color: #e9ecef;
             pointer-events: none;
         }
+        .btn-outline-warning {
+            color: #ffc107;
+            border-color: #ffc107;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-warning:hover {
+            background-color: #ffc107;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -40,10 +49,10 @@
             <td th:text="${squadra.nazionalita.nazione} + ' (' + ${squadra.nazionalita.sigla} + ')'">Nazionalità</td>
             <td th:text="${allenatoriPerSquadra[squadra.idSquadra]?.nome + ' ' + allenatoriPerSquadra[squadra.idSquadra]?.cognome}">Allenatore</td>
             <td>
-                <span th:if="${squadra.capitano != null}" th:text="${squadra.capitano}">Nome Capitano</span>
+                <span th:if="${squadra.capitano != null and !#strings.isEmpty(squadra.capitano)}" th:text="${squadra.capitano}">Nome Capitano</span>
 
-                <!-- Mostra il bottone solo se il capitano è null -->
-                <a th:if="${squadra.capitano == null}"
+                <!-- Mostra il bottone solo se il capitano è null o stringa vuota -->
+                <a th:if="${squadra.capitano == null or #strings.isEmpty(squadra.capitano)}"
                    th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}"
                    class="btn btn-outline-warning btn-sm">
                     Scegli Capitano
@@ -52,7 +61,6 @@
             <td>
                 <a th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}" class="btn btn-warning btn-sm">Modifica</a>
                 <a th:href="@{'/areaadmin/squadra/elimina'(id=${squadra.idSquadra})}" class="btn btn-danger">Elimina</a>
-
             </td>
         </tr>
         </tbody>

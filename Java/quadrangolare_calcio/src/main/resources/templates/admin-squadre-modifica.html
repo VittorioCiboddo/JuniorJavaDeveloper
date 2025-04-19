@@ -77,62 +77,34 @@
             <input type="text" name="nome" th:value="${squadra.nome}" placeholder="Nome squadra" required>
 
             <label for="logoSquadra">Logo squadra:</label>
-            <input type="file" name="immagineFile" accept="image/*" th:value="${squadra.logo}" id="logoSquadra" required>
+            <input type="file" name="immagineFile" accept="image/*" id="logoSquadra">
 
             <label for="capitano">Capitano</label>
-            <select name="capitano" class="form-select" id="capitano">
+            <select name="capitano" class="form-select" id="capitano"
+                    th:classappend="${squadra.capitano == null or squadra.capitano == ''} ? ' highlight-select' : ''">
+                <option value="" disabled selected th:if="${squadra.capitano == null}">Scegli il capitano</option>
                 <option th:each="g : ${giocatoriSquadra}"
                         th:value="${g.nome + ' ' + g.cognome}"
                         th:selected="${squadra.capitano != null and (squadra.capitano.equals(g.nome + ' ' + g.cognome))}"
                         th:text="${g.nome + ' ' + g.cognome + ' (' + g.ruolo.sigla + ')'}">
                 </option>
             </select>
-            <script th:inline="javascript">
-                /* Evidenzia il campo solo se il capitano non è ancora stato scelto */
-                /* (cioè se il campo è vuoto o nullo) */
-                window.onload = function () {
-                    let capitanoSelect = document.getElementById("capitano");
-                    let selected = capitanoSelect.value;
-                    if (!selected || selected.trim() === "") {
-                        capitanoSelect.classList.add("highlight-select");
-                    }
-                }
-            </script>
+
 
             <input type="text" name="descrizione" th:value="${squadra.descrizione}" placeholder="Descrizione squadra" required>
 
             <select name="nazionalita" required>
                 <option value="" disabled selected>Scegli la nazionalità</option>
-                <option th:each="nazionalita : ${nazionalita}"
-                        th:text="${nazionalita.nazione} + ' (' + ${nazionalita.sigla} + ')'"
-                        th:value="${nazionalita.idNazionalita}"
-                        th:selected="${squadra.nazionalita != null && squadra.nazionalita.idNazionalita == nazionalita.idNazionalita}">
+                <option th:each="naz : ${nazionalita}"
+                        th:value="${naz.idNazionalita}"
+                        th:text="${naz.nazione + ' (' + naz.sigla + ')'}"
+                        th:selected="${squadra.nazionalita != null && squadra.nazionalita.idNazionalita == naz.idNazionalita}">
                 </option>
             </select>
-        </fieldset>
-
-        <fieldset>
-            <legend>Allenatore</legend>
-            <input type="text" name="nomeAllenatore" th:value="${allenatore.nome}" placeholder="Nome allenatore (facoltativo)">
-            <input type="text" name="cognomeAllenatore" th:value="${allenatore.cognome}" placeholder="Cognome allenatore" required>
-
-            <label for="immagine_allenatore">Card allenatore:</label>
-            <input type="file" name="immagineAllenatore" accept="image/*" th:value="${allenatore.immagine}" id="immagine_allenatore" required>
-
-            <select name="nazionalitaAllenatore" required>
-                <option value="" disabled selected>Scegli la nazionalità dell'allenatore</option>
-                <option th:each="nazionalita : ${nazionalita}"
-                        th:text="${nazionalita.nazione} + ' (' + ${nazionalita.sigla} + ')'"
-                        th:value="${nazionalita.idNazionalita}"
-                        th:selected="${allenatore.nazionalita != null && allenatore.nazionalita.idNazionalita == nazionalita.idNazionalita}">
-                </option>
-            </select>
-
-            <input type="text" name="descrizioneAllenatore" th:value="${allenatore.descrizione}" placeholder="Descrizione allenatore" required>
 
             <select name="modulo" required>
                 <option value="" disabled selected>Scegli il modulo di gioco</option>
-                <option th:each="modulo : ${modulo}"
+                <option th:each="modulo : ${moduli}"
                         th:text="${modulo.schemaGioco}"
                         th:value="${modulo.idModulo}"
                         th:selected="${squadra.modulo != null && squadra.modulo.idModulo == modulo.idModulo}">
@@ -141,24 +113,50 @@
         </fieldset>
 
         <fieldset>
+            <legend>Allenatore</legend>
+            <input type="text" name="nomeAllenatore" th:value="${allenatore.nome}" placeholder="Nome allenatore">
+            <input type="text" name="cognomeAllenatore" th:value="${allenatore.cognome}" placeholder="Cognome allenatore" required>
+
+            <label for="immagine_allenatore">Card allenatore:</label>
+            <input type="file" name="immagineAllenatore" accept="image/*" id="immagine_allenatore">
+
+            <select name="nazionalitaAllenatore" required>
+                <option value="" disabled selected>Scegli la nazionalità dell'allenatore</option>
+                <option th:each="naz : ${nazionalita}"
+                        th:value="${naz.idNazionalita}"
+                        th:text="${naz.nazione + ' (' + naz.sigla + ')'}"
+                        th:selected="${allenatore.nazionalita != null && allenatore.nazionalita.idNazionalita == naz.idNazionalita}">
+                </option>
+            </select>
+
+            <input type="text" name="descrizioneAllenatore" th:value="${allenatore.descrizione}" placeholder="Descrizione allenatore" required>
+        </fieldset>
+
+        <fieldset>
             <legend>Stadio</legend>
             <input type="text" name="nomeStadio" th:value="${stadio.nome}" placeholder="Nome stadio" required>
-
             <input type="text" name="descrizioneStadio" th:value="${stadio.descrizione}" placeholder="Descrizione stadio" required>
-
-            <input type="number" name="capienza" id="capienza" min="10000" max="100000" step="500" placeholder="Capienza (spettatori)" required>
-            <input type="text" name="ultras" id="ultras" placeholder="Nome ultras" th:value="${stadio.ultras}" required>
+            <input type="number" name="capienza" th:value="${stadio.capienza}" min="10000" max="100000" step="500" placeholder="Capienza (spettatori)" required>
+            <input type="text" name="ultras" th:value="${stadio.ultras}" placeholder="Nome ultras" required>
 
             <label for="immagine_stadio">Card stadio:</label>
-            <input type="file" name="immagineStadio" accept="image/*" th:value="${stadio.immagine}" id="immagine_stadio" required>
+            <input type="file" name="immagineStadio" accept="image/*" id="immagine_stadio">
         </fieldset>
 
         <button type="submit" class="btn btn-primary">Salva modifiche</button>
         <a href="javascript:history.back()" class="btn btn-secondary ms-2">Annulla</a>
     </form>
-
-    
 </div>
+
+<script>
+    document.querySelector("form").addEventListener("submit", function (e) {
+        console.log("🔵 FORM STA PER ESSERE INVIATA");
+        const data = new FormData(this);
+        for (let pair of data.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+    });
+</script>
 
 </body>
 </html>
