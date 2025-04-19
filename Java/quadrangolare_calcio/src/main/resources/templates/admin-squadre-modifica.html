@@ -77,7 +77,7 @@
             <input type="text" name="nome" th:value="${squadra.nome}" placeholder="Nome squadra" required>
 
             <label for="logoSquadra">Logo squadra:</label>
-            <input type="file" name="logo" accept="image/*" th:value="${squadra.logo}" id="logoSquadra" required>
+            <input type="file" name="immagineFile" accept="image/*" th:value="${squadra.logo}" id="logoSquadra" required>
 
             <label for="capitano">Capitano</label>
             <select name="capitano" class="form-select" id="capitano">
@@ -143,6 +143,9 @@
         <fieldset>
             <legend>Stadio</legend>
             <input type="text" name="nomeStadio" th:value="${stadio.nome}" placeholder="Nome stadio" required>
+
+            <input type="text" name="descrizioneStadio" th:value="${stadio.descrizione}" placeholder="Descrizione stadio" required>
+
             <input type="number" name="capienza" id="capienza" min="10000" max="100000" step="500" placeholder="Capienza (spettatori)" required>
             <input type="text" name="ultras" id="ultras" placeholder="Nome ultras" th:value="${stadio.ultras}" required>
 
@@ -153,6 +156,8 @@
         <button type="submit" class="btn btn-primary">Salva modifiche</button>
         <a href="javascript:history.back()" class="btn btn-secondary ms-2">Annulla</a>
     </form>
+
+    
 </div>
 
 </body>

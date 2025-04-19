@@ -181,67 +181,61 @@ public class AdminSquadraController {
 
 
     @PostMapping("/squadra/modifica")
-    public String modificaSquadraPost(
-            @RequestParam("idSquadra") Long idSquadra,
-            @RequestParam("nome") String nome,
-            @RequestParam("descrizione") String descrizione,
-            @RequestParam("capitano") String capitano,
-            @RequestParam("nazionalita") Long idNazionalita,
-            @RequestParam("logo") MultipartFile immagineFile,
-
-            @RequestParam("nomeAllenatore") String nomeAllenatore,
-            @RequestParam("cognomeAllenatore") String cognomeAllenatore,
-            @RequestParam("descrizioneAllenatore") String descrizioneAllenatore,
-            @RequestParam("nazionalitaAllenatore") Long idNazionalitaAllenatore,
-            @RequestParam("immagineAllenatore") MultipartFile immagineAllenatore,
-            @RequestParam("modulo") Long idModulo,
-
-            @RequestParam("nomeStadio") String nomeStadio,
-            @RequestParam("capienza") int capienza,
-            @RequestParam("ultras") String ultras,
-            @RequestParam("immagineStadio") MultipartFile immagineStadio,
-
-            HttpSession session
-    ) {
+    public String modificaSquadraPost(@ModelAttribute Squadra squadra,
+                                      @RequestParam(value = "immagineFile", required = false) MultipartFile immagineFile,
+                                      @RequestParam("nomeAllenatore") String nomeAllenatore,
+                                      @RequestParam("cognomeAllenatore") String cognomeAllenatore,
+                                      @RequestParam(value = "immagineAllenatore", required = false) MultipartFile immagineAllenatore,
+                                      @RequestParam("nazionalitaAllenatore") Long idNazAllenatore,
+                                      @RequestParam("descrizioneAllenatore") String descrizioneAllenatore,
+                                      @RequestParam("nomeStadio") String nomeStadio,
+                                      @RequestParam("capienza") Integer capienza,
+                                      @RequestParam("ultras") String ultras,
+                                      @RequestParam("descrizioneStadio") String descrizioneStadio,
+                                      @RequestParam(value = "immagineStadio", required = false) MultipartFile immagineStadio,
+                                      HttpSession session) {
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
 
-        Squadra squadra = squadraService.getSquadraById(idSquadra);
-        Allenatore allenatore = allenatoreService.getAllenatoreBySquadraId(idSquadra);
-        Stadio stadio = stadioService.getStadioBySquadraId(idSquadra);
+        Squadra esistente = squadraService.getSquadraById(squadra.getIdSquadra());
+        if (esistente == null) return "redirect:/areaadmin/adminsquadra";
 
-        // === Aggiorna Squadra ===
-        if (nome != null) squadra.setNome(nome);
-        if (descrizione != null) squadra.setDescrizione(descrizione);
-        if (capitano != null && !capitano.isBlank()) squadra.setCapitano(capitano);
-        squadra.setNazionalita(nazionalitaService.getNazionalitaById(idNazionalita));
-        squadra.setModulo(moduloService.getModuloById(idModulo));
+        // --- Squadra
+        if (squadra.getNome() != null) esistente.setNome(squadra.getNome());
+        if (squadra.getModulo() != null) esistente.setModulo(squadra.getModulo());
+        if (squadra.getCapitano() != null) esistente.setCapitano(squadra.getCapitano());
+        if (squadra.getDescrizione() != null) esistente.setDescrizione(squadra.getDescrizione());
+        if (squadra.getNazionalita() != null) esistente.setNazionalita(squadra.getNazionalita());
 
         if (immagineFile != null && !immagineFile.isEmpty()) {
             try {
-                String img = "data:" + immagineFile.getContentType() + ";base64," +
+                String base64 = "data:" + immagineFile.getContentType() + ";base64," +
                         Base64.getEncoder().encodeToString(immagineFile.getBytes());
-                squadra.setLogo(img);
+                esistente.setLogo(base64);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        squadraService.salvaSquadra(squadra);
+        squadraService.salvaSquadra(esistente);
 
-        // === Aggiorna Allenatore ===
+        // --- Allenatore
+        Allenatore allenatore = allenatoreService.getAllenatoreBySquadraId(esistente.getIdSquadra());
         if (allenatore == null) allenatore = new Allenatore();
-        allenatore.setNome(nomeAllenatore);
-        allenatore.setCognome(cognomeAllenatore);
-        allenatore.setDescrizione(descrizioneAllenatore);
-        allenatore.setSquadra(squadra);
-        allenatore.setNazionalita(nazionalitaService.getNazionalitaById(idNazionalitaAllenatore));
+
+        if (nomeAllenatore != null) allenatore.setNome(nomeAllenatore);
+        if (cognomeAllenatore != null) allenatore.setCognome(cognomeAllenatore);
+        if (descrizioneAllenatore != null) allenatore.setDescrizione(descrizioneAllenatore);
+        if (idNazAllenatore != null)
+            allenatore.setNazionalita(nazionalitaService.getNazionalitaById(idNazAllenatore));
+
+        allenatore.setSquadra(esistente);
 
         if (immagineAllenatore != null && !immagineAllenatore.isEmpty()) {
             try {
-                String img = "data:" + immagineAllenatore.getContentType() + ";base64," +
+                String base64 = "data:" + immagineAllenatore.getContentType() + ";base64," +
                         Base64.getEncoder().encodeToString(immagineAllenatore.getBytes());
-                allenatore.setImmagine(img);
+                allenatore.setImmagine(base64);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -249,19 +243,21 @@ public class AdminSquadraController {
 
         allenatoreService.salvaAllenatore(allenatore);
 
-        // === Aggiorna Stadio ===
+        // --- Stadio
+        Stadio stadio = stadioService.getStadioBySquadraId(esistente.getIdSquadra());
         if (stadio == null) stadio = new Stadio();
-        stadio.setNome(nomeStadio);
-        stadio.setCapienza(capienza);
-        stadio.setUltras(ultras);
-        stadio.setDescrizione("Stadio di " + nome);
-        stadio.setSquadra(squadra);
+
+        if (nomeStadio != null) stadio.setNome(nomeStadio);
+        if (descrizioneStadio != null) stadio.setDescrizione(descrizioneStadio);
+        if (capienza != null) stadio.setCapienza(capienza);
+        if (ultras != null) stadio.setUltras(ultras);
+        stadio.setSquadra(esistente);
 
         if (immagineStadio != null && !immagineStadio.isEmpty()) {
             try {
-                String img = "data:" + immagineStadio.getContentType() + ";base64," +
+                String base64 = "data:" + immagineStadio.getContentType() + ";base64," +
                         Base64.getEncoder().encodeToString(immagineStadio.getBytes());
-                stadio.setImmagine(img);
+                stadio.setImmagine(base64);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -271,6 +267,7 @@ public class AdminSquadraController {
 
         return "redirect:/areaadmin/adminsquadra";
     }
+
 
 
 
