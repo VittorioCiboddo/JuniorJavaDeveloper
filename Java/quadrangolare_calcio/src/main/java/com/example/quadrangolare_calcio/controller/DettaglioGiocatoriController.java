@@ -20,11 +20,16 @@ public class DettaglioGiocatoriController {
     public String getDettaglioGiocatore(@RequestParam("id") int idGiocatore, Model model) {
         Giocatore giocatore = giocatoreService.dettaglioGiocatore(idGiocatore);
         if (giocatore == null) {
-            return "redirect:/squadre"; // o pagina di errore
+            return "redirect:/squadre";
+        }
+
+        if (giocatore.getImmagine() != null && !giocatore.getImmagine().startsWith("data:image")) {
+            giocatore.setImmagine("data:image/png;base64," + giocatore.getImmagine());
         }
 
         model.addAttribute("giocatore", giocatore);
         return "dettaglio-giocatori";
     }
+
 
 }

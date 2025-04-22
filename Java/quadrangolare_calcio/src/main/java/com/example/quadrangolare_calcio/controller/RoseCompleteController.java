@@ -35,7 +35,6 @@ public class RoseCompleteController {
         Stadio stadio = stadioService.getStadioBySquadraId(idSquadra);
         List<Giocatore> tuttiGiocatori = giocatoreService.getGiocatoriPerSquadra(idSquadra);
 
-        // Ordine dei ruoli
         Map<String, Integer> ordineCategoria = Map.of(
                 "Portiere", 1,
                 "Difensore", 2,
@@ -48,9 +47,13 @@ public class RoseCompleteController {
                         .comparing((Giocatore g) -> ordineCategoria.getOrDefault(
                                 g.getRuolo().getTipologia().getCategoria(), 5))
                         .thenComparing(Giocatore::getCognome))
+                .peek(g -> {
+                    if (g.getImmagine() != null && !g.getImmagine().startsWith("data:image")) {
+                        g.setImmagine("data:image/png;base64," + g.getImmagine());
+                    }
+                })
                 .collect(Collectors.toList());
 
-        // Recupera modulo della squadra
         String modulo = squadra.getModulo().getSchemaGioco();
 
         model.addAttribute("squadra", squadra);

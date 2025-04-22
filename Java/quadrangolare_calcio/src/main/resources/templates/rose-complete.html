@@ -85,7 +85,7 @@
 <div class="campo-container">
     <div th:each="giocatore : ${giocatori}">
         <a th:href="@{'/dettagliogiocatori?id=' + ${giocatore.idGiocatore}}">
-            <img th:src="'data:image/png;base64,' + ${giocatore.immagine}"
+            <img th:src="${giocatore.immagine}"
                  th:alt="${giocatore.nome + ' ' + giocatore.cognome}"
                  th:class="'figurina ' + ${giocatore.ruolo.sigla}" />
         </a>

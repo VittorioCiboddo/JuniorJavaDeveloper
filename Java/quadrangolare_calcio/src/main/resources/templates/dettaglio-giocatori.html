@@ -168,7 +168,7 @@
             </ul>
         </div>
         <div class="figurina-giocatore">
-            <img th:attr="src=${'data:image/png;base64,'} + ${giocatore.immagine}"
+            <img th:src="${giocatore.immagine}"
                  class="figurina-img"
                  alt="Figurina" />
         </div>
