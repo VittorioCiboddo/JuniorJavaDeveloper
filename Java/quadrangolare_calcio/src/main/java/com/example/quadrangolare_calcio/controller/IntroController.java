@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 // localhost:8080
 @Controller
 @RequestMapping("/")
-public class HomePageController {
+public class IntroController {
 
     @GetMapping
     public String getPage() {
-        return "home-page";
+        return "intro";
     }
 }
