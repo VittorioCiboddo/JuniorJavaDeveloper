@@ -2,7 +2,6 @@ package com.example.quadrangolare_calcio.service;
 
 import com.example.quadrangolare_calcio.dao.AllenatoreDao;
 import com.example.quadrangolare_calcio.model.Allenatore;
-import com.example.quadrangolare_calcio.model.Stadio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
