@@ -1,0 +1,16 @@
+/* Posizionamento 3-4-2-1 */
+        .PT { top: 1040px; left: 405px; }
+
+        .DCS { top: 850px; left: 215px; }
+        .DC { top: 850px; left: 405px; }
+        .DCD { top: 850px; left: 590px; }
+
+        .ECS { top: 440px; left: 120px; }
+        .CS { top: 590px; left: 300px; }
+        .CD { top: 590px; left: 510px; }
+        .ECD {top: 440px; left: 690px; }
+
+        .ATS { top: 330px; left: 300px; }
+        .ATD { top: 330px; left: 510px; }
+
+        .P { top: 230px; left: 405px; }

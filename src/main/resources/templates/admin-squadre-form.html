@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestione Squadre - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .form-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .disabled-select {
+            background-color: #e9ecef;
+            pointer-events: none;
+        }
+        .btn-outline-warning {
+            color: #ffc107;
+            border-color: #ffc107;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-warning:hover {
+            background-color: #ffc107;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mt-4 mb-4">Gestione Squadre</h2>
+
+    <!-- Tabella squadre -->
+    <table class="table table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th>Nome Squadra</th>
+            <th>Nazionalità</th>
+            <th>Allenatore</th>
+            <th>Capitano</th>
+            <th>Azioni</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="squadra : ${squadre}">
+            <td th:text="${squadra.nome}">Nome Squadra</td>
+            <td th:text="${squadra.nazionalita != null ? squadra.nazionalita.nazione + ' (' + squadra.nazionalita.sigla + ')' : '—'}">Nazionalità</td>
+            <td>
+                <span th:if="${allenatoriPerSquadra[squadra.idSquadra] != null}"
+                      th:text="${allenatoriPerSquadra[squadra.idSquadra].nome + ' ' + allenatoriPerSquadra[squadra.idSquadra].cognome}">Allenatore</span>
+
+                            <a th:if="${allenatoriPerSquadra[squadra.idSquadra] == null}"
+                               th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}"
+                               class="btn btn-outline-warning btn-sm">
+                                Scegli Allenatore
+                            </a>
+            </td>
+            <td>
+                <span th:if="${squadra.capitano != null and
+                              !#strings.isEmpty(squadra.capitano) and
+                              nomiGiocatoriPerSquadra[squadra.idSquadra]?.contains(squadra.capitano)}"
+                      th:text="${squadra.capitano}">Nome Capitano</span>
+
+                <a th:if="${squadra.capitano == null or
+                           #strings.isEmpty(squadra.capitano) or
+                           !nomiGiocatoriPerSquadra[squadra.idSquadra]?.contains(squadra.capitano)}"
+                   th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}"
+                   class="btn btn-outline-warning btn-sm">
+                    Scegli Capitano
+                </a>
+
+            </td>
+            <td>
+                <a th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}" class="btn btn-warning btn-sm">Modifica</a>
+                <a href="#" class="btn btn-danger btn-sm"
+                   th:attr="data-id=${squadra.idSquadra}, data-nome=${squadra.nome}"
+                   onclick="confermaEliminazioneSquadra(this)">
+                    Elimina
+                </a>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a th:href="@{'/areaadmin/squadra/aggiungi'}" class="btn btn-success">
+            Aggiungi nuova squadra
+        </a>
+        <a href="/areaadmin" class="btn btn-outline-secondary">
+            Indietro
+        </a>
+    </div>
+
+</div>
+
+<!-- Modale di conferma eliminazione -->
+<div class="modal fade" id="confermaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="modal-body text-center">
+                <p id="testoConferma" class="mb-4 fw-bold"></p>
+                <button type="button" class="btn btn-danger me-2" id="btnConfermaElimina">Sì</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confermaEliminazioneSquadra(el) {
+        const id = el.getAttribute('data-id');
+        const nome = el.getAttribute('data-nome');
+
+        const url = `/areaadmin/squadra/elimina?id=${id}`;
+        const messaggio = `Vuoi davvero eliminare ${nome}?`;
+
+        document.getElementById('testoConferma').textContent = messaggio;
+        document.getElementById('btnConfermaElimina').onclick = () => {
+            window.location.href = url;
+        };
+
+        new bootstrap.Modal(document.getElementById('confermaModal')).show();
+    }
+</script>
+
+</body>
+</html>

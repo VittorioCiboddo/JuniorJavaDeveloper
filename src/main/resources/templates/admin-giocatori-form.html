@@ -1,0 +1,108 @@
+<!-- admin-giocatori.html -->
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestione Giocatori - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/js/dinamicaFormGiocatori.js}"></script>
+    <style>
+        .form-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .disabled-select {
+            background-color: #e9ecef;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mt-4 mb-4">Gestione Giocatori - [[${tipologiaFissata}]]</h2>
+
+    <!-- Tabella giocatori -->
+    <table class="table table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th>Nome e Cognome</th>
+            <th>Ruolo (sigla)</th>
+            <th>Squadra</th>
+            <th>Azioni</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="giocatore : ${giocatori}">
+            <td th:text="${giocatore.nome + ' ' + giocatore.cognome}">Nome Cognome</td>
+            <td th:text="${giocatore.ruolo.descrizione + ' (' + giocatore.ruolo.sigla + ')'}"></td>
+            <td th:text="${giocatore.squadra.nome}">Nome Squadra</td>
+            <td>
+                <a th:href="@{'/areaadmin/giocatore/modifica?id=' + ${giocatore.idGiocatore}}" class="btn btn-warning btn-sm">Modifica</a>
+                <a href="#"
+                   class="btn btn-danger btn-sm ms-2"
+                   th:attr="data-id=${giocatore.idGiocatore},
+                            data-nome=${giocatore.nome},
+                            data-cognome=${giocatore.cognome},
+                            data-sigla=${giocatore.ruolo.sigla},
+                            data-tipologia=${tipologiaFissata}"
+                   onclick="confermaEliminazioneGiocatore(this)">
+                    Elimina
+                </a>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a th:href="@{'/areaadmin/giocatore/nuovo?tipologia=' + ${tipologiaFissata}}" class="btn btn-success">
+            Aggiungi nuovo giocatore
+        </a>
+        <a href="/areaadmin/giocatori" class="btn btn-outline-secondary">
+            Indietro
+        </a>
+    </div>
+
+</div>
+
+<!-- Modale di conferma eliminazione -->
+<div class="modal fade" id="confermaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="modal-body text-center">
+                <p id="testoConferma" class="mb-4 fw-bold"></p>
+                <button type="button" class="btn btn-danger me-2" id="btnConfermaElimina">Sì</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confermaEliminazioneGiocatore(el) {
+        const id = el.getAttribute('data-id');
+        const nome = el.getAttribute('data-nome');
+        const cognome = el.getAttribute('data-cognome');
+        const sigla = el.getAttribute('data-sigla');
+        const tipologia = el.getAttribute('data-tipologia');
+
+        const url = `/areaadmin/giocatore/elimina?id=${id}&tipologia=${tipologia}`;
+        const messaggio = `Vuoi davvero eliminare ${nome} ${cognome} (${sigla})?`;
+
+        document.getElementById('testoConferma').textContent = messaggio;
+        document.getElementById('btnConfermaElimina').onclick = () => {
+            window.location.href = url;
+        };
+
+        new bootstrap.Modal(document.getElementById('confermaModal')).show();
+    }
+</script>
+
+
+</body>
+</html>

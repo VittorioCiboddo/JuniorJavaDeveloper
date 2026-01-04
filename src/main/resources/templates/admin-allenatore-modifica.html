@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Modifica Allenatore</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+  <h2>Modifica Allenatore</h2>
+  <form th:action="@{/areaadmin/allenatore/modifica}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="idAllenatore" th:value="${allenatore.idAllenatore}" />
+
+    <div class="mb-3">
+      <label>Nome:</label>
+      <input type="text" class="form-control" name="nome" th:value="${allenatore.nome}"/>
+    </div>
+
+    <div class="mb-3">
+      <label>Cognome:</label>
+      <input type="text" class="form-control" name="cognome" th:value="${allenatore.cognome}" required />
+    </div>
+
+    <div class="mb-3">
+      <label>Squadra:</label>
+      <select class="form-select" name="squadra.idSquadra" required>
+        <option th:each="s : ${squadre}" th:value="${s.idSquadra}" th:selected="${s.idSquadra == allenatore.squadra.idSquadra}" th:text="${s.nome}"></option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Modulo:</label>
+      <select class="form-select" name="modulo.idModulo" required>
+        <option th:each="m : ${moduli}"
+                th:value="${m.idModulo}"
+                th:selected="${allenatore.squadra.modulo != null and m.idModulo == allenatore.squadra.modulo.idModulo}"
+                th:text="${m.schemaGioco}"></option>
+      </select>
+
+    </div>
+
+    <div class="mb-3">
+      <label>Nazionalità:</label>
+      <select name="nazionalita.idNazionalita" class="form-control" required>
+        <option th:each="n : ${nazionalita}"
+                th:value="${n.idNazionalita}"
+                th:selected="${n.idNazionalita == allenatore.nazionalita.idNazionalita}"
+                th:text="${n.nazione + ' (' + n.sigla + ')'}"></option>
+      </select>
+
+    </div>
+
+    <div class="mb-3">
+      <label>Immagine:</label>
+      <input type="file" class="form-control" name="immagineFile" accept="image/png">
+    </div>
+
+    <div class="mb-3">
+      <label>Descrizione:</label>
+      <textarea class="form-control" name="descrizione" rows="4" th:text="${allenatore.descrizione}"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salva modifiche</button>
+    <a href="javascript:history.back()" class="btn btn-secondary ms-2">Annulla</a>
+  </form>
+</div>
+</body>
+</html>
