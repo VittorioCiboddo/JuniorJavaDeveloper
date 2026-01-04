@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Modifica Giocatore</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+  <h2>Modifica Giocatore</h2>
+  <form th:action="@{/areaadmin/giocatore/modifica}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="idGiocatore" th:value="${giocatore.idGiocatore}" />
+
+    <div class="mb-3">
+      <label>Nome:</label>
+      <input type="text" class="form-control" name="nome" th:value="${giocatore.nome}" required />
+    </div>
+
+    <div class="mb-3">
+      <label>Cognome:</label>
+      <input type="text" class="form-control" name="cognome" th:value="${giocatore.cognome}" required />
+    </div>
+
+    <div class="mb-3">
+      <label>Numero di maglia:</label>
+      <input type="number" class="form-control" name="numeroMaglia" th:value="${giocatore.numeroMaglia}" required />
+    </div>
+
+    <div class="mb-3">
+      <label>Data di nascita:</label>
+      <input type="date" class="form-control" name="dataNascita" th:value="${giocatore.dataNascita}" required />
+    </div>
+
+    <div class="mb-3">
+      <label>Squadra:</label>
+      <select class="form-select" name="squadra.idSquadra" required>
+        <option th:each="s : ${squadre}" th:value="${s.idSquadra}" th:selected="${s.idSquadra == giocatore.squadra.idSquadra}" th:text="${s.nome}"></option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Modulo:</label>
+      <select class="form-select" name="modulo.idModulo" required>
+        <option th:each="m : ${moduli}" th:value="${m.idModulo}" th:text="${m.schemaGioco}"></option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Ruolo:</label>
+      <select class="form-select" name="ruolo.idRuolo" required>
+        <option th:each="r : ${ruoli}" th:value="${r.idRuolo}" th:selected="${r.idRuolo == giocatore.ruolo.idRuolo}" th:text="${r.descrizione + ' (' + r.sigla + ')'}"></option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Immagine:</label>
+      <input type="file" class="form-control" name="immagineFile" accept="image/png">
+    </div>
+
+    <div class="mb-3">
+      <label>Descrizione:</label>
+      <textarea class="form-control" name="descrizione" rows="4" th:text="${giocatore.descrizione}"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salva modifiche</button>
+    <a href="javascript:history.back()" class="btn btn-secondary ms-2">Annulla</a>
+  </form>
+</div>
+</body>
+</html>

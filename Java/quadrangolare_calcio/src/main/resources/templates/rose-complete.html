@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Formazione squadra</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0 auto;
+            padding: 0 5%;
+            background-color: #eaf5ea;
+            color: #222;
+        }
+
+        header, footer {
+            background-color: #00bf63;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #7ed957;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .campo-container {
+            position: relative;
+            max-width: 900px;
+            margin: 40px auto;
+            background: url('/images/bg-campo.png') no-repeat center center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            padding-top: 30px;
+            height: 1300px;
+        }
+
+        .figurina {
+            position: absolute;
+            width: 90px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+            z-index: 10;
+        }
+
+        .figurina:hover {
+            transform: scale(1.25); /* Zoom del 25% */
+            z-index: 999; /* Porta l'immagine sopra alle altre */
+        }
+
+        .ALL { top: 60px; left: 50px; width: 80px; }
+        .STADIO { top: 60px; right: 50px; width: 80px; }
+
+    </style>
+
+    <link th:href="@{'/' + ${modulo} + '.css'}" rel="stylesheet" />
+
+</head>
+<body>
+<header>
+    <h1>Formazione in campo</h1>
+</header>
+<nav>
+    <a href="/registra-squadre">Registra rose</a>
+    <a href="/squadre">Archivio</a>
+    <a href="#">Chi Siamo</a>
+    <a href="#">Area Admin</a>
+</nav>
+
+<div class="campo-container">
+    <div th:each="giocatore : ${giocatori}">
+        <a th:href="@{'/dettagliogiocatori?id=' + ${giocatore.idGiocatore}}">
+            <img th:src="${giocatore.immagine}"
+                 th:alt="${giocatore.nome + ' ' + giocatore.cognome}"
+                 th:class="'figurina ' + ${giocatore.ruolo.sigla}" />
+        </a>
+
+    </div>
+
+        <a th:href="@{'/dettaglioallenatore?id=' + ${allenatore.idAllenatore}}">
+            <img th:src="@{${allenatore.immagine}}" class="figurina ALL"
+                 th:alt="${allenatore.nome + ' ' + allenatore.cognome}" />
+        </a>
+
+        <a th:href="@{'/dettagliostadio?id=' + ${stadio.idStadio}}">
+            <img th:src="@{${stadio.immagine}}" class="figurina STADIO"
+                 th:alt="${stadio.nome}" />
+        </a>
+</div>
+
+<footer>
+    <p>Sprint Football Simulation</p>
+</footer>
+</body>
+</html>
+
