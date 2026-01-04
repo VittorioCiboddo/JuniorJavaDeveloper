@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dettaglio Allenatore</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0 auto;
+            padding: 0 5%;
+            background: url('/images/bg-campo.png') no-repeat center top fixed;
+            background-size: cover;
+            color: #222;
+        }
+
+        header, footer {
+            background-color: #00bf63;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #7ed957;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            margin-top: 30px;
+            background-color: rgba(255, 255, 255, 0.75);
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .top-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .top-section h2 {
+            font-size: 2.2em;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .top-section img {
+            height: 2.2em;
+            vertical-align: middle;
+        }
+
+        .middle-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 30px;
+        }
+
+        .info-list {
+            flex: 1;
+            margin-top: 50px;
+            margin-left: 30px;
+        }
+
+        .info-list ul {
+            list-style: none;
+            padding: 0;
+            font-size: 1.1em;
+        }
+
+        .info-list ul li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .info-list ul li img.icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .figurina-allenatore {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10px;
+            margin-right: 30px;
+        }
+
+        .figurina-img {
+            max-width: 350px;
+            max-height: 350px;
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 40px;
+        }
+
+        .description {
+            flex: 1;
+            font-size: 1.1em;
+            text-align: justify;
+            margin-right: 30px;
+        }
+
+    </style>
+</head>
+<body>
+<header>
+    <h1>Dettaglio Giocatore</h1>
+</header>
+
+<nav>
+    <a href="/registra-squadre">Registra rose</a>
+    <a href="/squadre">Archivio</a>
+    <a href="#">Chi Siamo</a>
+    <a href="#">Area Admin</a>
+</nav>
+
+<div class="container">
+    <div class="top-section">
+        <h2 th:text="${allenatore.nome != null ? allenatore.nome + ' ' : ''} + ${allenatore.cognome.toUpperCase()}">COGNOME</h2>
+        <img th:src="${allenatore.nazionalita.bandiera}" alt="Bandiera">
+    </div>
+
+    <div class="middle-section">
+        <div class="info-list">
+            <ul>
+                <li><img class="icon" src="images/icona-globo-trasparente.png" alt="Nazionalità">
+                <span th:text="${'Nazionalità: ' + allenatore.nazionalita.nazione + ' (' + allenatore.nazionalita.sigla + ')'}"></span>
+                </li>
+                <li><img class="icon" src="images/icona-squadra-trasparente.png" alt="Squadra">
+                    <span th:text="${'Squadra: ' + allenatore.squadra.nome}"></span>
+                </li>
+                <li><img class="icon" src="images/icona-modulo-trasparente.png" alt="Modulo">
+                    <span th:text="${'Modulo: ' + allenatore.squadra.modulo.schemaGioco}"></span>
+                </li>
+                <li><img class="icon" src="images/icona-ruolo-trasparente.png" alt="Ruolo">
+                    <span th:text="${'Ruolo: Allenatore (ALL)' }"></span>
+                </li>
+            </ul>
+        </div>
+        <div class="figurina-allenatore">
+            <img th:attr="src=${allenatore.immagine}"
+                 class="figurina-img"
+                 alt="Figurina" />
+        </div>
+    </div>
+
+    <div class="bottom-section">
+        <div class="description">
+            <p th:text="${allenatore.descrizione}">Descrizione dell'allenatore</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Sprint Football Simulation</p>
+</footer>
+</body>
+</html>
