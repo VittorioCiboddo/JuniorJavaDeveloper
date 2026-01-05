@@ -6,6 +6,66 @@
     <link rel="stylesheet" th:href="@{/generale.css}">
 </head>
 <body>
-bau bau
+<header>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1>SPRINT FOOTBALL SIMULATION</h1>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <a th:href="@{/home-page}">Home</a>
+    <a th:href="@{/squadre-disponibili}">Squadre</a>
+    <a th:href="@{/tabellone}">Torneo</a>
+</nav>
+
+<div class="container" style="text-align: center;">
+    <div class="top-section">
+        <h2>Pronti al fischio d'inizio!</h2>
+    </div>
+
+    <p style="font-size: 1.2em; margin-bottom: 40px;">Seleziona la tua strategia</p>
+
+    <div class="home-grid">
+
+        <a th:href="@{/tabellone}" class="home-card card-top">
+            <img src="/images/torneo_homepage.png" alt="Torneo">
+            <div class="card-body">
+                <h3>Inizia Torneo</h3>
+                <p>Scegli i tuoi eroi e competi per la gloria.</p>
+            </div>
+        </a>
+
+        <a th:href="@{/registra-squadre}" class="home-card card-left">
+            <img src="/images/squadra_homepage.png" alt="Squadra">
+            <div class="card-body">
+                <h3>Registra Squadra</h3>
+                <p>Crea la tua squadra, scegli lo stadio e l'allenatore.</p>
+            </div>
+        </a>
+
+        <a th:href="@{/registra-giocatori}" class="home-card card-right">
+            <img src="/images/giocatore_homepage.png" alt="Giocatori">
+            <div class="card-body">
+                <h3>Componi Formazione</h3>
+                <p>Aggiungi i talenti alla tua rosa.</p>
+            </div>
+        </a>
+
+        <a th:href="@{/squadre-disponibili}" class="home-card card-bottom">
+            <img src="/images/registro_homepage.png" alt="Lista">
+            <div class="card-body">
+                <h3>Visualizza Squadre</h3>
+                <p>Scopri le squadre già iscritte al torneo.</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
+</footer>
 </body>
 </html>

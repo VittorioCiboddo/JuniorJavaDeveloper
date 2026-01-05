@@ -254,3 +254,118 @@ select option:disabled {
     color: #999;
     font-style: italic;
 }
+
+
+/* --- HEADER CON LOGO --- */
+header {
+    background-color: #00bf63;
+    color: white;
+    padding: 10px 0; /* Ridotto leggermente il padding per un header più sottile */
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px; /* Spazio tra logo e scritte */
+}
+
+.header-logo-small {
+    height: 100px; /* Molto piccolo come richiesto */
+    width: auto;
+}
+
+.header-text {
+    text-align: center; /* Testo allineato a sinistra */
+}
+
+.header-text h1 {
+    margin: 0;
+    font-size: 1.5em; /* Font leggermente più piccolo per stare bene con il logo */
+    line-height: 1;
+}
+
+.header-text p {
+    margin: 5px 0 0 0;
+    font-size: 0.85em;
+    opacity: 0.9;
+}
+
+/* --- CARD FORMAZIONE A ROMBO --- */
+.home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* 3 colonne */
+    grid-template-rows: auto auto auto;    /* 3 righe */
+    gap: 20px;
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+.card-top {
+    grid-column: 2; /* Colonna centrale */
+    grid-row: 1;
+    /* Opzionale: risaltiamo l'azione finale con un bordo più evidente */
+    border: 3px solid gold !important;
+}
+
+.card-left {
+    grid-column: 1; /* Colonna sinistra */
+    grid-row: 2;
+}
+
+.card-right {
+    grid-column: 3; /* Colonna destra */
+    grid-row: 2;
+}
+
+.card-bottom {
+    grid-column: 2; /* Colonna centrale */
+    grid-row: 3;
+}
+
+.home-card {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 5px; /* Togliamo il padding per far arrivare l'immagine ai bordi se vuoi */
+    border-radius: 15px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column; /* Forza la disposizione verticale */
+    height: 450px; /* ALTEZZA FISSA ALLUNGATA */
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.home-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+}
+
+.home-card img {
+    width: 100%;
+    height: 250px; /* Spazio generoso per l'immagine */
+    object-fit: contain; /* L'immagine riempie lo spazio senza schiacciarsi */
+    border-bottom: 3px solid #00bf63;
+}
+
+.card-body {
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.home-card h3 {
+    color: #00bf63;
+    margin: 0 0 10px 0;
+    font-size: 1.4em;
+}
+
+.home-card p {
+    font-size: 1em;
+    color: #555;
+    margin: 0;
+}

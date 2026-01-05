@@ -37,7 +37,7 @@
 
         <!-- Modulo -->
         <select id="moduloSelect" required>
-            <option value="">Scegli il modulo di gioco</option>
+            <option value="" disabled selected hidden>Scegli il modulo di gioco</option>
             <option th:each="modulo : ${moduli}"
                     th:value="${modulo.idModulo}"
                     th:text="${modulo.schemaGioco}"
@@ -48,13 +48,13 @@
 
         <!-- Tipologia -->
         <select id="tipologiaSelect" required>
-            <option value="">Scegli la tipologia di giocatore</option>
+            <option value="" disabled selected hidden>Scegli la tipologia di giocatore</option>
         </select>
         <input type="hidden" name="tipologia" id="hiddenTipologia"/>
 
         <!-- Ruolo -->
         <select id="ruoloSelect" required>
-            <option value="">Scegli il ruolo del giocatore</option>
+            <option value="" disabled selected hidden>Scegli il ruolo del giocatore</option>
         </select>
         <input type="hidden" name="ruolo" id="hiddenRuolo"/>
 
@@ -68,7 +68,7 @@
 
         <!-- Nazionalità -->
         <select name="nazionalita" id="nazionalita" required>
-            <option value="">Scegli la nazionalità</option>
+            <option value="" disabled selected hidden>Scegli la nazionalità</option>
             <option th:each="naz : ${nazionalita}"
                     th:value="${naz.idNazionalita}"
                     th:text="${naz.nazione} + ' (' + ${naz.sigla} + ')'">
