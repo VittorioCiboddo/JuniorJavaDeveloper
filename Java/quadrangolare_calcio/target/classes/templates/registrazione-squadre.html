@@ -3,73 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Registrazione</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff;
-            color: #333;
-        }
-        header {
-            background-color: #00bf63;
-            padding: 10px 0;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #7ed957;
-            padding: 10px 0;
-        }
-        nav a {
-            color: #ffffff;
-            text-decoration: none;
-            padding: 15px 20px;
-            margin: 0 10px;
-            transition: background-color 0.3s;
-        }
-        nav a:hover {
-            background-color: #00bf63;
-        }
-        .form-container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            background-color: #f9f9f9;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        input, select {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        input[type="submit", type="button"] {
-            background-color: #00bf63;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        input[type="submit", type="button"]:hover {
-            background-color: #7ed957;
-        }
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #00bf63;
-            color: white;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/generale.css}">
 </head>
 <body>
 

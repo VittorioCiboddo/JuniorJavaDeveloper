@@ -1,0 +1,256 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0 auto;
+    padding: 0 5%;
+    background: url('images/bg-campo.png') no-repeat center top fixed;
+    background-size: cover;
+    color: #222;
+}
+
+header, footer {
+    background-color: #00bf63;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    background-color: #7ed957;
+    padding: 10px 0;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    margin-top: 30px;
+    background-color: rgba(255, 255, 255, 0.75);
+    padding: 30px;
+    border-radius: 12px;
+}
+
+.top-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.top-section h2 {
+    font-size: 2.2em;
+    margin: 0;
+}
+
+.top-section img {
+    height: 2.2em;
+    vertical-align: middle;
+}
+
+.middle-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 30px;
+}
+
+.info-list {
+    flex: 1;
+    margin-top: 50px;
+    margin-left: 30px;
+}
+
+.info-list ul {
+    list-style: none;
+    padding: 0;
+    font-size: 1.1em;
+}
+
+.info-list ul li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.info-list ul li img.icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-squadra-dx {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 50px;
+}
+
+.logo-big-dx {
+    max-width: 350px;
+    max-height: 350px;
+}
+
+.description {
+    margin-top: 40px;
+    font-size: 1.1em;
+    text-align: justify;
+}
+
+.button-row {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.button-row button {
+    padding: 10px 25px;
+    font-size: 1em;
+    font-weight: bold;
+    border: none;
+    background-color: #00bf63;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button-row button:hover {
+    background-color: #00994d;
+}
+
+
+/* --- STRUTTURA GRAFICA PER I FORM DI REGISTRAZIONE --- */
+
+.form-container {
+    max-width: 700px; /* Un po' più stretto per i form */
+    margin: 30px auto;
+    background-color: rgba(255, 255, 255, 0.85); /* Leggermente più opaco per scrivere meglio */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+form {
+    display: flex;
+    flex-direction: column; /* Incolonna gli elementi */
+}
+
+fieldset {
+    border: 1px solid #00bf63;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-weight: bold;
+    color: #00bf63;
+    padding: 0 10px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+    margin: 10px 0;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    width: 100%; /* Occupa tutta la larghezza disponibile */
+    box-sizing: border-box; /* Evita che il padding faccia uscire l'input dal bordo */
+}
+
+/* Stile per i bottoni dentro il form */
+input[type="submit"],
+input[type="button"] {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    background-color: #00bf63;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover,
+input[type="button"]:hover {
+    background-color: #00994d;
+}
+
+/* Bottone secondario (Indietro) */
+.btn-secondary {
+    background-color: #555 !important;
+    color: white !important;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background-color: #333 !important;
+}
+
+/* --- EFFETTO PLACEHOLDER NEL FORM --- */
+/* Colore grigio 'placeholder' quando la select non ha ancora un valore selezionato */
+select:invalid {
+    color: #888;
+}
+
+/* Colore normale quando viene selezionata una voce valida */
+select:valid {
+    color: #222;
+}
+
+/* Stile per le opzioni all'interno (per assicurarsi che tornino nere) */
+select option {
+    color: #222;
+}
+
+/* Impedisce di vedere l'opzione hidden in alcuni browser */
+option[hidden] {
+    display: none;
+}
+
+/* --- CAMPI PER FORM REGISTRAZIONE GIOCATORI --- */
+
+/* Usiamo display: none invece di visibility per evitare buchi bianchi nel form */
+.hidden-field {
+    display: none !important;
+}
+
+label {
+    font-weight: bold;
+    color: #00bf63;
+    margin-top: 10px;
+    margin-bottom: 2px;
+}
+
+/* Stile per la data (spesso diversa dagli altri input) */
+input[type="date"] {
+    font-family: inherit;
+    color: #555;
+}
+
+/* Messaggio di aiuto per i ruoli disabilitati */
+select option:disabled {
+    color: #999;
+    font-style: italic;
+}

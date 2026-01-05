@@ -228,10 +228,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function setVisible(el) {
-        el.style.visibility = "visible";
+        // Rimuove la classe che nasconde e permette al CSS di gestire il layout
+        el.classList.remove('hidden-field');
+        // Se è un input/select, assicuriamoci che sia abilitato
+        el.disabled = false;
     }
 
     function setInvisible(el) {
-        el.style.visibility = "hidden";
+        // Aggiunge la classe che elimina l'ingombro dell'elemento
+        el.classList.add('hidden-field');
+        el.disabled = true;
     }
 });
