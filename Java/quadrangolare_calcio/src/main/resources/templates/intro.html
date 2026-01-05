@@ -43,49 +43,78 @@
 
 <script>
     const video = document.getElementById('matchVideo');
-    const blackOverlay = document.getElementById('blackOverlay');
-    const buttonContainer = document.getElementById('buttonContainer');
     const skipButton = document.getElementById('skipButton');
+    const blackOverlay = document.getElementById('blackOverlay');
+    const logoContainer = document.getElementById('logoContainer');
+    const buttonContainer = document.getElementById('buttonContainer');
 
-    video.addEventListener('play', () => {
-        console.log('Video started'); // Verifica che l'evento "play" venga attivato.
+    let hideTimeout;
+    let canShow = false;
+    let transitionStarted = false; // Per evitare che la transizione parta due volte
 
-        // Rendi visibile il pulsante "Salta Video" dopo 3-4 secondi
-        setTimeout(() => {
-            skipButton.style.display = 'inline-block'; // Mostra il pulsante direttamente
-            skipButton.style.visibility = 'visible'; // Rendi visibile il pulsante
-            skipButton.style.opacity = 1; // Imposta opacità a 1
-            console.log('Skip button should be visible now'); // Log per vedere se viene eseguito
-        }, 3000); // Dopo 3 secondi
-    });
+    // 1. Attiva la possibilità di mostrare il tasto dopo 5 secondi
+    setTimeout(() => {
+        canShow = true;
+        showSkipButton();
+    }, 5000);
 
-    video.addEventListener('ended', () => {
-        console.log('Video ended'); // Verifica che l'evento "ended" venga attivato.
-        showOverlayAndLogo(); // Chiama la funzione per mostrare l'overlay e il logo quando il video finisce
-    });
+    // 2. Funzione Mostra/Nascondi Tasto
+    function showSkipButton() {
+        if (!canShow || transitionStarted) return;
 
-    function skipVideo() {
-        video.currentTime = video.duration; // Imposta il tempo corrente del video alla fine
-        showOverlayAndLogo(); // Mostra l'overlay e il logo
+        skipButton.classList.add('visible');
+        clearTimeout(hideTimeout);
+
+        hideTimeout = setTimeout(() => {
+            skipButton.classList.remove('visible');
+        }, 3000);
     }
 
+    // 3. Rilevamento movimento mouse
+    document.addEventListener('mousemove', showSkipButton);
+
+    // 4. Funzione SKIP (corretta)
+    function skipVideo() {
+        if (transitionStarted) return;
+
+        // Fermiamo il video e nascondiamo subito il tasto skip
+        video.pause();
+        skipButton.classList.remove('visible');
+        skipButton.style.display = 'none';
+
+        // Avviamo la tua transizione originale
+        showOverlayAndLogo();
+    }
+
+    // 5. Gestione fine naturale del video
+    video.addEventListener('ended', () => {
+        showOverlayAndLogo();
+    });
+
+    // 6. La tua sequenza originale di transizione
     function showOverlayAndLogo() {
-        // Mostra l'overlay nero con fade-in
+        if (transitionStarted) return;
+        transitionStarted = true;
+
+        // Nascondi il tasto skip per sicurezza
+        skipButton.classList.remove('visible');
+        skipButton.style.display = 'none';
+
+        // Appare l'overlay nero
         blackOverlay.classList.remove('hidden');
         blackOverlay.classList.add('fade-in');
 
+        // Dopo 1 secondo appare il logo
         setTimeout(() => {
-            // Mostra il logo
-            const logoContainer = document.getElementById('logoContainer');
             logoContainer.classList.remove('hidden');
             logoContainer.classList.add('fade-in');
 
-            // Mostra i bottoni
+            // Dopo altri 3 secondi appaiono i bottoni del menu
             setTimeout(() => {
                 buttonContainer.classList.remove('hidden');
                 buttonContainer.classList.add('fade-in');
             }, 3000);
-        }, 2000);
+        }, 1000);
     }
 
 </script>

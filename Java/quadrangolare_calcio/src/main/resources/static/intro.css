@@ -114,18 +114,19 @@ button:hover {
     top: 10px; /* Distanza dal bordo superiore */
     right: 10px; /* Distanza dal bordo destro */
     z-index: 9999; /* Altamente prioritario per stare sopra gli altri elementi */
-    opacity: 1; /* Assicurati che la visibilità non sia 0 */
-    visibility: visible; /* Garantisce che il pulsante sia visibile */
-    display: inline-block; /* Aggiunto per essere sicuri che sia visibile */
-    transition: opacity 1s ease-in-out; /* Transizione di opacità */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#skipButton.visible {
+    opacity: 1;
+    visibility: visible;
 }
 
 #skipButton:hover {
     background-color: #ff0000; /* Colore di sfondo rosso scuro al passaggio del mouse */
 }
-
-
-
 
 
 @keyframes appear {
