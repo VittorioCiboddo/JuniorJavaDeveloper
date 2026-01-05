@@ -3,19 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Registrazione giocatori</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #ffffff; color: #333; }
-        header { background-color: #00bf63; padding: 10px 0; text-align: center; }
-        nav { display: flex; justify-content: center; background-color: #7ed957; padding: 10px 0; }
-        nav a { color: #ffffff; text-decoration: none; padding: 15px 20px; margin: 0 10px; transition: background-color 0.3s; }
-        nav a:hover { background-color: #00bf63; }
-        .form-container { max-width: 600px; margin: 20px auto; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); background-color: #f9f9f9; }
-        form { display: flex; flex-direction: column; }
-        input, select, textarea { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        input[type="submit"] { background-color: #00bf63; color: white; border: none; cursor: pointer; transition: background-color 0.3s; }
-        input[type="submit"]:hover { background-color: #7ed957; }
-        footer { text-align: center; padding: 20px; background-color: #00bf63; color: white; position: relative; bottom: 0; width: 100%; }
-    </style>
+    <link rel="stylesheet" th:href="@{/generale.css}">
 </head>
 <body th:attr="data-selected-squadra-id=${selectedSquadraId}, data-selected-modulo-id=${selectedModuloId}">
 
@@ -38,7 +26,7 @@
 
         <!-- Squadra -->
         <select id="squadraSelect" required>
-            <option value="">Scegli la squadra</option>
+            <option value="" disabled selected hidden>Scegli la squadra</option>
             <option th:each="squadra : ${squadre}"
                     th:value="${squadra.idSquadra}"
                     th:text="${squadra.nome}"
@@ -49,7 +37,7 @@
 
         <!-- Modulo -->
         <select id="moduloSelect" required>
-            <option value="">Scegli il modulo di gioco</option>
+            <option value="" disabled selected hidden>Scegli il modulo di gioco</option>
             <option th:each="modulo : ${moduli}"
                     th:value="${modulo.idModulo}"
                     th:text="${modulo.schemaGioco}"
@@ -60,13 +48,13 @@
 
         <!-- Tipologia -->
         <select id="tipologiaSelect" required>
-            <option value="">Scegli la tipologia di giocatore</option>
+            <option value="" disabled selected hidden>Scegli la tipologia di giocatore</option>
         </select>
         <input type="hidden" name="tipologia" id="hiddenTipologia"/>
 
         <!-- Ruolo -->
         <select id="ruoloSelect" required>
-            <option value="">Scegli il ruolo del giocatore</option>
+            <option value="" disabled selected hidden>Scegli il ruolo del giocatore</option>
         </select>
         <input type="hidden" name="ruolo" id="hiddenRuolo"/>
 
@@ -80,7 +68,7 @@
 
         <!-- Nazionalità -->
         <select name="nazionalita" id="nazionalita" required>
-            <option value="">Scegli la nazionalità</option>
+            <option value="" disabled selected hidden>Scegli la nazionalità</option>
             <option th:each="naz : ${nazionalita}"
                     th:value="${naz.idNazionalita}"
                     th:text="${naz.nazione} + ' (' + ${naz.sigla} + ')'">
@@ -91,6 +79,16 @@
 
         <input type="submit" value="Registra la formazione" id="submitButton">
     </form>
+
+    <div class="form-container">
+        <div class="button-row">
+            <a th:href="@{/home-page}" class="btn-secondary" style="padding: 10px 25px; border-radius: 5px; font-weight: bold;">
+                Indietro
+            </a>
+
+        </div>
+    </div>
+
 </div>
 
 <script>
