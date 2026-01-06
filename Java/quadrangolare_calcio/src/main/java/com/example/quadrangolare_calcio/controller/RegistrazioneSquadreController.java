@@ -68,6 +68,8 @@ public class RegistrazioneSquadreController {
                               @RequestParam("nomeStadio") String nomeStadio,
                               @RequestParam("capienza") int capienza,
                               @RequestParam("immagineStadio") MultipartFile immagineStadio,
+                              @RequestParam("descrizioneStadio") String descrizioneStadio,
+                              @RequestParam("nomeUltras") String ultras,
                               Model model) {
 
 
@@ -106,6 +108,8 @@ public class RegistrazioneSquadreController {
                 System.out.println("Error encoding image: " + e.getMessage());
             }
         }
+        stadio.setDescrizione(descrizioneStadio);
+        stadio.setUltras(ultras);
         stadioService.salvaStadio(stadio);
 
         model.addAttribute("message", "Squadra registrata con successo!");
