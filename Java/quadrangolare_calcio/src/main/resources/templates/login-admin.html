@@ -77,7 +77,7 @@
   </style>
 </head>
 <body>
-<button class="exit-button" onclick="window.location.href='/'">Esci</button>
+<button class="exit-button" onclick="tornaIndietro()">Esci</button>
 <div class="login-container">
   <h2>Login Admin</h2>
   <p class="error-message" th:if="${error}">Credenziali Errate</p>
@@ -87,5 +87,20 @@
     <input type="submit" value="Accedi">
   </form>
 </div>
+
+<script>
+  function tornaIndietro() {
+        // Controlla se esiste una pagina di provenienza nel browser
+        if (document.referrer && document.referrer !== "" && !document.referrer.includes('/loginadmin')) {
+            // Torna alla pagina esatta da cui l'utente è arrivato
+            window.location.href = document.referrer;
+        } else {
+            // Se non c'è una provenienza (es. accesso diretto all'URL), vai alla Home
+            window.location.href = '/';
+        }
+    }
+</script>
+
 </body>
+
 </html>

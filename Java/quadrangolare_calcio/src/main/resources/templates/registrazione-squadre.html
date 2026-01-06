@@ -8,12 +8,17 @@
 <body>
 
 <header>
-    <h1>Registrazione Squadra</h1>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1>Registrazione squadre</h1>
+        </div>
+    </div>
 </header>
 
 <nav>
-    <a href="#">Simulive</a>
-    <a href="/squadre-disponibili">Squadre</a>
+    <a href="/home-page">Home</a>
+    <a href="/registra-giocatori">Registra giocatori</a>
     <a href="#">Archivio</a>
     <a href="#">Chi Siamo</a>
     <a href="/loginadmin">Area Admin</a>
@@ -22,14 +27,14 @@
 <div class="form-container">
     <form action="/registra-squadre" method="post" enctype="multipart/form-data">
         <fieldset>
-            <legend>Squadra</legend>
+            <legend>SQUADRA</legend>
             <input type="text" name="nome" th:value="${squadra.nome}" placeholder="Nome squadra" required>
             <br>
             <label for="logo_squadra">Logo squadra:</label>
             <input type="file" name="logo" accept="image/*" th:value="${squadra.logo}" id="logo_squadra" required>
             <input type="text" name="capitano" th:value="${squadra.capitano}" placeholder="Capitano (nome e cognome giocatore)" required>
             <br>
-            <input type="text" name="descrizione" th:value="${squadra.descrizione}" placeholder="Descrizione squadra" required>
+            <textarea name="descrizione" placeholder="Descrizione squadra" required th:text="${squadra.descrizione}"></textarea>
             <br>
             <select name="nazionalita" required>
                 <option value="" disabled selected>Scegli la nazionalità</option>
@@ -38,7 +43,7 @@
         </fieldset>
         <br>
         <fieldset>
-            <legend>Allenatore</legend>
+            <legend>ALLENATORE</legend>
             <input type="text" name="nomeAllenatore" th:value="${allenatore.nome}" placeholder="Nome allenatore (facoltativo)">
             <input type="text" name="cognomeAllenatore" th:value="${allenatore.cognome}" placeholder="Cognome allenatore" required>
             <br>
@@ -53,7 +58,7 @@
                 </option>
             </select>
             <br>
-            <input type="text" name="descrizioneAllenatore" th:value="${allenatore.descrizione}" placeholder="Descrizione allenatore" required>
+            <textarea name="descrizioneAllenatore" placeholder="Descrizione allenatore" required th:text="${allenatore.descrizione}"></textarea>
             <br>
             <select name="modulo" required>
                 <option value="" disabled selected>Scegli il modulo di gioco</option>
@@ -62,12 +67,16 @@
         </fieldset>
         <br>
         <fieldset>
-            <legend>Stadio</legend>
+            <legend>STADIO</legend>
             <input type="text" name="nomeStadio" th:value="${stadio.nome}" placeholder="Nome stadio" required>
             <input type="number" name="capienza" id="capienza" min="10000" max="100000" step="500" placeholder="Capienza (# posti)" required>
             <br>
             <label for="immagine_stadio">Card stadio:</label>
             <input type="file" name="immagineStadio" accept="image/*" th:value="${stadio.immagine}" id="immagine_stadio" required>
+            <br>
+            <textarea name="descrizioneStadio" placeholder="Descrizione stadio" required th:text="${stadio.descrizione}"></textarea>
+            <br>
+            <input type="text" name="nomeUltras" th:value="${stadio.ultras}" placeholder="Ultras" required>
         </fieldset>
         <br>
         <input type="submit" value="Registra la squadra">
@@ -76,7 +85,7 @@
 </div>
 
 <footer>
-    <p>Sprint Football Simulation</p>
+    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
 </footer>
 
 <!-- Aggiungo il codice per visualizzare un messaggio di successo -->

@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Formazione squadra</title>
+    <link rel="stylesheet" th:href="@{/generale.css}">
+
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
             margin: 0 auto;
             padding: 0 5%;
-            background-color: #eaf5ea;
+            background: none !important;
+            background-color: none !important;
             color: #222;
         }
 
@@ -66,6 +69,10 @@
         .ALL { top: 60px; left: 50px; width: 80px; }
         .STADIO { top: 60px; right: 50px; width: 80px; }
 
+        .button-row {
+            margin-bottom: 50px;
+        }
+
     </style>
 
     <link th:href="@{'/' + ${modulo} + '.css'}" rel="stylesheet" />
@@ -73,13 +80,19 @@
 </head>
 <body>
 <header>
-    <h1>Formazione in campo</h1>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1>Dettaglio formazione</h1>
+        </div>
+    </div>
 </header>
+
 <nav>
-    <a href="/registra-squadre">Registra rose</a>
-    <a href="/squadre">Archivio</a>
-    <a href="#">Chi Siamo</a>
-    <a href="#">Area Admin</a>
+    <a th:href="@{/home-page}">Home</a>
+    <a th:href="@{/squadre-disponibili}">Squadre disponibili</a>
+    <a th:href="@{/registra-squadre}">Registra rose</a>
+    <a th:href="@{/loginadmin}">Area Admin</a>
 </nav>
 
 <div class="campo-container">
@@ -103,9 +116,27 @@
         </a>
 </div>
 
+<div class="button-row">
+    <button onclick="tornaIndietro()">Indietro</button>
+</div>
+
 <footer>
-    <p>Sprint Football Simulation</p>
+    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
 </footer>
+
+<script>
+    function tornaIndietro() {
+        // Controlla se esiste una pagina di provenienza nel browser
+        if (document.referrer && document.referrer !== "" && !document.referrer.includes('/loginadmin')) {
+            // Torna alla pagina esatta da cui l'utente è arrivato
+            window.location.href = document.referrer;
+        } else {
+            // Se non c'è una provenienza (es. accesso diretto all'URL), vai alla Home
+            window.location.href = '/';
+        }
+    }
+</script>
+
 </body>
 </html>
 
