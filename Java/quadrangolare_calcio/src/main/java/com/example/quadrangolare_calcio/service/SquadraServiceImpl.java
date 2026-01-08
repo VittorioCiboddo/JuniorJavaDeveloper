@@ -71,6 +71,14 @@ public class SquadraServiceImpl implements SquadraService{
     }
 
     @Override
+    public List<Squadra> getSquadreComplete() {
+        List<Squadra> squadre = (List<Squadra>) squadraDao.findAll();
+        return squadre.stream()
+                .filter(s -> s.getGiocatori() != null && s.getGiocatori().size() == 11)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Squadra dettaglioSquadra(Long idSquadra) {
         Optional<Squadra> squadraOptional = squadraDao.findById(idSquadra);
         return squadraOptional.orElse(null);

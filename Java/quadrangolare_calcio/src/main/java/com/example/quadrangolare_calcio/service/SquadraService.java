@@ -14,6 +14,8 @@ public interface SquadraService {
 
     List<Squadra> elencoSquadre();
 
+    List<Squadra> getSquadreComplete();
+
     Squadra dettaglioSquadra(Long idSquadra);
 
     Squadra getSquadraById(Long idSquadra);
