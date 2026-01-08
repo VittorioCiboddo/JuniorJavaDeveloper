@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 setVisible(tipologiaSelect);
-                tipologiaSelect.innerHTML = `<option value="">Scegli la tipologia di giocatore</option>`;
+                tipologiaSelect.innerHTML = `<option value="" disabled selected hidden>Scegli la tipologia di giocatore</option>`;
 
                 fetch(`/registra-giocatori/getTipologiePerModulo/${selectedModuloId}`)
                     .then(response => response.json())
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
         hiddenSquadra.value = squadraId;
 
         setVisible(moduloSelect);
-        moduloSelect.innerHTML = `<option value="">Scegli il modulo di gioco</option>`;
+        moduloSelect.innerHTML = `<option value="" disabled selected hidden>Scegli il modulo di gioco</option>`;
         moduloSelect.disabled = false;
 
         fetch(`/registra-giocatori/getModuloPerSquadra/${squadraId}`)
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
         squadraSelect.disabled = true;
         moduloSelect.disabled = true;
 
-        tipologiaSelect.innerHTML = `<option value="">Scegli la tipologia di giocatore</option>`;
+        tipologiaSelect.innerHTML = `<option value="" disabled selected hidden>Scegli la tipologia di giocatore</option>`;
         setVisible(tipologiaSelect);
         tipologiaSelect.disabled = true;
 
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!tipologiaId || !moduloId) return;
         hiddenTipologia.value = tipologiaId;
 
-        ruoloSelect.innerHTML = `<option value="">Scegli il ruolo del giocatore</option>`;
+        ruoloSelect.innerHTML = `<option value="" disabled selected hidden>Scegli il ruolo del giocatore</option>`;
         setVisible(ruoloSelect);
         ruoloSelect.disabled = true;
 
