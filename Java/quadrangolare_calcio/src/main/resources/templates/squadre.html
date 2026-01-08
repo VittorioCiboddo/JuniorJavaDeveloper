@@ -38,9 +38,26 @@
     </a>
 </div>
 
+<div class="button-row" style="margin-bottom: 50px">
+    <button onclick="tornaIndietro()">Indietro</button>
+</div>
+
 <footer>
     <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
 </footer>
+
+<script>
+    function tornaIndietro() {
+        // Controlla se esiste una pagina di provenienza nel browser
+        if (document.referrer && document.referrer !== "" && !document.referrer.includes('/loginadmin')) {
+            // Torna alla pagina esatta da cui l'utente è arrivato
+            window.location.href = document.referrer;
+        } else {
+            // Se non c'è una provenienza (es. accesso diretto all'URL), vai alla Home
+            window.location.href = '/';
+        }
+    }
+</script>
 
 </body>
 </html>
