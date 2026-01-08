@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tabellone</title>
+    <link rel="stylesheet" th:href="@{/generale.css}">
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1>Tabellone</h1>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <a th:ref="@{/home-page}">Home</a>
+    <a th:href="@{/archiviotornei}">Archivio</a>
+    <a th:href="@{/contatti}">Chi siamo</a>
+    <a th:href="@{/loginadmin}">Area Admin</a>
+</nav>
+
+<div class="container">
+    <h2 style="text-align: center; color: #00bf63;">Sorteggio Semifinali</h2>
+
+    <div id="messaggio-errore" style="height: 30px; color: red; font-weight: bold; text-align: center; display: none;">
+        Nessuna squadra estratta: riprova.
+    </div>
+
+    <div class="carousel-viewport">
+        <div id="carousel-inner" class="carousel-inner">
+            <div th:each="squadra : ${squadre}" class="card-sorteggio"
+                 th:data-id="${squadra.idSquadra}" th:data-nome="${squadra.nome}" th:data-logo="${squadra.logo}">
+                <img th:src="${squadra.logo}" th:alt="${squadra.nome}">
+                <p th:text="${squadra.nome}"></p>
+            </div>
+        </div>
+        <div class="selector-line"></div>
+    </div>
+
+    <div class="results-container">
+        <div class="match-box">
+            <div id="slot-1" class="slot">?</div>
+            <div class="vs">VS</div>
+            <div id="slot-2" class="slot">?</div>
+        </div>
+        <div class="match-box">
+            <div id="slot-3" class="slot">?</div>
+            <div class="vs">VS</div>
+            <div id="slot-4" class="slot">?</div>
+        </div>
+    </div>
+
+    <div class="button-row">
+        <button id="btn-estrai" onclick="avviaSorteggio()">Estrai Squadra</button>
+        <button id="btn-partita" style="display: none;" onclick="window.location.href='/partita'">Vai alla Partita</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const listaSquadreIniziale = [[${squadre}]];
+</script>
+<script src="/js/sorteggioTorneo.js"></script>
+
+<footer>
+    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
+</footer>
+</body>
+</html>
