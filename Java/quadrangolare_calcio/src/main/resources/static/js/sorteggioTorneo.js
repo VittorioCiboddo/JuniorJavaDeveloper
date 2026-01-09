@@ -1,6 +1,6 @@
 let squadreDisponibili = [];
 let contatoreEstratti = 0;
-const TOTAL_CARD_SPACE = 200; // 180px + 10px + 10px
+const TOTAL_CARD_SPACE = 200; // 180px card + 10px margin left + 10px margin right
 
 document.addEventListener("DOMContentLoaded", function() {
     const cardsIniziali = document.querySelectorAll('.card-sorteggio');
@@ -27,6 +27,7 @@ function avviaSorteggio() {
     btn.disabled = true;
     selectorLine.style.display = 'block';
 
+    // Gestione dell'ultima squadra rimasta
     if (squadreDisponibili.length === 1) {
         setTimeout(() => {
             riempiSlot(squadreDisponibili[0]);
@@ -38,7 +39,16 @@ function avviaSorteggio() {
         return;
     }
 
-    // 1. Rigenerazione carosello
+    /* --- LOGICA DI TRANSIZIONE LAYOUT --- */
+    // Disattiviamo la centratura Flexbox del CSS per passare al posizionamento assoluto
+    carousel.style.transition = 'none';
+    carousel.style.justifyContent = 'flex-start';
+    carousel.style.position = 'absolute';
+    carousel.style.width = 'auto';
+    carousel.style.left = '0px';
+    /* ------------------------------------ */
+
+    // 1. Rigenerazione carosello (creazione del nastro lungo per lo scorrimento)
     carousel.innerHTML = '';
     const ripetizioni = 15;
     for (let i = 0; i < ripetizioni; i++) {
@@ -48,28 +58,26 @@ function avviaSorteggio() {
             div.setAttribute('data-id', s.id);
             div.setAttribute('data-nome', s.nome);
             div.setAttribute('data-logo', s.logo);
-            // pointer-events: none è fondamentale per non bloccare il raggio del sensore
+            // pointer-events: none evita che le immagini blocchino il sensore di collisione
             div.innerHTML = `<img src="${s.logo}" style="pointer-events:none; width:120px;"><p style="pointer-events:none;">${s.nome}</p>`;
             carousel.appendChild(div);
         });
     }
 
-    // 2. Calcolo posizione
+    // 2. Calcolo posizione finale di arresto
     const centroVetrina = viewport.offsetWidth / 2;
     const minScroll = (squadreDisponibili.length * 10) * TOTAL_CARD_SPACE;
     const maxScroll = (squadreDisponibili.length * 13) * TOTAL_CARD_SPACE;
     const stopPixel = Math.floor(Math.random() * (maxScroll - minScroll)) + minScroll;
     const finalLeft = -(stopPixel - centroVetrina);
 
-    carousel.style.transition = 'none';
-    carousel.style.left = '0px';
-
+    // Avvio animazione con un piccolo delay per permettere al browser di recepire il cambio layout
     setTimeout(() => {
         carousel.style.transition = 'left 4s cubic-bezier(0.15, 0, 0.15, 1)';
         carousel.style.left = finalLeft + 'px';
     }, 50);
 
-    // 3. RILEVAMENTO CON TOLLERANZA
+    // 3. Rilevamento della squadra sotto il selettore rosso
     setTimeout(() => {
         const selectorRect = selectorLine.getBoundingClientRect();
         const selectorX = selectorRect.left + selectorRect.width / 2;
@@ -79,6 +87,7 @@ function avviaSorteggio() {
 
         cards.forEach(card => {
             const rect = card.getBoundingClientRect();
+            // Controlla se il centro del selettore cade dentro i confini della card
             if (selectorX >= rect.left && selectorX <= rect.right) {
                 cardSelezionata = card;
             }
@@ -91,8 +100,8 @@ function avviaSorteggio() {
                 logo: cardSelezionata.getAttribute('data-logo')
             };
 
-            console.log("Squadra estratta:", vinta.nome);
             riempiSlot(vinta);
+            // Rimuoviamo la squadra estratta da quelle disponibili per il prossimo turno
             squadreDisponibili = squadreDisponibili.filter(s => s.id != vinta.id);
 
             if (squadreDisponibili.length === 1) {
@@ -100,12 +109,10 @@ function avviaSorteggio() {
             }
             btn.disabled = false;
         } else {
-            console.log("Caduto nello spazio bianco");
             if (msgErrore) msgErrore.style.display = 'block';
             btn.disabled = false;
         }
-    }, 4500);
-
+    }, 4500); // 4000ms di transizione + 500ms di margine
 }
 
 function riempiSlot(squadra) {
