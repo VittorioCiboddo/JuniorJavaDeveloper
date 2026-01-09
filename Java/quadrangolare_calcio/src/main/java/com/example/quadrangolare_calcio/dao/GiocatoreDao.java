@@ -1,7 +1,6 @@
 package com.example.quadrangolare_calcio.dao;
 
 import com.example.quadrangolare_calcio.model.Giocatore;
-import com.example.quadrangolare_calcio.model.Tipologia;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
