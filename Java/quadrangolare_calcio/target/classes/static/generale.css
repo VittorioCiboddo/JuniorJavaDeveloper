@@ -439,10 +439,10 @@ header {
 
 .carousel-inner {
     display: flex;
-    position: absolute;
-    left: 0;
-    top: 0;
+    justify-content: center;
+    width: 100%;
     transition: left 3s cubic-bezier(0.15, 0, 0.15, 1); /* Effetto rallentamento */
+    position: relative;
 }
 
 .card-sorteggio {
@@ -491,10 +491,30 @@ header {
     font-weight: bold;
 }
 
+/* Container per allineare titolo e match box */
+.semifinal-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra orizzontalmente tutto il contenuto */
+    gap: 15px;           /* Spazio tra titolo e slot */
+}
+
+/* Stile per i titoli delle semifinali */
+.semifinal-title {
+    color: #00bf63;
+    margin: 0;
+    font-size: 1.4em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #00bf63;
+    padding-bottom: 5px;
+}
+
 .results-container {
     display: flex;
-    justify-content: space-around;
-    margin-top: 30px;
+    justify-content: center;
+    gap: 80px; /* Aumentato lo spazio tra le due partite per chiarezza */
+    margin-top: 40px;
 }
 
 .match-box {
