@@ -1,7 +1,13 @@
 package com.example.quadrangolare_calcio.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "tipologia")
 public class Tipologia {
@@ -14,19 +20,4 @@ public class Tipologia {
     @Column
     private String categoria;
 
-    public int getIdTipologia() {
-        return idTipologia;
-    }
-
-    public void setIdTipologia(int idTipologia) {
-        this.idTipologia = idTipologia;
-    }
-
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
 }

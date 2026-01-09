@@ -1,10 +1,13 @@
 package com.example.quadrangolare_calcio.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "modulo")
 public class Modulo {
@@ -17,36 +20,5 @@ public class Modulo {
     @Column(name = "schema_gioco")
     private String schemaGioco;
 
-//    @OneToMany
-//            (
-//                    mappedBy = "squadra",
-//                    cascade = CascadeType.REMOVE,
-//                    fetch = FetchType.EAGER,
-//                    orphanRemoval = true
-//            )
-//    private List<Squadra> squadra = new ArrayList<>();
 
-    public int getIdModulo() {
-        return idModulo;
-    }
-
-    public void setIdModulo(int idModulo) {
-        this.idModulo = idModulo;
-    }
-
-    public String getSchemaGioco() {
-        return schemaGioco;
-    }
-
-    public void setSchemaGioco(String schemaGioco) {
-        this.schemaGioco = schemaGioco;
-    }
-
-//    public List<Squadra> getSquadra() {
-//        return squadra;
-//    }
-//
-//    public void setSquadra(List<Squadra> squadra) {
-//        this.squadra = squadra;
-//    }
 }

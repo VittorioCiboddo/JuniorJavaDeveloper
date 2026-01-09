@@ -1,9 +1,15 @@
 package com.example.quadrangolare_calcio.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "giocatore")
 public class Giocatore {
@@ -43,83 +49,5 @@ public class Giocatore {
     @JoinColumn(name = "fk_id_nazionalita", referencedColumnName = "id_nazionalita")
     private Nazionalita nazionalita;
 
-    public int getIdGiocatore() {
-        return idGiocatore;
-    }
 
-    public void setIdGiocatore(int idGiocatore) {
-        this.idGiocatore = idGiocatore;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getCognome() {
-        return cognome;
-    }
-
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
-    }
-
-    public String getImmagine() {
-        return immagine;
-    }
-
-    public void setImmagine(String immagine) {
-        this.immagine = immagine;
-    }
-
-    public int getNumeroMaglia() {
-        return numeroMaglia;
-    }
-
-    public void setNumeroMaglia(int numeroMaglia) {
-        this.numeroMaglia = numeroMaglia;
-    }
-
-    public LocalDate getDataNascita() {
-        return dataNascita;
-    }
-
-    public void setDataNascita(LocalDate dataNascita) {
-        this.dataNascita = dataNascita;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
-
-    public Ruolo getRuolo() {
-        return ruolo;
-    }
-
-    public void setRuolo(Ruolo ruolo) {
-        this.ruolo = ruolo;
-    }
-
-    public Squadra getSquadra() {
-        return squadra;
-    }
-
-    public void setSquadra(Squadra squadra) {
-        this.squadra = squadra;
-    }
-
-    public Nazionalita getNazionalita() {
-        return nazionalita;
-    }
-
-    public void setNazionalita(Nazionalita nazionalita) {
-        this.nazionalita = nazionalita;
-    }
 }

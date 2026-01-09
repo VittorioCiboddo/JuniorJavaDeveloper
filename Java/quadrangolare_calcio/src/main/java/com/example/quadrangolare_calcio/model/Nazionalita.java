@@ -1,9 +1,15 @@
 package com.example.quadrangolare_calcio.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "nazionalita")
 public class Nazionalita {
@@ -31,59 +37,4 @@ public class Nazionalita {
     @OneToMany(mappedBy = "nazionalita", cascade = CascadeType.REMOVE)
     private List<Allenatore> allenatori;
 
-    public int getIdNazionalita() {
-        return idNazionalita;
-    }
-
-    public void setIdNazionalita(int idNazionalita) {
-        this.idNazionalita = idNazionalita;
-    }
-
-    public String getNazione() {
-        return nazione;
-    }
-
-    public void setNazione(String nazione) {
-        this.nazione = nazione;
-    }
-
-    public String getSigla() {
-        return sigla;
-    }
-
-    public void setSigla(String sigla) {
-        this.sigla = sigla;
-    }
-
-    public String getBandiera() {
-        return bandiera;
-    }
-
-    public void setBandiera(String bandiera) {
-        this.bandiera = bandiera;
-    }
-
-    public List<Squadra> getSquadre() {
-        return squadre;
-    }
-
-    public void setSquadre(List<Squadra> squadre) {
-        this.squadre = squadre;
-    }
-
-    public List<Giocatore> getGiocatori() {
-        return giocatori;
-    }
-
-    public void setGiocatori(List<Giocatore> giocatori) {
-        this.giocatori = giocatori;
-    }
-
-    public List<Allenatore> getAllenatori() {
-        return allenatori;
-    }
-
-    public void setAllenatori(List<Allenatore> allenatori) {
-        this.allenatori = allenatori;
-    }
 }
