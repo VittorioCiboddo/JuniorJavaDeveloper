@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -48,6 +49,12 @@ public class Giocatore {
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "fk_id_nazionalita", referencedColumnName = "id_nazionalita")
     private Nazionalita nazionalita;
+
+    @OneToOne(mappedBy = "giocatore", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ArchivioGiocatore archivioGiocatore;
+
+    @OneToMany(mappedBy = "giocatore", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TabellinoPartita> tabellinoPartita;
 
 
 }

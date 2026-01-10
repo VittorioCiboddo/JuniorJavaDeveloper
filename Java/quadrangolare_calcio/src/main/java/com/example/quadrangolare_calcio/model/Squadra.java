@@ -48,4 +48,10 @@ public class Squadra {
     @OneToMany(mappedBy = "squadra", cascade = CascadeType.REMOVE)
     private List<Allenatore> allenatori;
 
+    @OneToMany(mappedBy = "squadraHome", cascade = CascadeType.REMOVE)
+    private List<Partita> partiteHome;
+
+    @OneToMany(mappedBy = "squadraAway", cascade = CascadeType.REMOVE)
+    private List<Partita> partiteAway;
+
 }
