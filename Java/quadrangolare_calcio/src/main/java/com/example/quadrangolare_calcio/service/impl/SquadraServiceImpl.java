@@ -1,4 +1,4 @@
-package com.example.quadrangolare_calcio.service;
+package com.example.quadrangolare_calcio.service.impl;
 
 import com.example.quadrangolare_calcio.dao.NazionalitaDao;
 import com.example.quadrangolare_calcio.dao.SquadraDao;
@@ -8,6 +8,10 @@ import com.example.quadrangolare_calcio.model.Ruolo;
 import com.example.quadrangolare_calcio.model.Squadra;
 import com.example.quadrangolare_calcio.repository.NazionalitaRepository;
 import com.example.quadrangolare_calcio.repository.SquadraRepository;
+import com.example.quadrangolare_calcio.service.ModuloService;
+import com.example.quadrangolare_calcio.service.NazionalitaService;
+import com.example.quadrangolare_calcio.service.RuoloService;
+import com.example.quadrangolare_calcio.service.SquadraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class SquadraServiceImpl implements SquadraService{
+public class SquadraServiceImpl implements SquadraService {
 
     @Autowired
     private NazionalitaRepository nazionalitaRepository;

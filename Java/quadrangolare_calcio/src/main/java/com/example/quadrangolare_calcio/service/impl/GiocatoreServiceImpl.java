@@ -1,23 +1,20 @@
-package com.example.quadrangolare_calcio.service;
+package com.example.quadrangolare_calcio.service.impl;
 
 import com.example.quadrangolare_calcio.dao.GiocatoreDao;
 import com.example.quadrangolare_calcio.dao.TipologiaDao;
 import com.example.quadrangolare_calcio.model.Giocatore;
-import com.example.quadrangolare_calcio.model.Nazionalita;
-import com.example.quadrangolare_calcio.model.Ruolo;
-import com.example.quadrangolare_calcio.model.Squadra;
 import com.example.quadrangolare_calcio.repository.GiocatoreRepository;
+import com.example.quadrangolare_calcio.service.GiocatoreService;
+import com.example.quadrangolare_calcio.service.NazionalitaService;
+import com.example.quadrangolare_calcio.service.SquadraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import com.example.quadrangolare_calcio.model.Tipologia;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class GiocatoreServiceImpl implements GiocatoreService{
+public class GiocatoreServiceImpl implements GiocatoreService {
 
     @Autowired
     private TipologiaDao tipologiaDao;

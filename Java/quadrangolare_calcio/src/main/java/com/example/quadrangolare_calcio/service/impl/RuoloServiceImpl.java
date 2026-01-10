@@ -1,16 +1,17 @@
-package com.example.quadrangolare_calcio.service;
+package com.example.quadrangolare_calcio.service.impl;
 
 import com.example.quadrangolare_calcio.dao.RuoloDao;
 import com.example.quadrangolare_calcio.model.Ruolo;
 import com.example.quadrangolare_calcio.model.Tipologia;
 import com.example.quadrangolare_calcio.repository.RuoloRepository;
+import com.example.quadrangolare_calcio.service.RuoloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class RuoloServiceImpl implements RuoloService{
+public class RuoloServiceImpl implements RuoloService {
 
     @Autowired
     private RuoloRepository ruoloRepository;

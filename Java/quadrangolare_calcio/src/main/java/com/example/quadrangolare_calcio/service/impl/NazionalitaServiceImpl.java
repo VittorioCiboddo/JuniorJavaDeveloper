@@ -1,8 +1,9 @@
-package com.example.quadrangolare_calcio.service;
+package com.example.quadrangolare_calcio.service.impl;
 
 import com.example.quadrangolare_calcio.dao.NazionalitaDao;
 import com.example.quadrangolare_calcio.model.Nazionalita;
 import com.example.quadrangolare_calcio.repository.NazionalitaRepository;
+import com.example.quadrangolare_calcio.service.NazionalitaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class NazionalitaServiceImpl implements NazionalitaService{
+public class NazionalitaServiceImpl implements NazionalitaService {
 
     @Autowired
     private NazionalitaRepository nazionalitaRepository;
