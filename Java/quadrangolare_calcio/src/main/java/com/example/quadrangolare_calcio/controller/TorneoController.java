@@ -1,53 +1,74 @@
 package com.example.quadrangolare_calcio.controller;
 
-import com.example.quadrangolare_calcio.model.Squadra;
-import com.example.quadrangolare_calcio.model.enums.Partita;
-import com.example.quadrangolare_calcio.service.GiocatoreService;
-import com.example.quadrangolare_calcio.service.SquadraService;
+import com.example.quadrangolare_calcio.model.Torneo;
+import com.example.quadrangolare_calcio.service.TorneoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
-@Controller
-@RequestMapping("/torneo")
+@RestController
+@RequestMapping("/stats/tornei")
 public class TorneoController {
 
     @Autowired
-    private SquadraService squadraService;
+    private TorneoService torneoService;
 
-    @Autowired
-    private GiocatoreService giocatoreService;
+    // --- GESTIONE TORNEO ---
 
-    @GetMapping("/match")
-    public String avviaPartita(@RequestParam("fase") Partita fase,
-                               @RequestParam("idHome") long idHome,
-                               @RequestParam("idAway") long idAway,
-                               Model model) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Torneo> getDettaglioTorneo(@PathVariable Long id) {
+        Torneo torneo = torneoService.getDettaglioTorneo(id);
+        return torneo != null ? ResponseEntity.ok(torneo) : ResponseEntity.notFound().build();
+    }
 
-        // 1. Recuperiamo le squadre
-        Squadra home = squadraService.getSquadraById(idHome);
-        Squadra away = squadraService.getSquadraById(idAway);
+    // Restituisce la classifica finale (1°, 2°, 3°, 4°) di uno specifico torneo
+    @GetMapping("/{id}/classifica")
+    public ResponseEntity<Map<Integer, String>> getClassificaTorneo(@PathVariable int id) {
+        return ResponseEntity.ok(torneoService.getClassificaTorneo(id));
+    }
 
-        // 2. Prepariamo le liste dei nomi per il JavaScript
-        List<String> playersHome = giocatoreService.getGiocatoriPerSquadra(idHome)
-                .stream().map(g -> g.getCognome()).toList();
+    // Restituisce il podio (primi 3) con le emoji delle medaglie
+    @GetMapping("/{id}/podio")
+    public ResponseEntity<List<String>> getPodio(@PathVariable int id) {
+        return ResponseEntity.ok(torneoService.getPodio(id));
+    }
 
-        List<String> playersAway = giocatoreService.getGiocatoriPerSquadra(idAway)
-                .stream().map(g -> g.getCognome()).toList();
+    // Restituisce statistiche generali (gol totali, media) di un torneo
+    @GetMapping("/{id}/stats")
+    public ResponseEntity<Map<String, Object>> getStatsTorneo(@PathVariable int id) {
+        return ResponseEntity.ok(torneoService.getStatsTorneo(id));
+    }
 
-        // 3. Passiamo tutto alla pagina HTML
-        model.addAttribute("teamHome", home.getNome());
-        model.addAttribute("playersHome", playersHome);
-        model.addAttribute("teamAway", away.getNome());
-        model.addAttribute("playersAway", playersAway);
-        model.addAttribute("partita", fase.getDescrizione());
+    // --- STATISTICHE STORICHE (ALL-TIME) ---
 
-        return "partita"; // La pagina HTML con lo script JS
+    // L'Albo d'Oro: lista di tutti i vincitori di ogni torneo
+    @GetMapping("/albo-doro")
+    public ResponseEntity<List<Map<String, String>>> getAlboDOro() {
+        return ResponseEntity.ok(torneoService.getAlboDOro());
+    }
+
+    // Il Medagliere Storico: ordina le squadre per Ori, Argenti, Bronzi e Quarti posti
+    @GetMapping("/medagliere")
+    public ResponseEntity<List<Map<String, Object>>> getMedagliereStorico() {
+        return ResponseEntity.ok(torneoService.getMedagliereStorico());
+    }
+
+    // Ranking basato solo sui trofei vinti
+    @GetMapping("/ranking")
+    public ResponseEntity<List<Map<String, Object>>> getRanking() {
+        return ResponseEntity.ok(torneoService.getRankingStorico());
+    }
+
+    // Hall of Fame: record storici (miglior attacco, squadra più vincente)
+    @GetMapping("/hall-of-fame")
+    public ResponseEntity<Map<String, Object>> getHallOfFame() {
+        return ResponseEntity.ok(torneoService.getHallOfFame());
     }
 
 }
