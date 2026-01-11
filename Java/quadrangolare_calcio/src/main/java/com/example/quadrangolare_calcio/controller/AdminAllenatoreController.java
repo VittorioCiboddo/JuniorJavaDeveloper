@@ -100,7 +100,7 @@ public class AdminAllenatoreController {
         if (session.getAttribute("admin") == null)
             return "redirect:/loginadmin";
 
-        Allenatore esistente = allenatoreService.dettaglioAllenatore(allenatore.getIdAllenatore());
+        Allenatore esistente = allenatoreService.dettaglioAllenatore((long) allenatore.getIdAllenatore());
 
         // NOME
         if (allenatore.getNome() != null && !allenatore.getNome().isBlank()) {

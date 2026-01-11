@@ -49,17 +49,17 @@ public class AdminSquadraController {
         Map<Long, Allenatore> allenatoriPerSquadra = new HashMap<>();
         for (Allenatore a : allenatori) {
             if (a.getSquadra() != null) {
-                allenatoriPerSquadra.put(a.getSquadra().getIdSquadra(), a);
+                allenatoriPerSquadra.put((long) a.getSquadra().getIdSquadra(), a);
             }
         }
 
         Map<Long, List<String>> nomiGiocatoriPerSquadra = new HashMap<>();
         for (Squadra s : squadre) {
-            List<Giocatore> giocatori = giocatoreService.getGiocatoriPerSquadra(s.getIdSquadra());
+            List<Giocatore> giocatori = giocatoreService.getGiocatoriPerSquadra((long) s.getIdSquadra());
             List<String> nomiCompleti = giocatori.stream()
                     .map(g -> g.getNome() + " " + g.getCognome())
                     .collect(Collectors.toList());
-            nomiGiocatoriPerSquadra.put(s.getIdSquadra(), nomiCompleti);
+            nomiGiocatoriPerSquadra.put((long) s.getIdSquadra(), nomiCompleti);
         }
 
         model.addAttribute("squadre", squadre);
