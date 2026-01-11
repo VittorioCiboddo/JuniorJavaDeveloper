@@ -9,4 +9,7 @@ public interface TabellinoPartitaRepository extends JpaRepository<TabellinoParti
 
     List<TabellinoPartita> findByPartitaIdPartita(int idPartita);
 
+    // Navigazione automatica: Tabellino -> Partita -> Torneo -> ID
+    List<TabellinoPartita> findByPartitaTorneoIdTorneo(int idTorneo);
+
 }
