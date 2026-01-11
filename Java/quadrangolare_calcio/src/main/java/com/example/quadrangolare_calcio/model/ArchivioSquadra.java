@@ -23,6 +23,15 @@ public class ArchivioSquadra {
     @Column(name = "tornei_vinti")
     private int torneiVinti;
 
+    @Column(name = "secondi_posti")
+    private int secondiPosti;
+
+    @Column(name = "terzi_posti")
+    private int terziPosti;
+
+    @Column(name = "quarti_posti")
+    private int quartiPosti;
+
     @Column(name = "vittorie_regolari")
     private int vittorieRegolari;
 
