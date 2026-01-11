@@ -131,7 +131,7 @@ public class ArchivioSquadraServiceImpl implements ArchivioSquadraService {
 
     @Transactional
     public void registraPiazzamentoTorneo(Squadra squadra, int posizione) {
-        ArchivioSquadra archivio = getOrCreateArchivio(squadra); // Metodo interno già esistente
+        ArchivioSquadra archivio = getOrCreateArchivio(squadra);
 
         switch (posizione) {
             case 1 -> archivio.setTorneiVinti(archivio.getTorneiVinti() + 1);
@@ -143,7 +143,9 @@ public class ArchivioSquadraServiceImpl implements ArchivioSquadraService {
         archivioSquadraRepository.save(archivio);
     }
 
-    private ArchivioSquadra getOrCreateArchivio(Squadra squadra) {
+    @Override
+    @Transactional
+    public ArchivioSquadra getOrCreateArchivio(Squadra squadra) {
         // Cerchiamo l'archivio esistente usando l'ID della squadra
         return archivioSquadraRepository.findBySquadraIdSquadra(squadra.getIdSquadra())
                 .orElseGet(() -> {
@@ -168,5 +170,7 @@ public class ArchivioSquadraServiceImpl implements ArchivioSquadraService {
                     return archivioSquadraRepository.save(nuovoArchivio);
                 });
     }
+
+
 }
 

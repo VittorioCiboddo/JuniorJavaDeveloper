@@ -1,5 +1,6 @@
 package com.example.quadrangolare_calcio.service;
 
+import com.example.quadrangolare_calcio.model.ArchivioSquadra;
 import com.example.quadrangolare_calcio.model.Squadra;
 
 import java.util.Map;
@@ -21,5 +22,7 @@ public interface ArchivioSquadraService {
     double getMediaGolFatti(Squadra squadra);
 
     void registraPiazzamentoTorneo(Squadra squadra, int posizione);
+
+    ArchivioSquadra getOrCreateArchivio(Squadra squadra);
 
 }
