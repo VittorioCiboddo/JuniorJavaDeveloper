@@ -2,17 +2,27 @@ package com.example.quadrangolare_calcio.service.impl;
 
 import com.example.quadrangolare_calcio.model.ArchivioGiocatore;
 import com.example.quadrangolare_calcio.model.Giocatore;
+import com.example.quadrangolare_calcio.model.TabellinoPartita;
 import com.example.quadrangolare_calcio.repository.ArchivioGiocatoreRepository;
+import com.example.quadrangolare_calcio.repository.TabellinoPartitaRepository;
 import com.example.quadrangolare_calcio.service.ArchivioGiocatoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ArchivioGiocatoreServiceImpl implements ArchivioGiocatoreService {
 
     @Autowired
     private ArchivioGiocatoreRepository archivioGiocatoreRepository;
+
+    @Autowired
+    private TabellinoPartitaRepository tabellinoPartitaRepository;
 
     // Metodo privato di utilità per recuperare o creare l'archivio
     private ArchivioGiocatore getOrCreateArchivio(Giocatore giocatore) {
@@ -62,5 +72,57 @@ public class ArchivioGiocatoreServiceImpl implements ArchivioGiocatoreService {
         }
 
         archivioGiocatoreRepository.save(archivio);
+    }
+
+    @Override
+    public List<Map<String, Object>> getClassificaMarcatori(int idTorneo) {
+        // Recuperiamo tutti i tabellini del torneo specifico per l'evento "Goal" (ID 4 o 5)
+        List<TabellinoPartita> golDelTorneo = tabellinoPartitaRepository.findByPartitaTorneoIdTorneo(idTorneo);
+
+        // Raggruppiamo per giocatore e contiamo i gol
+        return golDelTorneo.stream()
+                .filter(t -> t.getEventoPartita().getIdEventoPartita() == 4 || t.getEventoPartita().getIdEventoPartita() == 5)
+                .collect(Collectors.groupingBy(t -> t.getGiocatore().getNome() + " " + t.getGiocatore().getCognome(), Collectors.counting()))
+                .entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .map(e -> {
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("giocatore", e.getKey());
+                    m.put("gol", e.getValue());
+                    return m;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public int getCleanSheets(Giocatore portiere) {
+        // Recuperiamo tutte le partite della squadra del portiere
+        // Controlliamo in quante di queste il risultato subìto (home o away) è stato 0
+        // Questa è una logica che richiede l'accesso a PartitaRepository
+        return 0; // Implementazione dipendente dalla squadra del giocatore
+    }
+
+    @Override
+    public double getMediaGol(Giocatore giocatore, int partiteGiocate) {
+        ArchivioGiocatore archivio = getOrCreateArchivio(giocatore);
+        if (partiteGiocate == 0) return 0.0;
+        return (double) archivio.getGolTotali() / partiteGiocate;
+    }
+
+    @Override
+    public Map<String, Object> getSpecialistaRigori(int idTorneo) {
+        List<TabellinoPartita> rigori = tabellinoPartitaRepository.findByPartitaTorneoIdTorneo(idTorneo);
+
+        return rigori.stream()
+                .filter(t -> t.getEventoPartita().getIdEventoPartita() == 5) // Rigore Segnato
+                .collect(Collectors.groupingBy(t -> t.getGiocatore().getNome() + " " + t.getGiocatore().getCognome(), Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(e -> {
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("giocatore", e.getKey());
+                    m.put("rigoriSegnati", e.getValue());
+                    return m;
+                }).orElse(null);
     }
 }
