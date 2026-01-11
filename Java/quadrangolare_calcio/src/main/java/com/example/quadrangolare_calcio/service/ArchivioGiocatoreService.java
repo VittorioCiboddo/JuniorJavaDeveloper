@@ -1,5 +1,6 @@
 package com.example.quadrangolare_calcio.service;
 
+import com.example.quadrangolare_calcio.model.ArchivioGiocatore;
 import com.example.quadrangolare_calcio.model.Giocatore;
 
 import java.util.List;
@@ -24,5 +25,7 @@ public interface ArchivioGiocatoreService {
 
     // Trova il giocatore con più rigori segnati in un torneo
     Map<String, Object> getSpecialistaRigori(int idTorneo);
+
+    ArchivioGiocatore getOrCreateArchivio(Giocatore giocatore);
 
 }

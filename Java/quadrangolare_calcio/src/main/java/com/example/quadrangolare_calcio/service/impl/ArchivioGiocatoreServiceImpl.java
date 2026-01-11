@@ -24,8 +24,9 @@ public class ArchivioGiocatoreServiceImpl implements ArchivioGiocatoreService {
     @Autowired
     private TabellinoPartitaRepository tabellinoPartitaRepository;
 
-    // Metodo privato di utilità per recuperare o creare l'archivio
-    private ArchivioGiocatore getOrCreateArchivio(Giocatore giocatore) {
+    @Override
+    @Transactional
+    public ArchivioGiocatore getOrCreateArchivio(Giocatore giocatore) {
         return archivioGiocatoreRepository.findByGiocatoreIdGiocatore(giocatore.getIdGiocatore())
                 .orElseGet(() -> {
                     ArchivioGiocatore nuovo = new ArchivioGiocatore();
