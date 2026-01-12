@@ -378,6 +378,71 @@ header {
     margin: 0;
 }
 
+/* --- BANNER INSERIMENTO NOME TORNEO --- */
+/* Contenuto pagina sfocabile */
+.blur {
+    filter: blur(6px);
+    transition: filter 0.3s ease;
+    pointer-events: none; /* blocca click sotto */
+}
+
+/* Overlay a schermo intero */
+.overlay-blur {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* Banner centrale */
+.banner-sportivo {
+    background-color: white;
+    padding: 40px;
+    border-radius: 15px;
+    border: 3px solid #00bf63;
+    text-align: center;
+    width: 400px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.banner-sportivo h3 {
+    color: #00bf63;
+    margin-top: 0;
+    text-transform: uppercase;
+}
+
+.banner-sportivo input {
+    width: 100%;
+    padding: 12px;
+    margin: 20px 0;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.banner-sportivo input:focus {
+    border-color: #00bf63;
+    outline: none;
+}
+
+.btn-conferma {
+    background-color: #00bf63;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-conferma:hover {
+    background-color: #7ed957;
+}
+
 
 /* --- CARD SQUADRE DISPONIBILI --- */
 .team-grid {

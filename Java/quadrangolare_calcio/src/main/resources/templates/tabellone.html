@@ -6,73 +6,123 @@
     <link rel="stylesheet" th:href="@{/generale.css}">
 </head>
 <body>
-<header>
-    <div class="header-content">
-        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
-        <div class="header-text">
-            <h1>Tabellone</h1>
-        </div>
-    </div>
-</header>
 
-<nav>
-    <a th:ref="@{/home-page}">Home</a>
-    <a th:href="@{/archiviotornei}">Archivio</a>
-    <a th:href="@{/contatti}">Chi siamo</a>
-    <a th:href="@{/loginadmin}">Area Admin</a>
-</nav>
+<div id="page-content">
 
-<div class="container">
-    <h2 style="text-align: center; color: #00bf63;">Sorteggio Torneo</h2>
-
-    <div id="messaggio-errore" style="height: 30px; color: red; font-weight: bold; text-align: center; display: none;">
-        Nessuna squadra estratta: riprova.
-    </div>
-
-    <div class="carousel-viewport">
-        <div id="carousel-inner" class="carousel-inner">
-            <div th:each="squadra : ${squadre}" class="card-sorteggio"
-                 th:data-id="${squadra.idSquadra}" th:data-nome="${squadra.nome}" th:data-logo="${squadra.logo}">
-                <img th:src="${squadra.logo}" th:alt="${squadra.nome}">
-                <p th:text="${squadra.nome}"></p>
+    <header>
+        <div class="header-content">
+            <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+            <div class="header-text">
+                <h1>Tabellone</h1>
             </div>
         </div>
-        <div class="selector-line"></div>
-    </div>
+    </header>
 
-    <div class="results-container">
-        <div class="semifinal-column">
-            <h3 class="semifinal-title">Semifinale 1</h3>
-            <div class="match-box">
-                <div id="slot-1" class="slot">?</div>
-                <div class="vs">VS</div>
-                <div id="slot-2" class="slot">?</div>
+    <nav>
+        <a th:href="@{/homepage}">Home</a>
+        <a th:href="@{/archiviotornei}">Archivio</a>
+        <a th:href="@{/contatti}">Chi siamo</a>
+        <a th:href="@{/loginadmin}">Area Admin</a>
+    </nav>
+
+    <div class="container">
+        <h2 id="titolo-sorteggio" style="text-align: center; color: #00bf63; text-transform: uppercase;">Sorteggio Torneo</h2>
+
+
+        <div id="messaggio-errore" style="height: 30px; color: red; font-weight: bold; text-align: center; display: none;">
+            Nessuna squadra estratta: riprova.
+        </div>
+
+        <div class="carousel-viewport">
+            <div id="carousel-inner" class="carousel-inner">
+                <div th:each="squadra : ${squadre}" class="card-sorteggio"
+                     th:data-id="${squadra.idSquadra}" th:data-nome="${squadra.nome}" th:data-logo="${squadra.logo}">
+                    <img th:src="${squadra.logo}" th:alt="${squadra.nome}">
+                    <p th:text="${squadra.nome}"></p>
+                </div>
+            </div>
+            <div class="selector-line"></div>
+        </div>
+
+        <div class="results-container">
+            <div class="semifinal-column">
+                <h3 class="semifinal-title">Semifinale 1</h3>
+                <div class="match-box">
+                    <div id="slot-1" class="slot">?</div>
+                    <div class="vs">VS</div>
+                    <div id="slot-2" class="slot">?</div>
+                </div>
+            </div>
+
+            <div class="semifinal-column">
+                <h3 class="semifinal-title">Semifinale 2</h3>
+                <div class="match-box">
+                    <div id="slot-3" class="slot">?</div>
+                    <div class="vs">VS</div>
+                    <div id="slot-4" class="slot">?</div>
+                </div>
             </div>
         </div>
 
-        <div class="semifinal-column">
-            <h3 class="semifinal-title">Semifinale 2</h3>
-            <div class="match-box">
-                <div id="slot-3" class="slot">?</div>
-                <div class="vs">VS</div>
-                <div id="slot-4" class="slot">?</div>
-            </div>
+        <div class="button-row">
+            <button id="btn-estrai" onclick="avviaSorteggio()">Estrai Squadra</button>
+            <button id="btn-partita" style="display: none;" onclick="window.location.href='/partita'">Vai alla Partita</button>
         </div>
     </div>
 
-    <div class="button-row">
-        <button id="btn-estrai" onclick="avviaSorteggio()">Estrai Squadra</button>
-        <button id="btn-partita" style="display: none;" onclick="window.location.href='/partita'">Vai alla Partita</button>
+    <script th:inline="javascript">
+        const listaSquadreIniziale = [[${squadre}]];
+    </script>
+    <script src="/js/sorteggioTorneo.js"></script>
+
+    <footer>
+        <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
+    </footer>
+
+</div>
+
+<!-- OVERLAY -->
+<div id="overlay-torneo" class="overlay-blur">
+    <div class="banner-sportivo">
+        <h3>Nuovo Torneo</h3>
+        <p>Inserisci il nome della competizione</p>
+
+        <input type="text"
+               id="input-nome-torneo"
+               placeholder="Es. Coppa del Mondo"
+               autofocus>
+
+        <button class="btn-conferma"
+                onclick="confermaNomeTorneo()">
+            OK
+        </button>
     </div>
 </div>
 
-<script th:inline="javascript">
-    const listaSquadreIniziale = [[${squadre}]];
-</script>
-<script src="/js/sorteggioTorneo.js"></script>
+<!-- SCRIPT -->
+<script>
+    const pageContent = document.getElementById('page-content');
+    pageContent.classList.add('blur');
 
-<footer>
-    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
-</footer>
+    function confermaNomeTorneo() {
+        const nome = document.getElementById('input-nome-torneo')
+                            .value.trim();
+
+        if (!nome) {
+            alert("Inserisci un nome per il torneo!");
+            return;
+        }
+
+        document.getElementById('titolo-sorteggio')
+                .innerText = "Sorteggio " + nome;
+
+        sessionStorage.setItem('nomeTorneoAttuale', nome);
+
+        document.getElementById('overlay-torneo').style.display = 'none';
+        pageContent.classList.remove('blur');
+    }
+</script>
+
+
 </body>
 </html>
