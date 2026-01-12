@@ -22,13 +22,13 @@ public class Squadra {
     @Column
     private String nome;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     private String logo;
 
     @Column
     private String capitano;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String descrizione;
 
     @ManyToOne(cascade = CascadeType.REFRESH)

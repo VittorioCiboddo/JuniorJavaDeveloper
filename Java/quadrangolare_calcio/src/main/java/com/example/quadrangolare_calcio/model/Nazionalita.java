@@ -25,7 +25,7 @@ public class Nazionalita {
     @Column
     private String sigla;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     private String bandiera;
 
     @OneToMany(mappedBy = "nazionalita", cascade = CascadeType.REMOVE)

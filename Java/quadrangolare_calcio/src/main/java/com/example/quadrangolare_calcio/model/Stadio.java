@@ -21,7 +21,7 @@ public class Stadio {
     @Column
     private String nome;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     private String immagine;
 
     @Column
@@ -30,7 +30,7 @@ public class Stadio {
     @Column
     private String ultras;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String descrizione;
 
     @OneToOne

@@ -20,10 +20,10 @@ public class Ruolo {
     @Column
     private String sigla;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String descrizione;
 
-    @Column(name = "heat_map")
+    @Column(name = "heat_map", columnDefinition = "LONGTEXT")
     private String heatMap;
 
     @ManyToOne(cascade = CascadeType.REFRESH)

@@ -26,7 +26,7 @@ public class Giocatore {
     @Column
     private String cognome;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     private String immagine;
 
     @Column(name = "numero_maglia")
@@ -35,7 +35,7 @@ public class Giocatore {
     @Column(name = "data_nascita")
     private LocalDate dataNascita;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String descrizione;
 
     @ManyToOne(cascade = CascadeType.REFRESH)

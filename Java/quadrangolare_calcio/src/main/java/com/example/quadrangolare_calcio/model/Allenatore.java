@@ -23,10 +23,10 @@ public class Allenatore {
     @Column
     private String cognome;
 
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     private String immagine;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String descrizione;
 
     @OneToOne
