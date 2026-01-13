@@ -587,3 +587,100 @@ header {
     align-items: center;
     gap: 15px;
 }
+
+
+/* --- TELECRONACA SIMULATA --- */
+.match-simulation-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.team-display {
+    text-align: center;
+    width: 30%;
+}
+
+.logo-match {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.scoreboard {
+    text-align: center;
+    background: #222;
+    color: #00bf63;
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 150px;
+    box-shadow: 0 0 15px rgba(0, 191, 99, 0.3);
+}
+
+.score-main {
+    font-size: 3rem;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+}
+
+.match-time {
+    font-size: 1.2rem;
+    color: white;
+    margin-top: 5px;
+}
+
+/* Styling del contenitore dei messaggi */
+.commentary-box {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    height: 400px; /* Aumentato per vedere più messaggi */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Spazio tra un messaggio e l'altro */
+}
+
+/* Singolo post della telecronaca */
+.commentary-event {
+    background: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border-left: 5px solid #00bf63; /* Verde sprint */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    font-size: 0.95em;
+    line-height: 1.4;
+    animation: fadeInSlide 0.4s ease-out; /* Effetto apparizione */
+}
+
+/* Varianti di colore per eventi speciali */
+.commentary-event.goal {
+    border-left-color: #ffcc00; /* Giallo/Oro per il gol */
+    background-color: #fffdf0;
+    font-weight: bold;
+}
+
+.commentary-event.info {
+    border-left-color: #555;
+    font-style: italic;
+}
+
+/* Animazione per l'ingresso dei messaggi */
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#box-rigori {
+    margin-top: 10px;
+    padding: 10px;
+    border: 2px solid #ffcc00; /* Giallo per evidenziarli */
+    border-radius: 8px;
+    background: rgba(255, 204, 0, 0.1);
+    font-weight: bold;
+}

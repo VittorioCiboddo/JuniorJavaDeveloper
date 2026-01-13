@@ -6,19 +6,99 @@
     <link rel="stylesheet" th:href="@{/generale.css}">
 </head>
 <body>
-
 <header>
     <div class="header-content">
         <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
         <div class="header-text">
-            <h1>SPRINT FOOTBALL SIMULATION</h1>
+            <h1 id="header-nome-torneo">Torneo</h1>
         </div>
     </div>
 </header>
 
+<div class="container">
+    <h2 id="tipo-partita-titolo" style="text-align: center; color: #00bf63; text-transform: uppercase;">Caricamento...</h2>
+
+    <div class="match-simulation-container">
+        <div class="team-display">
+            <img id="logo-home" src="" alt="" class="logo-match">
+            <h3 id="nome-home">Squadra Casa</h3>
+        </div>
+
+        <div class="scoreboard">
+            <div id="punteggio-live" class="score-main">0 - 0</div>
+            <div id="tempo-match" class="match-time">00:00</div>
+            <div id="box-rigori" style="display: none; font-size: 1.2rem; color: #ffcc00;">
+                Rigori: <span id="score-rigori">0 - 0</span>
+            </div>
+        </div>
+
+        <div class="team-display">
+            <img id="logo-away" src="" alt="" class="logo-match">
+            <h3 id="nome-away">Squadra Trasferta</h3>
+        </div>
+    </div>
+
+    <div id="telecronaca" class="commentary-box">
+        <p>In attesa del fischio d'inizio...</p>
+    </div>
+
+    <div id="container-navigazione" style="display: none; text-align: center; margin-top: 20px;">
+        <button id="btn-prossima-fase" class="btn-azione" onclick="proseguiTorneo()">
+        </button>
+    </div>
+
+</div>
 
 <footer>
     <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
 </footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Recuperiamo lo stato del torneo
+        const stato = JSON.parse(sessionStorage.getItem('statoTorneo'));
+
+        // Sicurezza: se non c'è uno stato (es. accesso diretto alla pagina), torniamo al tabellone
+        if (!stato) {
+            window.location.href = '/tabellone';
+            return;
+        }
+
+        let matchCorrente = {};
+
+        // 2. Il tuo script: decidiamo quale match caricare
+        switch(stato.faseAttuale) {
+            case 1:
+                matchCorrente = { tipo: "SEMIFINALE 1", home: stato.squadre[0], away: stato.squadre[1] };
+                break;
+            case 2:
+                matchCorrente = { tipo: "SEMIFINALE 2", home: stato.squadre[2], away: stato.squadre[3] };
+                break;
+            case 3:
+                matchCorrente = { tipo: "FINALE 3°-4° POSTO", home: stato.risultati.semi1.perdente, away: stato.risultati.semi2.perdente };
+                break;
+            case 4:
+                matchCorrente = { tipo: "FINALISSIMA", home: stato.risultati.semi1.vincente, away: stato.risultati.semi2.vincente };
+                break;
+        }
+
+        // 3. AGGIORNAMENTO GRAFICO DINAMICO
+        // Scriviamo i dati del match appena calcolato negli ID dell'HTML
+        document.getElementById('header-nome-torneo').innerText = sessionStorage.getItem('nomeTorneoAttuale') || "Torneo";
+        document.getElementById('tipo-partita-titolo').innerText = matchCorrente.tipo;
+
+        document.getElementById('nome-home').innerText = matchCorrente.home.nome;
+        document.getElementById('logo-home').src = matchCorrente.home.logo;
+
+        document.getElementById('nome-away').innerText = matchCorrente.away.nome;
+        document.getElementById('logo-away').src = matchCorrente.away.logo;
+
+        // 4. Salviamo il match specifico nel sessionStorage così la logicaSimulazionePartita.js sa cosa simulare
+        sessionStorage.setItem('matchCorrente', JSON.stringify(matchCorrente));
+    });
+</script>
+
+<script src="/js/logicaSimulazionePartita.js"></script>
+
 </body>
 </html>
