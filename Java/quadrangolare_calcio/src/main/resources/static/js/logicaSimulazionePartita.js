@@ -1,214 +1,299 @@
-// LOGICA PER SIMULARE PARTITE LATO BACKEND
+// LOGICA PER SIMULARE PARTITE CON AGGIORNAMENTO UI DINAMICO
 
 const matchState = {
     tipoPartita: "",
     homeTeam: {
         nome: "",
+        logo: "",
         gol: 0,
         giocatori: []
     },
     awayTeam: {
         nome: "",
+        logo: "",
         gol: 0,
         giocatori: []
     },
-    currentTime: 0,      // Tempo in secondi
-    maxTime: 300,        // 5 minuti di partita (2.5 min per tempo)
+    currentTime: 0, // Tempo in secondi
+    half: 1,
+    maxTime: 90*60,  // 90 minuti reali
+    tickStep: 30,   // 30 secondi simulati per tick
+    tickInterval: 1000,    // ms reali tra un tick e l’altro
+    speedFactor: 3,
     matchEnded: false,
     penalties: {
         active: false,
-        turn: 0,         // 0 per Home, 1 per Away
-        count: 0,        // Totale rigori calciati
+        turn: 0,
+        count: 0,
         results: { home: 0, away: 0 }
     }
 };
 
+// Inizializzazione pagina al caricamento
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Recupero Nome Torneo dall'header
+    const nomeTorneo = sessionStorage.getItem('nomeTorneoAttuale') || 'Torneo';
+    document.getElementById('header-nome-torneo').innerText = nomeTorneo;
+
+    // 2. Recupero Dati Match (assumendo siano salvati nel sessionStorage dal tabellone)
+    const data = JSON.parse(sessionStorage.getItem('matchCorrente'));
+    if (data) {
+        matchState.tipoPartita = data.tipo;
+
+        matchState.homeTeam.nome = data.home.nome;
+        matchState.homeTeam.logo = data.home.logo;
+
+        matchState.awayTeam.logo = data.away.logo;
+        matchState.awayTeam.nome = data.away.nome;
+
+        // Aggiornamento Grafica Iniziale
+        document.getElementById('tipo-partita-titolo').innerText = data.tipo;
+        document.getElementById('nome-home').innerText = data.home.nome;
+        document.getElementById('logo-home').src = data.home.logo;
+        document.getElementById('nome-away').innerText = data.away.nome;
+        document.getElementById('logo-away').src = data.away.logo;
+
+        // Avvio simulazione dopo 2 secondi
+        setTimeout(avviaSimulazione, 2000);
+    }
+});
+
+function avviaSimulazione() {
+    aggiungiCommento("L'arbitro fischia l'inizio della partita!");
+
+    const gameInterval = setInterval(() => {
+        if (matchState.matchEnded) {
+            clearInterval(gameInterval);
+            return;
+        }
+        tick();
+    }, matchState.tickInterval);
+}
+
 
 function tick() {
     if (matchState.matchEnded) return;
+    if (matchState.pause) return;
+
+    matchState.currentTime += matchState.tickStep * matchState.speedFactor;
+
+    if (matchState.currentTime >= 45 * 60 && matchState.half === 1) {
+        aggiungiCommento("FINE PRIMO TEMPO");
+        matchState.half = 2;
+
+        matchState.pause = true;
+
+        setTimeout(() => {
+            aggiungiCommento("INIZIO SECONDO TEMPO");
+            matchState.pause = false;
+        }, 3000);
+
+        return;
+    }
 
     if (matchState.currentTime >= matchState.maxTime) {
         gestisciFinePartita();
         return;
     }
 
-    // Avanzamento tempo (simulo 10 secondi di gioco ogni secondo reale)
-    matchState.currentTime += 10;
 
-    // Probabilità che accada un evento (60%)
-    if (Math.random() < 0.6) {
+    document.getElementById('tempo-match').innerText = `${matchState.half}T ${formattaTempo(matchState.currentTime)}`;
+
+    // Probabilità evento ridotta
+    if (Math.random() < 0.4) {
         generaEvento();
-    } else {
-        console.log(`[${formattaTempo(matchState.currentTime)}] Gioco a centrocampo tra ${matchState.homeTeam.nome} e ${matchState.awayTeam.nome}...`);
     }
 }
 
-/**
- * GENERATORE EVENTI (Tiri o Falli)
- */
 function generaEvento() {
-    const isHomeAttacking = Math.random() < 0.5;
-    const teamAttacco = isHomeAttacking ? matchState.homeTeam : matchState.awayTeam;
-    const giocatore = teamAttacco.giocatori[Math.floor(Math.random() * teamAttacco.giocatori.length)];
-    const tempoCorrente = formattaTempo(matchState.currentTime);
+    const isHome = Math.random() > 0.5;
+    const team = isHome ? matchState.homeTeam : matchState.awayTeam;
 
-    // Estrazione tra Azione di Tiro (70%) o Fallo (30%)
-    if (Math.random() < 0.7) {
-        logicaTiro(teamAttacco, giocatore, tempoCorrente);
+    // Semplificazione: 30% probabilità che l'evento sia un GOL
+    if (Math.random() < 0.3) {
+        team.gol++;
+        // Aggiorno Punteggio UI
+        document.getElementById('punteggio-live').innerText =
+            `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+
+        aggiungiCommento(`[${formattaTempo(matchState.currentTime)}] GOAL! Segna la squadra: ${team.nome}!`);
     } else {
-        logicaFallo(teamAttacco, giocatore, tempoCorrente);
+        aggiungiCommento(`[${formattaTempo(matchState.currentTime)}] Azione pericolosa per il ${team.nome}... palla fuori!`);
     }
 }
 
-/**
- * LOGICA TIRI (Range 0-100)
- */
-function logicaTiro(squadra, player, tempo) {
-    const x = Math.floor(Math.random() * 101);
-    let msg = `[${tempo}] AZIONE: ${player} (${squadra.nome}) si invola verso la porta... `;
-
-    if (x <= 50) {
-        msg += "conclusione sballata, palla fuori!";
-    } else if (x <= 65) {
-        msg += "tiro centrale, il portiere blocca a terra.";
-    } else if (x <= 80) {
-        msg += "mira l'incrocio! Il portiere devia miracolosamente in angolo.";
-    } else {
-        msg += "GOAL!!! Palla nel sacco, non può nulla il portiere!";
-        squadra.gol++;
-        aggiornaTabellino();
-    }
-    console.log(msg);
-}
-
-/**
- * LOGICA FALLI (Range 0-100)
- */
-function logicaFallo(squadraAttacco, player, tempo) {
-    const x = Math.floor(Math.random() * 101);
-    let msg = `[${tempo}] FALLO: Intervento duro su ${player}... `;
-
-    if (x <= 40) {
-        msg += "L'arbitro fischia la punizione ma non estrae cartellini.";
-    } else if (x <= 75) {
-        msg += "AMMONIZIONE! Cartellino giallo per il difensore.";
-    } else if (x <= 90) {
-        msg += "ESPULSIONE! Rosso diretto, fallo bruttissimo!";
-    } else {
-        msg += "CALCIO DI RIGORE! L'arbitro indica il dischetto!";
-        console.log(msg);
-        const segnato = simulaSingoloCalcioRigore(player, squadraAttacco);
-        if (segnato) {
-            squadraAttacco.gol++;
-            aggiornaTabellino();
-        }
-        return;
-    }
-    console.log(msg);
-}
-
-/**
- * LOGICA SINGOLO RIGORE (Range 0-10) - Usata sia in partita che ai rigori finali
- */
-function simulaSingoloCalcioRigore(player, squadra) {
-    const x = Math.floor(Math.random() * 11);
-    let msg = `[RIGORE] ${player} (${squadra.nome}) prende la rincorsa... `;
-
-    if (x <= 6) {
-        console.log(msg + "RETE! Gol impeccabile.");
-        return true;
-    } else if (x === 7) {
-        console.log(msg + "PARATO! Il portiere blocca il pallone.");
-    } else if (x === 8) {
-        console.log(msg + "PALO! La palla rimbalza e finisce fuori.");
-    } else if (x === 9) {
-        console.log(msg + "FUORI! Rigore calciato malissimo.");
-    } else if (x === 10) {
-        console.log(msg + "NON VALIDO! L'arbitro fa ripetere il tiro...");
-        return simulaSingoloCalcioRigore(player, squadra); // Ricorsione
-    }
-    return false;
-}
-
-/**
- * GESTIONE FINE PARTITA E RIGORI FINALI
- */
 function gestisciFinePartita() {
-    matchState.matchEnded = true;
-    console.warn(`FINISCONO I TEMPI REGOLAMENTARI: ${matchState.homeTeam.gol}-${matchState.awayTeam.gol}`);
+    // 1. Controllo se siamo in una situazione di pareggio al termine dei tempi regolamentari
+    if (matchState.homeTeam.gol === matchState.awayTeam.gol && !matchState.penalties.active) {
+        aggiungiCommento("FISCHIO FINALE: Pareggio! La qualificazione si deciderà ai calci di rigore.");
 
-    if (matchState.homeTeam.gol === matchState.awayTeam.gol) {
-        console.log("SI VA AI CALCI DI RIGORE PER DECIDERE IL VINCITORE!");
-        avviaRigoriFinali();
-    } else {
-        console.log("FISCHIO FINALE! Vince il " + (matchState.homeTeam.gol > matchState.awayTeam.gol ? matchState.homeTeam.nome : matchState.awayTeam.nome));
+        // Mostriamo il box dei rigori nell'HTML
+        const boxRigori = document.getElementById('box-rigori');
+        if (boxRigori) boxRigori.style.display = 'block';
+
+        // Facciamo partire la sequenza dei rigori
+        setTimeout(avviaRigori, 2000);
+        return; // ESCIAMO dalla funzione, non dobbiamo salvare nulla ancora!
     }
+
+    // 2. Se arriviamo qui, o la partita è finita con un vincitore nei 90',
+    //    o abbiamo appena finito i rigori.
+    matchState.matchEnded = true;
+
+    let vincitore, perdente;
+
+    // Determiniamo il vincitore considerando i rigori se sono stati disputati
+    if (matchState.penalties.active) {
+        const res = matchState.penalties.results;
+        if (res.home > res.away) {
+            vincitore = matchState.homeTeam;
+            perdente = matchState.awayTeam;
+        } else {
+            vincitore = matchState.awayTeam;
+            perdente = matchState.homeTeam;
+        }
+    } else {
+        if (matchState.homeTeam.gol > matchState.awayTeam.gol) {
+            vincitore = matchState.homeTeam;
+            perdente = matchState.awayTeam;
+        } else {
+            vincitore = matchState.awayTeam;
+            perdente = matchState.homeTeam;
+        }
+    }
+
+    aggiungiCommento(`MATCH CONCLUSO! ${vincitore.nome.toUpperCase()} passa il turno.`);
+
+    // 3. Ora possiamo finalmente salvare e passare alla fase successiva
+    setTimeout(() => {
+        salvaERiprosegui(vincitore, perdente);
+    }, 3000);
 }
 
-function avviaRigoriFinali() {
+/**
+ * LOGICA RIGORI
+ */
+function avviaRigori() {
     matchState.penalties.active = true;
-    // Sorteggio chi inizia (0 o 1)
-    matchState.penalties.turn = Math.random() < 0.5 ? 0 : 1;
+    aggiungiCommento("--- INIZIO CALCI DI RIGORE ---");
 
-    console.log(`Inizia la serie dei rigori. Tirerà per prima: ${matchState.penalties.turn === 0 ? matchState.homeTeam.nome : matchState.awayTeam.nome}`);
-
-    const penaltyTimer = setInterval(() => {
-        eseguiTurnoRigore();
-
+    const penaltyInterval = setInterval(() => {
         if (checkFineRigori()) {
-            clearInterval(penaltyTimer);
-            const vincitore = matchState.penalties.results.home > matchState.penalties.results.away ? matchState.homeTeam.nome : matchState.awayTeam.nome;
-            console.warn(`FINE RIGORI! Risultato finale: ${matchState.penalties.results.home}-${matchState.penalties.results.away}. Vince il ${vincitore}!`);
+            clearInterval(penaltyInterval);
+            aggiungiCommento("Lotteria dei rigori conclusa!");
+
+            // Fondamentale: richiamiamo la gestione fine partita
+            // che ora troverà i rigori completati e salverà il risultato
+            gestisciFinePartita();
+            return;
         }
+        eseguiTurnoRigore();
     }, 1500);
 }
 
 function eseguiTurnoRigore() {
     const isHomeTurn = matchState.penalties.turn === 0;
-    const squadra = isHomeTurn ? matchState.homeTeam : matchState.awayTeam;
-    const tiratore = squadra.giocatori[Math.floor(Math.random() * squadra.giocatori.length)];
-
-    const segnato = simulaSingoloCalcioRigore(tiratore, squadra);
+    const segnato = Math.random() > 0.3; // 70% di probabilità di segnare
 
     if (segnato) {
         if (isHomeTurn) matchState.penalties.results.home++;
         else matchState.penalties.results.away++;
     }
 
+    const scoreElement = document.getElementById('score-rigori');
+    if (scoreElement) {
+        scoreElement.innerText = `${matchState.penalties.results.home} - ${matchState.penalties.results.away}`;
+    }
+
+    const squadraTira = isHomeTurn ? matchState.homeTeam.nome : matchState.awayTeam.nome;
+    aggiungiCommento(`Rigore per ${squadraTira}: ${segnato ? 'RETE! ⚽' : 'PARATO! 🧤'}`);
+
     matchState.penalties.count++;
-    matchState.penalties.turn = isHomeTurn ? 1 : 0; // Cambio turno alternato
+    matchState.penalties.turn = isHomeTurn ? 1 : 0; // Alternanza
 }
 
 function checkFineRigori() {
     const { home, away } = matchState.penalties.results;
     const count = matchState.penalties.count;
 
-    // 1. Fase dei primi 10 rigori (5 a testa)
-    if (count < 10) {
-        const tiriRimastiHome = 5 - (matchState.penalties.turn === 0 ? Math.floor(count/2) : Math.ceil(count/2));
-        const tiriRimastiAway = 5 - (matchState.penalties.turn === 1 ? Math.floor(count/2) : Math.ceil(count/2));
-
-        if (home > away + tiriRimastiAway || away > home + tiriRimastiHome) return true;
-    }
-    // 2. Oltranza (dopo i 10 tiri, solo se count è pari per parità di turni)
-    else if (count % 2 === 0 && home !== away) {
+    // Se sono stati tirati almeno 10 rigori (5 a testa) e il punteggio è diverso
+    if (count >= 10 && count % 2 === 0 && home !== away) {
         return true;
     }
+
+    // Ad oltranza (dopo i primi 10) continua finché uno segna e l'altro sbaglia nello stesso turno
+    if (count > 10 && count % 2 === 0 && home !== away) {
+        return true;
+    }
+
     return false;
 }
 
 /**
- * UTILS
+ * UI HELPERS
  */
+function aggiungiCommento(testo) {
+    const box = document.getElementById('telecronaca');
+
+    // Creiamo un div contenitore per il singolo messaggio
+    const div = document.createElement('div');
+    div.classList.add('commentary-event');
+
+    // Gestione icone e classi speciali in base al contenuto
+    if (testo.includes("GOAL") || testo.includes("RETE")) {
+        div.classList.add('goal');
+        testo = "⚽ " + testo;
+    } else if (testo.includes("FINE") || testo.includes("INIZIO") || testo.includes("FISCHIO")) {
+        div.classList.add('info');
+        testo = "📢 " + testo;
+    } else if (testo.includes("PARATO") || testo.includes("🧤")) {
+        testo = "🧤 " + testo;
+    } else {
+        testo = "👟 " + testo;
+    }
+
+    div.innerText = testo;
+
+    // Inseriamo il messaggio in cima
+    box.prepend(div);
+}
+
 function formattaTempo(secondi) {
-    const min = Math.floor(secondi / 60);
-    const sec = secondi % 60;
-    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    const m = Math.floor(secondi / 60);
+    const s = secondi % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-function aggiornaTabellino() {
-    console.log(`%c PUNTEGGIO: ${matchState.homeTeam.nome} ${matchState.homeTeam.gol} - ${matchState.awayTeam.gol} ${matchState.awayTeam.nome} `, "background: #222; color: #bada55; font-weight: bold;");
+
+function salvaERiprosegui(vincitore, perdente) {
+    let stato = JSON.parse(sessionStorage.getItem('statoTorneo'));
+
+    // Salviamo chi ha vinto e chi ha perso per calcolare Finale e Finalina
+    if (stato.faseAttuale === 1) stato.risultati.semi1 = { vincente : vincitore, perdente };
+    if (stato.faseAttuale === 2) stato.risultati.semi2 = { vincente : vincitore, perdente };
+
+    // Incrementiamo la fase (es. da 1 a 2)
+    stato.faseAttuale++;
+    sessionStorage.setItem('statoTorneo', JSON.stringify(stato));
+
+    if (stato.faseAttuale <= 4) {
+        alert("Partita terminata! Prossima fase: " + getNomeFase(stato.faseAttuale));
+        // Ricaricando la pagina, il switch-case in match-simulato.html
+        // leggerà la nuova faseAttuale e caricherà le squadre corrette
+        window.location.reload();
+    } else {
+        alert("Torneo Concluso! Vai alla premiazione.");
+        window.location.href = "/archivio"; // O dove preferisci mandare l'utente
+    }
 }
 
-// AVVIO SIMULAZIONE (Esegue un tick ogni 1 secondo reale)
-const gameInterval = setInterval(tick, 1000);
+// Funzione di supporto per gli alert
+function getNomeFase(fase) {
+    const nomi = {
+        1: "SEMIFINALE 1",
+        2: "SEMIFINALE 2",
+        3: "FINALE 3°-4° POSTO",
+        4: "FINALISSIMA"
+    };
+    return nomi[fase] || "FINE";
+}
