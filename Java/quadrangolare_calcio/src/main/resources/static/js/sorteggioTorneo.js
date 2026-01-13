@@ -1,5 +1,6 @@
 let squadreDisponibili = [];
 let contatoreEstratti = 0;
+let partecipanti = [];
 const TOTAL_CARD_SPACE = 200; // 180px card + 10px margin left + 10px margin right
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -118,8 +119,56 @@ function avviaSorteggio() {
 function riempiSlot(squadra) {
     contatoreEstratti++;
     const slot = document.getElementById(`slot-${contatoreEstratti}`);
+
+    partecipanti.push({
+            id: squadra.idSquadra,
+            nome: squadra.nome,
+            logo: squadra.logo
+        });
+
     if (slot) {
         slot.innerHTML = `<img src="${squadra.logo}" style="width:70px; height:70px; object-fit:contain;"><br><b>${squadra.nome}</b>`;
         slot.classList.add('estratta');
+    }
+
+    // Dentro riempiSlot, quando contatoreEstratti === 4
+    if (contatoreEstratti === 4) {
+        document.getElementById('btn-estrai').style.display = 'none';
+        const btnPartita = document.getElementById('btn-partita');
+        btnPartita.style.display = 'block';
+
+        const statoTorneo = {
+            faseAttuale: 1,
+            squadre: partecipanti,
+            risultati: { semi1: null, semi2: null }
+        };
+        sessionStorage.setItem('statoTorneo', JSON.stringify(statoTorneo));
+
+        // CHIAMATA ALLA TUA FUNZIONE
+        preparaMatch(1); // Inizializza la Semifinale 1
+    }
+
+
+    function preparaMatch(numeroMatch) {
+        let matchData = {};
+
+        if (numeroMatch === 1) {
+            // Semifinale 1: Slot 1 vs Slot 2
+            matchData = {
+                tipo: "SEMIFINALE 1",
+                home: partecipanti[0], // Squadra nello slot 1
+                away: partecipanti[1]  // Squadra nello slot 2
+            };
+        } else if (numeroMatch === 2) {
+            // Semifinale 2: Slot 3 vs Slot 4
+            matchData = {
+                tipo: "SEMIFINALE 2",
+                home: partecipanti[2], // Squadra nello slot 3
+                away: partecipanti[3]  // Squadra nello slot 4
+            };
+        }
+
+        // Salva l'oggetto nel sessionStorage per match-simulato.html
+        sessionStorage.setItem('matchCorrente', JSON.stringify(matchData));
     }
 }
