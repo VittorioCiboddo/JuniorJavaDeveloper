@@ -29,7 +29,11 @@ const matchState = {
         active: false,
         turn: 0,
         count: 0,
-        results: { home: 0, away: 0 }
+        results: { home: 0, away: 0 },
+        tiratori: {
+            home: [],
+            away: []
+        }
     }
 };
 
@@ -162,16 +166,62 @@ function selezionaGiocatorePerAzione(team, tipoAzione) {
     return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function formattaMessaggio(categoria, sottocategoria, team) {
+function scegliRigorista(team, key) {
+    const tutti = team.giocatori;
+    let giaUsati = matchState.penalties.tiratori[key];
 
-    let frasi = (categoria === 'RIGORI')
-        ? DIZIONARIO_LIVE.RIGORI[sottocategoria]
-        : DIZIONARIO_LIVE[categoria];
+    // se tutti hanno già tirato, reset
+    if (giaUsati.length >= tutti.length) {
+        matchState.penalties.tiratori[key] = [];
+        giaUsati = [];
+    }
+
+    // prendi solo i giocatori disponibili
+    let disponibili = tutti.filter(g => !giaUsati.includes(g.id));
+
+    // fallback: se disponibile è vuoto, reset completo
+    if (disponibili.length === 0) {
+        matchState.penalties.tiratori[key] = [];
+        disponibili = [...tutti];
+    }
+
+    const scelto = disponibili[Math.floor(Math.random() * disponibili.length)];
+
+    matchState.penalties.tiratori[key].push(scelto.id);
+    return scelto;
+}
+
+
+
+function formattaMessaggio(
+    categoria,
+    sottocategoria,
+    teamAttacco,
+    teamDifesa,
+    giocatoreForzato = null
+) {
+
+    let frasi;
+
+    if (categoria === 'LOTTERIA_RIGORI') {
+        frasi = DIZIONARIO_LIVE.LOTTERIA_RIGORI[sottocategoria];
+    } else if (categoria === 'RIGORI') {
+        frasi = DIZIONARIO_LIVE.RIGORI[sottocategoria];
+    } else {
+        frasi = DIZIONARIO_LIVE[categoria];
+    }
+
+    if (!frasi || frasi.length === 0) {
+        return "Azione confusa in campo.";
+    }
 
     const fraseBase = frasi[Math.floor(Math.random() * frasi.length)];
 
-    const giocatoreAzione = selezionaGiocatorePerAzione(team, categoria);
-    const portiere = getPortiere(team);
+    const giocatoreAzione = giocatoreForzato
+        ? giocatoreForzato
+        : selezionaGiocatorePerAzione(teamAttacco, categoria);
+
+    const portiere = getPortiere(teamDifesa);
 
     const nomeG = giocatoreAzione ? giocatoreAzione.cognome : "un giocatore";
     const nomePT = portiere ? portiere.cognome : "il portiere";
@@ -179,8 +229,10 @@ function formattaMessaggio(categoria, sottocategoria, team) {
     return fraseBase
         .replace(/{G}/g, `<strong>${nomeG}</strong>`)
         .replace(/{PT}/g, `<strong>${nomePT}</strong>`)
-        .replace(/{S}/g, `<strong>${team.nome}</strong>`);
+        .replace(/{S}/g, `<strong>${teamAttacco.nome}</strong>`);
 }
+
+
 
 let gameInterval = null;
 let penaltyInterval = null;
@@ -275,28 +327,51 @@ function aggiornaGraficaTimer() {
 
 function generaEvento() {
     const isHome = Math.random() > 0.5;
-    const teamAttaccante = isHome ? matchState.homeTeam : matchState.awayTeam;
-    const teamDifendente = isHome ? matchState.awayTeam : matchState.homeTeam; // Il team che subisce l'azione
+    const teamAttacco = isHome ? matchState.homeTeam : matchState.awayTeam;
+    const teamDifesa = isHome ? matchState.awayTeam : matchState.homeTeam;
     const tempo = formattaTempo(matchState.currentTime);
 
     const rand = Math.random();
 
     if (rand < 0.20) {
-        // 1. AZIONE DEL PORTIERE (20% di probabilità)
-        // Passiamo 'teamDifendente' perché è il portiere di chi si difende a fare la parata!
-        aggiungiCommento(`[${tempo}] ${formattaMessaggio('PORTIERE', null, teamDifendente)}`);
+        // AZIONE PORTIERE
+        aggiungiCommento(
+            `[${tempo}] ${formattaMessaggio(
+                'PORTIERE',
+                null,
+                teamDifesa,
+                teamAttacco
+            )}`
+        );
 
     } else if (rand < 0.30) {
-        // 2. GOAL (30% di probabilità: 0.5 - 0.2)
-        teamAttaccante.gol++;
-        document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
-        aggiungiCommento(`[${tempo}] GOAL! ${formattaMessaggio('GOL', null, teamAttaccante)}`);
+        // GOAL
+        teamAttacco.gol++;
+        document.getElementById('punteggio-live').innerText =
+            `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+
+        aggiungiCommento(
+            `[${tempo}] GOAL! ${formattaMessaggio(
+                'GOL',
+                null,
+                teamAttacco,
+                teamDifesa
+            )}`
+        );
 
     } else {
-        // 3. AZIONE PERICOLOSA (60% di probabilità)
-        aggiungiCommento(`[${tempo}] ${formattaMessaggio('AZIONE_PERICOLOSA', null, teamAttaccante)}`);
+        // AZIONE PERICOLOSA
+        aggiungiCommento(
+            `[${tempo}] ${formattaMessaggio(
+                'AZIONE_PERICOLOSA',
+                null,
+                teamAttacco,
+                teamDifesa
+            )}`
+        );
     }
 }
+
 
 function gestisciFinePartita() {
 
@@ -310,7 +385,7 @@ function gestisciFinePartita() {
     ) {
         matchState.penalties.active = true;
 
-        // ⛔ FERMIAMO LA PARTITA
+        // FERMIAMO LA PARTITA
         matchState.pause = true;
         if (gameInterval) clearInterval(gameInterval);
 
@@ -322,7 +397,7 @@ function gestisciFinePartita() {
         return;
     }
 
-    // ✅ DA QUI IN POI: PARTITA FINITA DAVVERO
+    // DA QUI IN POI: PARTITA FINITA DAVVERO
     matchState.matchEnded = true;
     matchState.pause = true;
 
@@ -357,10 +432,17 @@ function gestisciFinePartita() {
  * LOGICA RIGORI
  */
 function avviaRigori() {
+
+    // BLOCCO TOTALE DEL MATCH
+    matchState.pause = true;
+
+    // RESET COMPLETO STATO RIGORI
     matchState.penalties = {
         active: true,
+        turn: 0,
         count: 0,
-        results: { home: 0, away: 0 }
+        results: { home: 0, away: 0 },
+        tiratori: { home: [], away: [] }
     };
 
     aggiungiCommento("--- INIZIO CALCI DI RIGORE ---");
@@ -370,7 +452,6 @@ function avviaRigori() {
     penaltyInterval = setInterval(() => {
         if (checkFineRigori()) {
             clearInterval(penaltyInterval);
-            aggiungiCommento("Lotteria dei rigori conclusa!");
             gestisciFinePartita();
             return;
         }
@@ -381,47 +462,67 @@ function avviaRigori() {
 
 
 function eseguiTurnoRigore() {
-    const count = matchState.penalties.count;
-    const isHomeTurn = count % 2 === 0;
 
-    const teamTiratore = isHomeTurn
-        ? matchState.homeTeam
-        : matchState.awayTeam;
+    const isHomeTurn = matchState.penalties.turn === 0;
 
-    const segnato = Math.random() > 0.3;
+    // Squadra che tira e squadra che difende
+    const teamAttacco = isHomeTurn ? matchState.homeTeam : matchState.awayTeam;
+    const teamDifesa = isHomeTurn ? matchState.awayTeam : matchState.homeTeam;
+
+    const keyTiratore = isHomeTurn ? 'home' : 'away';
+
+    // SCELTA RIGORISTA (una sola volta per turno)
+    const rigorista = scegliRigorista(teamAttacco, keyTiratore);
+
+    // Probabilità di segnare
+    const segnato = Math.random() < 0.7;
 
     if (segnato) {
-        if (isHomeTurn) matchState.penalties.results.home++;
-        else matchState.penalties.results.away++;
+        isHomeTurn
+            ? matchState.penalties.results.home++
+            : matchState.penalties.results.away++;
     }
 
-    // Aggiorna tabellino
-    const scoreElement = document.getElementById('score-rigori');
-    if (scoreElement) {
-        scoreElement.innerText =
-            `${matchState.penalties.results.home} - ${matchState.penalties.results.away}`;
-    }
+    // Aggiornamento tabellino rigori
+    document.getElementById('score-rigori').innerText =
+        `${matchState.penalties.results.home} - ${matchState.penalties.results.away}`;
 
+    // Messaggio telecronaca
     const categoria = segnato ? 'SEGNATO' : 'ERRORE';
-    const messaggio = formattaMessaggio('LOTTERIA_RIGORI', categoria, teamTiratore);
 
-    aggiungiCommento(`[RIGORI] ${messaggio}`);
+    aggiungiCommento(
+        `[RIGORI] ${formattaMessaggio(
+            'LOTTERIA_RIGORI',
+            categoria,
+            teamAttacco,
+            teamDifesa,
+            rigorista
+        )}`
+    );
 
-    matchState.penalties.count++;
+    // Alternanza turni
+    matchState.penalties.turn = isHomeTurn ? 1 : 0;
+
+    // Conta solo dopo entrambi i tiri
+    if (matchState.penalties.turn === 0) {
+        matchState.penalties.count++;
+    }
 }
+
 
 
 function checkFineRigori() {
     const { home, away } = matchState.penalties.results;
-    const count = matchState.penalties.count;
+    const rounds = matchState.penalties.count;
 
-    // Dopo 5 rigori a testa (10 totali)
-    if (count >= 10 && count % 2 === 0 && home !== away) {
+    // Dopo 5 rigori a testa
+    if (rounds >= 5 && home !== away) {
         return true;
     }
 
     return false;
 }
+
 
 
 /**
