@@ -21,13 +21,23 @@ public class TabelloneController {
     public String getPage(Model model) {
         List<Squadra> squadreComplete = squadraService.getSquadreComplete();
 
-        // Creiamo una lista semplificata per il JS
         List<Map<String, Object>> squadreSemplici = squadreComplete.stream().map(s -> {
             Map<String, Object> map = new HashMap<>();
             map.put("idSquadra", s.getIdSquadra());
             map.put("nome", s.getNome());
             map.put("logo", s.getLogo());
+
+            List<Map<String, String>> giocatoriSemplici = s.getGiocatori().stream().map(g -> {
+                Map<String, String> gMap = new HashMap<>();
+                gMap.put("nome", g.getNome());
+                gMap.put("cognome", g.getCognome());
+                gMap.put("categoria", g.getRuolo().getTipologia().getCategoria());
+                return gMap;
+            }).collect(Collectors.toList());
+
+            map.put("giocatori", giocatoriSemplici);
             return map;
+
         }).collect(Collectors.toList());
 
         model.addAttribute("squadre", squadreSemplici); // Passiamo questa al JS
