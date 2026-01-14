@@ -4,15 +4,16 @@ let partecipanti = [];
 const TOTAL_CARD_SPACE = 200; // 180px card + 10px margin left + 10px margin right
 
 document.addEventListener("DOMContentLoaded", function() {
-    const cardsIniziali = document.querySelectorAll('.card-sorteggio');
-    cardsIniziali.forEach(c => {
-        squadreDisponibili.push({
-            id: c.getAttribute('data-id'),
-            nome: c.getAttribute('data-nome'),
-            logo: c.getAttribute('data-logo')
-        });
-    });
-    console.log("Squadre pronte:", squadreDisponibili);
+    // IMPORTANTE: listaSquadreIniziale contiene già TUTTO dal DB (giocatori inclusi)
+    if (typeof listaSquadreIniziale !== 'undefined' && listaSquadreIniziale !== null) {
+        squadreDisponibili = listaSquadreIniziale.map(s => ({
+            id: s.idSquadra,
+            nome: s.nome,
+            logo: s.logo,
+            giocatori: s.giocatori || [] // <--- QUI NASCE IL DATO
+        }));
+    }
+    console.log("Squadre caricate con giocatori:", squadreDisponibili);
 });
 
 function avviaSorteggio() {
@@ -95,11 +96,10 @@ function avviaSorteggio() {
         });
 
         if (cardSelezionata) {
-            const vinta = {
-                id: cardSelezionata.getAttribute('data-id'),
-                nome: cardSelezionata.getAttribute('data-nome'),
-                logo: cardSelezionata.getAttribute('data-logo')
-            };
+
+            const idVinta = cardSelezionata.getAttribute('data-id');
+            const vinta = squadreDisponibili.find(s => s.id == idVinta);
+
 
             riempiSlot(vinta);
             // Rimuoviamo la squadra estratta da quelle disponibili per il prossimo turno
@@ -120,11 +120,7 @@ function riempiSlot(squadra) {
     contatoreEstratti++;
     const slot = document.getElementById(`slot-${contatoreEstratti}`);
 
-    partecipanti.push({
-            id: squadra.idSquadra,
-            nome: squadra.nome,
-            logo: squadra.logo
-        });
+    partecipanti.push({ ...squadra });
 
     if (slot) {
         slot.innerHTML = `<img src="${squadra.logo}" style="width:70px; height:70px; object-fit:contain;"><br><b>${squadra.nome}</b>`;
