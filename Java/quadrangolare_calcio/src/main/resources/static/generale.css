@@ -684,3 +684,32 @@ header {
     background: rgba(255, 204, 0, 0.1);
     font-weight: bold;
 }
+
+/* style button per fine simulazione e prosieguo fase successiva */
+#btn-prosegui-fase {
+    display: none;
+    margin: 30px auto;
+    padding: 15px 45px;
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: slideInUp 0.5s ease-out;
+}
+
+#btn-prosegui-fase:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
