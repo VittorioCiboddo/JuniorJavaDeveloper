@@ -670,6 +670,20 @@ header {
     font-style: italic;
 }
 
+/* style per rendering immagine png come icona unicode */
+.icona-evento {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.emoji-evento {
+    font-size: 18px;
+    margin-right: 6px;
+}
+
+
 /* Animazione per l'ingresso dei messaggi */
 @keyframes fadeInSlide {
     from { opacity: 0; transform: translateY(-10px); }
