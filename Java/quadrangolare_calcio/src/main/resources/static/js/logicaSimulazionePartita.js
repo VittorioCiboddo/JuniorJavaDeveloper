@@ -183,27 +183,30 @@ function selezionaGiocatorePerAzione(team, tipoAzione) {
 
 function scegliRigorista(team, key) {
     const tutti = team.giocatori;
-    let giaUsati = matchState.penalties.tiratori[key];
 
-    // se tutti hanno già tirato, reset
+    if (!matchState.penalties.tiratori[key]) {
+        matchState.penalties.tiratori[key] = [];
+    }
+
+    const giaUsati = matchState.penalties.tiratori[key];
+
+    // se tutti hanno già tirato → reset (oltranza vera)
     if (giaUsati.length >= tutti.length) {
         matchState.penalties.tiratori[key] = [];
-        giaUsati = [];
     }
 
-    // prendi solo i giocatori disponibili
-    let disponibili = tutti.filter(g => !giaUsati.includes(g.id));
+    const disponibili = tutti.filter((_, index) =>
+        !matchState.penalties.tiratori[key].includes(index)
+    );
 
-    // fallback: se disponibile è vuoto, reset completo
-    if (disponibili.length === 0) {
-        matchState.penalties.tiratori[key] = [];
-        disponibili = [...tutti];
-    }
+    const indiceScelto =
+        disponibili.length > 0
+            ? tutti.indexOf(disponibili[Math.floor(Math.random() * disponibili.length)])
+            : Math.floor(Math.random() * tutti.length);
 
-    const scelto = disponibili[Math.floor(Math.random() * disponibili.length)];
+    matchState.penalties.tiratori[key].push(indiceScelto);
 
-    matchState.penalties.tiratori[key].push(scelto.id);
-    return scelto;
+    return tutti[indiceScelto];
 }
 
 
@@ -228,11 +231,22 @@ function formattaMessaggio(
     }
 
     if (!frasi || frasi.length === 0) {
-        return "Azione confusa in campo."; // fallback sicuro
+        return "Azione confusa in campo.";
     }
 
     const fraseBase = frasi[Math.floor(Math.random() * frasi.length)];
 
+    // CASO SPECIALE PORTIERE
+    if (categoria === 'PORTIERE') {
+        const portiere = getPortiere(teamDifesa);
+        const nomePT = portiere ? portiere.cognome : "il portiere";
+
+        return fraseBase
+            .replace(/{PT}/g, `<strong>${nomePT}</strong>`)
+            .replace(/{S}/g, `<strong>${teamDifesa.nome}</strong>`);
+    }
+
+    // CASO NORMALE
     const giocatoreAzione = giocatoreForzato
         ? giocatoreForzato
         : selezionaGiocatorePerAzione(teamAttacco, categoria);
@@ -251,11 +265,15 @@ function formattaMessaggio(
 
 
 
+
 let gameInterval = null;
 let penaltyInterval = null;
 
 function avviaSimulazione() {
-    aggiungiCommento("L'arbitro fischia l'inizio della partita!", "FISCHIO");
+
+    document.getElementById('col-neutral').innerHTML = "";
+
+    aggiungiCommento("L'arbitro fischia l'inizio della partita!", "FISCHIO", "neutral");
 
     if (gameInterval) clearInterval(gameInterval);
 
@@ -287,7 +305,7 @@ function tick() {
         matchState.mostraRecupero = true;
 
         if (r > 0) {
-            aggiungiCommento(`[${matchState.half === 1 ? '45:00' : '90:00'}] Segnalati ${r} minuti di recupero.`, "FISCHIO");
+            aggiungiCommento(`[${matchState.half === 1 ? '45:00' : '90:00'}] Segnalati ${r} minuti di recupero.`, "FISCHIO", "neutral");
         }
     }
 
@@ -299,14 +317,14 @@ function tick() {
         aggiornaGraficaTimer(); // Funzione di supporto che creiamo sotto
 
         if (matchState.half === 1) {
-            aggiungiCommento(`FINE PRIMO TEMPO (${matchState.recuperoMinuti > 0 ? '+'+matchState.recuperoMinuti : ''})`, "FISCHIO");
+            aggiungiCommento(`FINE PRIMO TEMPO (${matchState.recuperoMinuti > 0 ? '+'+matchState.recuperoMinuti : ''})`, "FISCHIO", "neutral");
             matchState.half = 2;
             matchState.pause = true;
             matchState.mostraRecupero = false; // Reset per il secondo tempo
             matchState.recuperoMinuti = 0;
 
             setTimeout(() => {
-                aggiungiCommento("INIZIO SECONDO TEMPO", "FISCHIO");
+                aggiungiCommento("INIZIO SECONDO TEMPO", "FISCHIO", "neutral");
                 matchState.currentTime = 45 * 60; // Inizia esattamente da 45:00
                 matchState.pause = false;
             }, 3000);
@@ -346,28 +364,41 @@ function generaEvento() {
     const isHome = Math.random() > 0.5;
     const teamAttacco = isHome ? matchState.homeTeam : matchState.awayTeam;
     const teamDifesa = isHome ? matchState.awayTeam : matchState.homeTeam;
+    const target = isHome ? 'home' : 'away'; // <--- target (telecronaca a 3 colonne)
     const tempo = formattaTempo(matchState.currentTime);
 
     const rand = Math.random();
 
     if (rand < 0.20) {
-        // AZIONE PORTIERE
-        const frase = formattaMessaggio('PORTIERE', null, teamDifesa, teamAttacco);
-        aggiungiCommento(`[${tempo}] ${frase}`, "PARATA");
+        // AZIONE PORTIERE (difesa)
+        const frase = formattaMessaggio(
+            'PORTIERE',
+            null,
+            teamAttacco,
+            teamDifesa
+        );
 
-    } else if (rand < 0.15) {
+        // Forziamo la colonna sulla squadra che ha il portiere
+        const targetPortiere = teamDifesa === matchState.homeTeam ? 'home' : 'away';
+
+        aggiungiCommento(
+            `[${tempo}] ${frase}`,
+            "PARATA",
+            targetPortiere
+        );
+
+    } else if (rand < 0.30) {
         // RIGORE PARTITA (annuncio fischio + messaggio rigore)
         const rigorista = scegliRigorista(teamAttacco, isHome ? 'home' : 'away');
         const segnato = Math.random() < 0.70;
 
         // Annuncio rigore
-        aggiungiCommento(`[${tempo}] Attenzione: l'arbitro fischia calcio di rigore per ${teamAttacco.nome}!`, "FISCHIO");
+        aggiungiCommento(`[${tempo}] Attenzione: l\`arbitro fischia calcio di rigore per ${teamAttacco.nome}!`, "FISCHIO", target);
 
         // Aggiornamento gol se segnato
         if (segnato) {
             teamAttacco.gol++;
-            document.getElementById('punteggio-live').innerText =
-                `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+            document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
         }
 
         // Messaggio rigore
@@ -378,7 +409,8 @@ function generaEvento() {
         aggiungiCommento(
             `[${tempo}] ${formattaMessaggio('RIGORE_PARTITA', sottocategoria, teamAttacco, teamDifesa, rigorista)}`,
             categoriaEmoji,
-            segnato // true = usa stile goal
+            segnato, // true = usa stile goal
+            target
         );
 
     } else if (rand < 0.50) {
@@ -389,7 +421,7 @@ function generaEvento() {
 
         aggiungiCommento(
             `[${tempo}] GOAL! ${formattaMessaggio('GOL', null, teamAttacco, teamDifesa)}`,
-            "GOL"
+            "GOL", target
         );
 
     } else {
@@ -403,13 +435,11 @@ function generaEvento() {
 
         aggiungiCommento(
             `[${tempo}] ${frase}`,
-            tipoEvento
+            tipoEvento,
+            target
         );
     }
 }
-
-
-
 
 
 function gestisciFinePartita() {
@@ -428,7 +458,7 @@ function gestisciFinePartita() {
         matchState.pause = true;
         if (gameInterval) clearInterval(gameInterval);
 
-        aggiungiCommento("FISCHIO FINALE: Pareggio! Si va ai calci di rigore.", "FISCHIO");
+        aggiungiCommento("FISCHIO FINALE: Pareggio! Si va ai calci di rigore.", "FISCHIO", "neutral");
 
         document.getElementById('box-rigori').style.display = 'block';
 
@@ -460,7 +490,9 @@ function gestisciFinePartita() {
             : matchState.homeTeam;
     }
 
-    aggiungiCommento(`MATCH CONCLUSO! Vince ${vincitore.nome.toUpperCase()}.`, "INIZIO_FINE_PARTITA");
+    aggiungiCommento(`MATCH CONCLUSO! Vince ${vincitore.nome.toUpperCase()}.`, "INIZIO_FINE_PARTITA", "neutral");
+
+    matchState.matchEnded = true;
 
     salvaERiprosegui(vincitore, perdente);
 }
@@ -475,16 +507,13 @@ function avviaRigori() {
     // BLOCCO TOTALE DEL MATCH
     matchState.pause = true;
 
-    // RESET COMPLETO STATO RIGORI
-    matchState.penalties = {
-        active: true,
-        turn: 0,
-        count: 0,
-        results: { home: 0, away: 0 },
-        tiratori: { home: [], away: [] }
-    };
+    matchState.penalties.active = true;
+    matchState.penalties.turn = 0;
+    matchState.penalties.count = 0;
+    matchState.penalties.results = { home: 0, away: 0 };
+    matchState.penalties.tiratori = { home: [], away: [] };
 
-    aggiungiCommento("--- INIZIO CALCI DI RIGORE ---", "FISCHIO");
+    aggiungiCommento("--- INIZIO CALCI DI RIGORE ---", "FISCHIO", "neutral");
 
     if (penaltyInterval) clearInterval(penaltyInterval);
 
@@ -503,6 +532,9 @@ function avviaRigori() {
 function eseguiTurnoRigore() {
 
     const isHomeTurn = matchState.penalties.turn === 0;
+
+    // Target
+    const target = isHomeTurn ? 'home' : 'away';
 
     // Squadra che tira e squadra che difende
     const teamAttacco = isHomeTurn ? matchState.homeTeam : matchState.awayTeam;
@@ -529,15 +561,14 @@ function eseguiTurnoRigore() {
     // Messaggio telecronaca
     const categoria = segnato ? 'SEGNATO' : 'ERRORE';
 
+    const tipoEmoji = segnato ? "RIGORE_OK" : "RIGORE_KO";
+
     aggiungiCommento(
-        `[RIGORI] ${formattaMessaggio(
-            'LOTTERIA_RIGORI',
-            categoria,
-            teamAttacco,
-            teamDifesa,
-            rigorista
-        )}`, "FISCHIO"
+        `[RIGORI] ${formattaMessaggio('LOTTERIA_RIGORI', categoria, teamAttacco, teamDifesa, rigorista)}`,
+        tipoEmoji,
+        target
     );
+
 
     // Alternanza turni
     matchState.penalties.turn = isHomeTurn ? 1 : 0;
@@ -549,18 +580,20 @@ function eseguiTurnoRigore() {
 }
 
 
-
 function checkFineRigori() {
     const { home, away } = matchState.penalties.results;
     const rounds = matchState.penalties.count;
 
-    // Dopo 5 rigori a testa
-    if (rounds >= 5 && home !== away) {
+    // variabile di controllo per i rigori ad oltranza
+    const fineCoppia = matchState.penalties.turn === 0;
+
+    if (rounds >= 5 && fineCoppia && home !== away) {
         return true;
     }
 
     return false;
 }
+
 
 
 
@@ -580,26 +613,47 @@ function renderIconaEvento(valore) {
 }
 
 
-function aggiungiCommento(testo, tipoEvento = "AZIONE") {
-    const box = document.getElementById('telecronaca');
-    const div = document.createElement('div');
-    div.classList.add('commentary-event');
+function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral') {
+    const colonne = {
+        home: document.getElementById('col-home'),
+        neutral: document.getElementById('col-neutral'),
+        away: document.getElementById('col-away')
+    };
 
-    // Prendi emoji o PNG
+    // 1. Creiamo il messaggio reale
+    const divMessaggio = document.createElement('div');
+    divMessaggio.classList.add('commentary-event');
+
+    // Classi grafiche
+    if (tipoEvento === "GOL") divMessaggio.classList.add('goal');
+    if (tipoEvento === "INIZIO_FINE_PARTITA" || tipoEvento === "FISCHIO") divMessaggio.classList.add('info');
+    if (tipoEvento === "PARATA") divMessaggio.classList.add('parata');
+    if (tipoEvento === "AZIONE") divMessaggio.classList.add('azione');
+
     const valoreIcona = EMOJI_EVENTI[tipoEvento] || EMOJI_EVENTI.AZIONE;
     const iconaHtml = renderIconaEvento(valoreIcona);
+    divMessaggio.innerHTML = `${iconaHtml} ${testo}`;
 
-    // Classi CSS basate sul tipo
-    if (tipoEvento === "GOL") div.classList.add('goal');
-    if (tipoEvento === "INIZIO_FINE_PARTITA" || tipoEvento === "FISCHIO")
-        div.classList.add('info');
-    if (tipoEvento === "PARATA") div.classList.add('parata');
-    if (tipoEvento === "AZIONE") div.classList.add('azione');
+    // 2. Inseriamo il messaggio nella colonna bersaglio
+    colonne[target].prepend(divMessaggio);
 
-    // Usa innerHTML per mantenere <strong> e immagini
-    div.innerHTML = `${iconaHtml} ${testo}`;
+    // 3. CALCOLO ALTEZZA: Usiamo requestAnimationFrame per essere sicuri che il browser
+    // abbia renderizzato il div e ne conosca l'altezza reale (offsetHeight)
+    requestAnimationFrame(() => {
+        const altezzaReale = divMessaggio.offsetHeight;
+        const margineSotto = 15; // Deve corrispondere al margin-bottom del CSS
 
-    box.prepend(div);
+        // 4. Creiamo gli spacer nelle altre colonne con l'altezza identica al pixel
+        Object.keys(colonne).forEach(key => {
+            if (key !== target) {
+                const spacer = document.createElement('div');
+                spacer.classList.add('commentary-spacer');
+                spacer.style.height = altezzaReale + "px";
+                spacer.style.marginBottom = margineSotto + "px";
+                colonne[key].prepend(spacer);
+            }
+        });
+    });
 }
 
 
@@ -652,7 +706,7 @@ function getNomeFase(fase) {
         1: "SEMIFINALE 1",
         2: "SEMIFINALE 2",
         3: "FINALE 3°-4° POSTO",
-        4: "FINALISSIMA"
+        4: "FINALE"
     };
     return nomi[fase] || "FINE";
 }
