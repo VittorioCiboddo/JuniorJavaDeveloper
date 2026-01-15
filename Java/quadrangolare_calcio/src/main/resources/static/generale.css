@@ -590,6 +590,7 @@ header {
 
 
 /* --- TELECRONACA SIMULATA --- */
+
 .match-simulation-container {
     display: flex;
     justify-content: space-around;
@@ -667,7 +668,76 @@ header {
 
 .commentary-event.info {
     border-left-color: #555;
+    border-right-color: #555;
     font-style: italic;
+}
+
+/* Layout a tre colonne per la telecronaca */
+.telecronaca-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    min-height: 400px;
+    align-items: flex-start;
+}
+
+.commentary-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.central-column {
+    max-width: 30%; /* La colonna centrale è più stretta */
+}
+
+/* Stile dei singoli messaggi (fumetti) */
+.commentary-event {
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    word-wrap: break-word; /* Forza il testo ad andare a capo correttamente */
+}
+
+
+#col-home .commentary-event { border-left: 4px solid #00bf63; border-right: 4px solid #00bf63;}
+#col-away .commentary-event { border-right: 4px solid #00bf63; border-left: 4px solid #00bf63; text-align: right; }
+#col-neutral .commentary-event { text-align: center; background-color: #f8f9fa; font-weight: bold; border-left: 4px solid #555; border-right: 4px solid #555; }
+
+/* Assicurati che ogni evento e ogni spacer abbiano lo stesso margine e comportamento */
+.commentary-event, .commentary-spacer {
+    margin-bottom: 15px; /* Spazio tra un messaggio e l'altro */
+    min-height: 50px;    /* Altezza minima per allineare i blocchi */
+}
+
+.commentary-spacer {
+    visibility: hidden;
+    pointer-events: none; /* Evita che l'utente possa cliccare spazi vuoti */
+    padding: 0 !important; /* Reset fondamentale */
+    border: none !important;
+    margin-top: 0 !important;
+}
+
+/* Rendi il contenitore della telecronaca scorrevole se diventa troppo lungo */
+.telecronaca-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    max-height: 600px; /* O l'altezza che preferisci */
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+}
+
+/* Icona Goal speciale */
+.commentary-event.goal {
+    background-color: #F1E9B6 !important;
+    border: 2px solid gold !important;
 }
 
 /* style per rendering immagine png come icona unicode */
