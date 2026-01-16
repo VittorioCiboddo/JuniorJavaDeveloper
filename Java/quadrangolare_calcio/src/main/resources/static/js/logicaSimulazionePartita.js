@@ -329,24 +329,31 @@ function tick() {
             const r = matchState.rigoreInCorso;
             const segnato = Math.random() < 0.7;
 
-            // Aggiorna gol e tabellino
-            if (segnato) r.teamAttacco.gol++;
-
             const tipoEvento = segnato ? "GOL" : "RIGORE_KO";
             const iconaForzata = segnato ? "RIGORE_PARTITA_OK" : "RIGORE_PARTITA_KO";
             const sottocategoria = segnato ? "SEGNATO" : "PARATO_ERRORE";
 
             const tempoFormattato = formattaTempo(r.tempoEsecuzione);
 
-            registraMarcatore(
-                r.target,
-                r.rigorista.cognome,
-                r.tempoEsecuzione,
-                segnato
-            );
+            // Aggiorna gol e tabellino
+            if (segnato) {
+                r.teamAttacco.gol++;
 
-            document.getElementById('punteggio-live').innerText =
-                `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+                registraMarcatore(
+                    r.target,
+                    r.rigorista.cognome,
+                    r.tempoEsecuzione,
+                    true
+                );
+            } else {
+                registraRigoreSbagliato(
+                    r.target,
+                    r.rigorista.cognome,
+                    r.tempoEsecuzione
+                );
+            }
+
+            document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
 
             aggiungiCommento(
                 `[${tempoFormattato}] ${formattaMessaggio(
@@ -430,12 +437,19 @@ function generaEvento() {
             const tempoFormattato = formattaTempo(tempoEsecuzione);
 
             if (segnato) {
+
                 teamAttacco.gol++;
-                // Usa tempoEsecuzione, così il minuto nel tabellino è coerente (es. 74')
                 registraMarcatore(target, rigorista.cognome, tempoEsecuzione, true);
 
-                document.getElementById('punteggio-live').innerText =
-                    `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+                document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+
+            } else {
+
+                registraRigoreSbagliato(
+                    target,
+                    rigorista.cognome,
+                    tempoEsecuzione
+                );
             }
 
             const tipoEvento = segnato ? "GOL" : "RIGORE_KO";
@@ -513,8 +527,7 @@ function generaEvento() {
             target
         );
 
-        document.getElementById('punteggio-live').innerText =
-            `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+        document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
 
     } else {
         // AZIONE PERICOLOSA
@@ -806,7 +819,31 @@ function registraMarcatore(teamKey, nome, secondi, isRigore = false) {
         lista.push(entry);
     }
 
-    entry.gol.push({ minuto, rigore: isRigore });
+    entry.gol.push({ minuto, rigore: isRigore, sbagliato: false});
+
+    renderMarcatori();
+}
+
+function registraRigoreSbagliato(teamKey, nome, secondi) {
+    const lista = marcatori[teamKey];
+    const minuto = calcolaMinutoUfficiale(secondi);
+
+    let entry = lista.find(m => m.nome === nome);
+
+    if (!entry) {
+        entry = {
+            nome,
+            gol: [],
+            ordine: lista.length
+        };
+        lista.push(entry);
+    }
+
+    entry.gol.push({
+        minuto,
+        rigore: false,
+        sbagliato: true
+    });
 
     renderMarcatori();
 }
@@ -825,8 +862,17 @@ function renderMarcatori() {
                 divGiocatore.className = "marcatore";
 
                 const minuti = m.gol
-                    .map(g => `${g.minuto}${g.rigore ? ' (R)' : ''}`)
+                    .map(g => {
+                        if (g.sbagliato) {
+                            return `<span class="rigore-sbagliato">❌ ${g.minuto} (RIGORE SBAGLIATO)</span>`;
+                        }
+                        if (g.rigore) {
+                            return `${g.minuto} (R)`;
+                        }
+                        return g.minuto;
+                    })
                     .join(", ");
+
 
                 // Allineamento pulito: Minuti e poi Nome (o viceversa per away)
                 if (teamKey === 'home') {
