@@ -105,12 +105,17 @@
     pageContent.classList.add('blur');
 
     function confermaNomeTorneo() {
-        const nome = document.getElementById('input-nome-torneo')
+        let nome = document.getElementById('input-nome-torneo')
                             .value.trim();
 
         if (!nome) {
             alert("Inserisci un nome per il torneo!");
             return;
+        }
+
+        // controllo per aggiungere la parola "torneo" se non presente
+        if (!/torneo/i.test(nome)) {
+            nome = "Torneo " + nome;
         }
 
         document.getElementById('titolo-sorteggio')
