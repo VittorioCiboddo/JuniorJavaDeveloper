@@ -35,8 +35,14 @@ const matchState = {
             away: []
         }
     },
-    rigoreInCorso: null
+    rigoreInCorso: null,
+
 };
+const marcatori = {
+    home: [],
+    away: []
+};
+
 
 // --- DIZIONARIO TELECRONACA ---
 const DIZIONARIO_LIVE = {
@@ -365,59 +371,61 @@ function aggiornaGraficaTimer() {
 
 function generaEvento() {
 
-    // SE C'È UN RIGORE IN CORSO → lo calciamo ORA
-    if (matchState.rigoreInCorso) {
-
-        const { teamAttacco, teamDifesa, rigorista, target } = matchState.rigoreInCorso;
-        const tempo = formattaTempo(matchState.currentTime);
-
-        const segnato = Math.random() < 0.70;
-
-        if (segnato) {
-            teamAttacco.gol++;
-            document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
-        }
-
-        const tipoEvento = segnato ? "GOL" : "PARATA";
-        const iconaForzata = segnato ? "RIGORE_PARTITA_OK" : "RIGORE_PARTITA_KO";
-        const sottocategoria = segnato ? "SEGNATO" : "PARATO_ERRORE";
-
-        aggiungiCommento(
-            `[${tempo}] ${formattaMessaggio(
-                'RIGORE_PARTITA',
-                sottocategoria,
-                teamAttacco,
-                teamDifesa,
-                rigorista
-            )}`,
-            tipoEvento,
-            target,
-            iconaForzata
-        );
-
-        // reset stato
-        matchState.rigoreInCorso = null;
-        return;
-    }
-
     const isHome = Math.random() > 0.5;
     const teamAttacco = isHome ? matchState.homeTeam : matchState.awayTeam;
     const teamDifesa = isHome ? matchState.awayTeam : matchState.homeTeam;
-    const target = isHome ? 'home' : 'away'; // <--- target (telecronaca a 3 colonne)
+    const target = isHome ? 'home' : 'away';
     const tempo = formattaTempo(matchState.currentTime);
 
+    // --- Gestione rigore in partita ---
+    if (matchState.rigoreInCorso) {
+        const { tempoEsecuzione, teamAttacco, teamDifesa, rigorista, target } = matchState.rigoreInCorso;
+
+        // Se il tempo della simulazione ha raggiunto o superato il momento del tiro
+        if (matchState.currentTime >= tempoEsecuzione) {
+            const segnato = Math.random() < 0.70;
+
+            // Usiamo il tempo esatto dell'esecuzione per il commento e il tabellino
+            const tempoFormattato = formattaTempo(tempoEsecuzione);
+
+            if (segnato) {
+                teamAttacco.gol++;
+                // Usa tempoEsecuzione, così il minuto nel tabellino è coerente (es. 74')
+                registraMarcatore(target, rigorista.cognome, tempoEsecuzione, true);
+
+                document.getElementById('punteggio-live').innerText =
+                    `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+            }
+
+            const tipoEvento = segnato ? "GOL" : "RIGORE_KO";
+            const iconaForzata = segnato ? "RIGORE_PARTITA_OK" : "RIGORE_PARTITA_KO";
+            const sottocategoria = segnato ? "SEGNATO" : "PARATO_ERRORE";
+
+            // NOTA: Passiamo tempoFormattato per evitare che esca il minuto 91' se la simulazione è corsa avanti
+            aggiungiCommento(
+                `[${tempoFormattato}] ${formattaMessaggio(
+                    'RIGORE_PARTITA',
+                    sottocategoria,
+                    teamAttacco,
+                    teamDifesa,
+                    rigorista
+                )}`,
+                tipoEvento,
+                target,
+                iconaForzata
+            );
+
+            matchState.rigoreInCorso = null;
+        }
+        return; // ESCI dalla funzione: se c'è un rigore in corso, non vogliamo altri eventi nello stesso tick
+    }
+
+    // --- Altri eventi del match ---
     const rand = Math.random();
 
     if (rand < 0.20) {
         // AZIONE PORTIERE (difesa)
-        const frase = formattaMessaggio(
-            'PORTIERE',
-            null,
-            teamAttacco,
-            teamDifesa
-        );
-
-        // Forziamo la colonna sulla squadra che ha il portiere
+        const frase = formattaMessaggio('PORTIERE', null, teamAttacco, teamDifesa);
         const targetPortiere = teamDifesa === matchState.homeTeam ? 'home' : 'away';
 
         aggiungiCommento(
@@ -427,15 +435,17 @@ function generaEvento() {
         );
 
     } else if (rand < 0.30 && !matchState.rigoreInCorso) {
-
+        // Assegna nuovo rigore in partita
         const rigorista = scegliRigorista(teamAttacco, isHome ? 'home' : 'away');
+        const delayRigore = 30 + Math.random() * 150;
 
-        // salva stato rigore
         matchState.rigoreInCorso = {
             teamAttacco,
             teamDifesa,
             rigorista,
-            target
+            target,
+            tempoFischio: matchState.currentTime,
+            tempoEsecuzione: matchState.currentTime + delayRigore
         };
 
         aggiungiCommento(
@@ -446,31 +456,38 @@ function generaEvento() {
 
     } else if (rand < 0.50) {
         // GOAL NORMALE
+        const marcatore = selezionaGiocatorePerAzione(teamAttacco, 'GOL');
         teamAttacco.gol++;
+
+        registraMarcatore(
+            target,
+            marcatore.cognome,
+            matchState.currentTime,
+            false
+        );
+
+        aggiungiCommento(
+            `[${tempo}] GOAL! ${formattaMessaggio('GOL', null, teamAttacco, teamDifesa, marcatore)}`,
+            "GOL",
+            target
+        );
+
         document.getElementById('punteggio-live').innerText =
             `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
 
-        aggiungiCommento(
-            `[${tempo}] GOAL! ${formattaMessaggio('GOL', null, teamAttacco, teamDifesa)}`,
-            "GOL", target
-        );
-
     } else {
         // AZIONE PERICOLOSA
-        const frase = formattaMessaggio('AZIONE_PERICOLOSA', null, teamAttacco, teamDifesa);
+        const marcatore = selezionaGiocatorePerAzione(teamAttacco, 'AZIONE_PERICOLOSA');
+        const frase = formattaMessaggio('AZIONE_PERICOLOSA', null, teamAttacco, teamDifesa, marcatore);
 
-        // Determina tipoEvento in base al contenuto della frase
         let tipoEvento = "AZIONE";
         if (frase.includes("Traversa") || frase.includes("palo")) tipoEvento = "PALO_TRAVERSA";
         else if (frase.includes("Parata") || frase.includes("blocca") || frase.includes("nega")) tipoEvento = "PARATA";
 
-        aggiungiCommento(
-            `[${tempo}] ${frase}`,
-            tipoEvento,
-            target
-        );
+        aggiungiCommento(`[${tempo}] ${frase}`, tipoEvento, target);
     }
 }
+
 
 
 function gestisciFinePartita() {
@@ -530,9 +547,7 @@ function gestisciFinePartita() {
 
 
 
-/**
- * LOGICA RIGORI
- */
+/* LOGICA LOTTERIA RIGORI */
 function avviaRigori() {
 
     // BLOCCO TOTALE DEL MATCH
@@ -657,6 +672,7 @@ function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral', icon
 
     // Classi grafiche
     if (tipoEvento === "GOL") divMessaggio.classList.add('goal');
+    if (tipoEvento === "RIGORE_KO") divMessaggio.classList.add('rigore-ko');
     if (tipoEvento === "INIZIO_FINE_PARTITA" || tipoEvento === "FISCHIO") divMessaggio.classList.add('info');
     if (tipoEvento === "PARATA") divMessaggio.classList.add('parata');
     if (tipoEvento === "AZIONE") divMessaggio.classList.add('azione');
@@ -693,10 +709,81 @@ function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral', icon
 
 
 function formattaTempo(secondi) {
-    const m = Math.floor(secondi / 60);
-    const s = secondi % 60;
+    const secondiInteri = Math.floor(secondi); // Rimuove i decimali come 184094...
+    const m = Math.floor(secondiInteri / 60);
+    const s = secondiInteri % 60;
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
+
+
+function calcolaMinutoUfficiale(secondiEvento) {
+    const half = matchState.half;
+    const limite = half === 1 ? 45 * 60 : 90 * 60;
+
+    // minuto reale (si conta da 1)
+    const minutoBase = Math.floor(secondiEvento / 60) + 1;
+
+    // NON recupero
+    if (secondiEvento <= limite) {
+        return `${minutoBase}'`;
+    }
+
+    // RECUPERO
+    const base = half === 1 ? 45 : 90;
+    const extra = minutoBase - base;
+
+    return `${base}+${extra}'`;
+}
+
+function registraMarcatore(teamKey, nome, secondi, isRigore = false) {
+    const lista = marcatori[teamKey];
+    const minuto = calcolaMinutoUfficiale(secondi);
+
+    let entry = lista.find(m => m.nome === nome);
+
+    if (!entry) {
+        entry = {
+            nome,
+            gol: [],
+            ordine: lista.length
+        };
+        lista.push(entry);
+    }
+
+    entry.gol.push({ minuto, rigore: isRigore });
+
+    renderMarcatori();
+}
+
+
+function renderMarcatori() {
+    ['home', 'away'].forEach(teamKey => {
+        const container = document.getElementById(`marcatori-${teamKey}`);
+        container.innerHTML = ""; // Svuota il div dedicato alla squadra
+
+        // Ordina i marcatori per ordine di inserimento
+        marcatori[teamKey]
+            .sort((a, b) => a.ordine - b.ordine)
+            .forEach(m => {
+                const divGiocatore = document.createElement('div');
+                divGiocatore.className = "marcatore";
+
+                const minuti = m.gol
+                    .map(g => `${g.minuto}${g.rigore ? ' (R)' : ''}`)
+                    .join(", ");
+
+                // Allineamento pulito: Minuti e poi Nome (o viceversa per away)
+                if (teamKey === 'home') {
+                    divGiocatore.innerHTML = `<small>${minuti}</small> <strong>${m.nome}</strong>`;
+                } else {
+                    divGiocatore.innerHTML = `<strong>${m.nome}</strong> <small>${minuti}</small>`;
+                }
+
+                container.appendChild(divGiocatore);
+            });
+    });
+}
+
 
 
 function salvaERiprosegui(vincitore, perdente) {
