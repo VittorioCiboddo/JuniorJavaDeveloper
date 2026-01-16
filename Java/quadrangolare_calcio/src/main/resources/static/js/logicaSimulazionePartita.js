@@ -106,8 +106,8 @@ const EMOJI_EVENTI = {
     AZIONE: "👟",
     PALO_TRAVERSA: "🥅",
     PARATA: "🧤",
-    RIGORE_OK: "✅",       // solo lotteria rigori
-    RIGORE_KO: "❌",       // solo lotteria rigori
+    RIGORE_OK: "/images/check_verde.png",       // solo lotteria rigori
+    RIGORE_KO: "❌",                           // solo lotteria rigori
     RIGORE_PARTITA_OK: "/images/rigore_gol.png",
     RIGORE_PARTITA_KO: "/images/rigore_fail.png"
 };
@@ -323,6 +323,47 @@ function tick() {
 
     if (matchState.currentTime >= tempoTotaleInclusoRecupero) {
         matchState.currentTime = tempoTotaleInclusoRecupero; // Forza il tempo finale
+
+        // --- esegui eventuale rigore in sospeso ---
+        if (matchState.rigoreInCorso) {
+            const r = matchState.rigoreInCorso;
+            const segnato = Math.random() < 0.7;
+
+            // Aggiorna gol e tabellino
+            if (segnato) r.teamAttacco.gol++;
+
+            const tipoEvento = segnato ? "GOL" : "RIGORE_KO";
+            const iconaForzata = segnato ? "RIGORE_PARTITA_OK" : "RIGORE_PARTITA_KO";
+            const sottocategoria = segnato ? "SEGNATO" : "PARATO_ERRORE";
+
+            const tempoFormattato = formattaTempo(r.tempoEsecuzione);
+
+            registraMarcatore(
+                r.target,
+                r.rigorista.cognome,
+                r.tempoEsecuzione,
+                segnato
+            );
+
+            document.getElementById('punteggio-live').innerText =
+                `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+
+            aggiungiCommento(
+                `[${tempoFormattato}] ${formattaMessaggio(
+                    'RIGORE_PARTITA',
+                    sottocategoria,
+                    r.teamAttacco,
+                    r.teamDifesa,
+                    r.rigorista
+                )}`,
+                tipoEvento,
+                r.target,
+                iconaForzata
+            );
+
+            matchState.rigoreInCorso = null; // Rigore consumato
+        }
+
         aggiornaGraficaTimer(); // Funzione di supporto che creiamo sotto
 
         if (matchState.half === 1) {
@@ -609,11 +650,17 @@ function eseguiTurnoRigore() {
 
     const tipoEmoji = segnato ? "RIGORE_OK" : "RIGORE_KO";
 
+    const esitoClasse = categoria === 'SEGNATO' ? 'segnato' : 'sbagliato';
+
     aggiungiCommento(
         `[RIGORI] ${formattaMessaggio('LOTTERIA_RIGORI', categoria, teamAttacco, teamDifesa, rigorista)}`,
         tipoEmoji,
-        target
+        target,
+        null,
+        "LOTTERIA",
+        esitoClasse
     );
+
 
 
     // Alternanza turni
@@ -659,7 +706,7 @@ function renderIconaEvento(valore) {
 }
 
 
-function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral', iconaForzata = null) {
+function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral', iconaForzata = null, contesto = "PARTITA", esitoClasse="") {
     const colonne = {
         home: document.getElementById('col-home'),
         neutral: document.getElementById('col-neutral'),
@@ -671,8 +718,17 @@ function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral', icon
     divMessaggio.classList.add('commentary-event');
 
     // Classi grafiche
-    if (tipoEvento === "GOL") divMessaggio.classList.add('goal');
-    if (tipoEvento === "RIGORE_KO") divMessaggio.classList.add('rigore-ko');
+
+    // Lotteria rigori
+    if (contesto === "LOTTERIA") {
+        divMessaggio.classList.add('lotteria-rigori');
+        if (esitoClasse) divMessaggio.classList.add(esitoClasse);
+    } else {
+        // PARTITA NORMALE
+        if (tipoEvento === "GOL") divMessaggio.classList.add('goal');
+        if (tipoEvento === "RIGORE_KO") divMessaggio.classList.add('rigore-ko');
+    }
+
     if (tipoEvento === "INIZIO_FINE_PARTITA" || tipoEvento === "FISCHIO") divMessaggio.classList.add('info');
     if (tipoEvento === "PARATA") divMessaggio.classList.add('parata');
     if (tipoEvento === "AZIONE") divMessaggio.classList.add('azione');
