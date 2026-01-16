@@ -634,6 +634,61 @@ header {
     margin-top: 5px;
 }
 
+/* --- TABELLINO MARCATORI PULITO --- */
+#marcatori-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 15px 30px;
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.4); /* Sfondo sobrio */
+    border-radius: 10px;
+}
+
+.marcatori-squadra {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#marcatori-home { text-align: left; align-items: flex-start; }
+#marcatori-away { text-align: right; align-items: flex-end; }
+
+.marcatore {
+    font-size: 1.15rem !important; /* Font più grande */
+    font-weight: 600;
+    color: #1a1a1a;
+    display: block;
+    padding: 2px 0;
+}
+
+.minuti-label {
+    font-weight: 700;
+    color: #333; /* Sobrio, niente colori strani */
+}
+
+/* Simbolo del gol standard */
+.marcatore-item::before {
+    content: "⚽";
+    margin-right: 8px;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+#marcatori-away .marcatore-item::before {
+    content: "";
+    margin-right: 0;
+}
+
+#marcatori-away .marcatore-item::after {
+    content: "⚽";
+    margin-left: 8px;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+
 /* Styling del contenitore dei messaggi */
 .commentary-box {
     background: #f9f9f9;
@@ -659,12 +714,33 @@ header {
     animation: fadeInSlide 0.4s ease-out; /* Effetto apparizione */
 }
 
-/* Varianti di colore per eventi speciali */
+/* Varianti di colore per GOAL partita */
 .commentary-event.goal {
     border-left-color: #ffcc00; /* Giallo/Oro per il gol */
     background-color: #fffdf0;
     font-weight: bold;
 }
+
+/* Rigore fallito/parato: stile identico al gol ma rosso */
+.commentary-event.rigore-ko {
+    background-color: #ffe5e5 !important;
+    color: #000 !important;
+    font-weight: bold;
+    border: 2px solid #c40000 !important;
+}
+
+/* OVERRIDE dei bordi verdi delle colonne */
+#col-home .commentary-event.rigore-ko,
+#col-away .commentary-event.rigore-ko,
+#col-neutral .commentary-event.rigore-ko {
+    border-left: 2px solid #c40000 !important;
+    border-right: 2px solid #c40000 !important;
+    border-top: 2px solid #c40000 !important;
+    border-bottom: 2px solid #c40000 !important;
+}
+
+
+
 
 .commentary-event.info {
     border-left-color: #555;
