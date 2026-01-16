@@ -34,7 +34,8 @@ const matchState = {
             home: [],
             away: []
         }
-    }
+    },
+    rigoreInCorso: null
 };
 
 // --- DIZIONARIO TELECRONACA ---
@@ -93,14 +94,16 @@ const DIZIONARIO_LIVE = {
 const EMOJI_EVENTI = {
     INIZIO_FINE_PARTITA: "📢",
     FISCHIO: "/images/icona_fischietto.png",
+    RIGORE_ARBITRO: "/images/fischio_rigore.png",
+    RECUPERO: "/images/timer_recupero.png",
     GOL: "⚽",
     AZIONE: "👟",
     PALO_TRAVERSA: "🥅",
     PARATA: "🧤",
     RIGORE_OK: "✅",       // solo lotteria rigori
     RIGORE_KO: "❌",       // solo lotteria rigori
-    RIGORE_PARTITA_OK: "🎉",
-    RIGORE_PARTITA_KO: "🚫"
+    RIGORE_PARTITA_OK: "/images/rigore_gol.png",
+    RIGORE_PARTITA_KO: "/images/rigore_fail.png"
 };
 
 
@@ -305,7 +308,7 @@ function tick() {
         matchState.mostraRecupero = true;
 
         if (r > 0) {
-            aggiungiCommento(`[${matchState.half === 1 ? '45:00' : '90:00'}] Segnalati ${r} minuti di recupero.`, "FISCHIO", "neutral");
+            aggiungiCommento(`[${matchState.half === 1 ? '45:00' : '90:00'}] Segnalati ${r} minuti di recupero.`, "RECUPERO", "neutral");
         }
     }
 
@@ -361,6 +364,42 @@ function aggiornaGraficaTimer() {
 }
 
 function generaEvento() {
+
+    // SE C'È UN RIGORE IN CORSO → lo calciamo ORA
+    if (matchState.rigoreInCorso) {
+
+        const { teamAttacco, teamDifesa, rigorista, target } = matchState.rigoreInCorso;
+        const tempo = formattaTempo(matchState.currentTime);
+
+        const segnato = Math.random() < 0.70;
+
+        if (segnato) {
+            teamAttacco.gol++;
+            document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
+        }
+
+        const tipoEvento = segnato ? "GOL" : "PARATA";
+        const iconaForzata = segnato ? "RIGORE_PARTITA_OK" : "RIGORE_PARTITA_KO";
+        const sottocategoria = segnato ? "SEGNATO" : "PARATO_ERRORE";
+
+        aggiungiCommento(
+            `[${tempo}] ${formattaMessaggio(
+                'RIGORE_PARTITA',
+                sottocategoria,
+                teamAttacco,
+                teamDifesa,
+                rigorista
+            )}`,
+            tipoEvento,
+            target,
+            iconaForzata
+        );
+
+        // reset stato
+        matchState.rigoreInCorso = null;
+        return;
+    }
+
     const isHome = Math.random() > 0.5;
     const teamAttacco = isHome ? matchState.homeTeam : matchState.awayTeam;
     const teamDifesa = isHome ? matchState.awayTeam : matchState.homeTeam;
@@ -387,29 +426,21 @@ function generaEvento() {
             targetPortiere
         );
 
-    } else if (rand < 0.30) {
-        // RIGORE PARTITA (annuncio fischio + messaggio rigore)
+    } else if (rand < 0.30 && !matchState.rigoreInCorso) {
+
         const rigorista = scegliRigorista(teamAttacco, isHome ? 'home' : 'away');
-        const segnato = Math.random() < 0.70;
 
-        // Annuncio rigore
-        aggiungiCommento(`[${tempo}] Attenzione: l\`arbitro fischia calcio di rigore per ${teamAttacco.nome}!`, "FISCHIO", target);
+        // salva stato rigore
+        matchState.rigoreInCorso = {
+            teamAttacco,
+            teamDifesa,
+            rigorista,
+            target
+        };
 
-        // Aggiornamento gol se segnato
-        if (segnato) {
-            teamAttacco.gol++;
-            document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
-        }
-
-        // Messaggio rigore
-        const categoriaEmoji = segnato ? "RIGORE_OK" : "RIGORE_KO";
-        const sottocategoria = segnato ? "SEGNATO" : "PARATO_ERRORE";
-
-        // Usa stile goal se segnato
         aggiungiCommento(
-            `[${tempo}] ${formattaMessaggio('RIGORE_PARTITA', sottocategoria, teamAttacco, teamDifesa, rigorista)}`,
-            categoriaEmoji,
-            segnato, // true = usa stile goal
+            `[${tempo}] Attenzione: l'arbitro fischia calcio di rigore per ${teamAttacco.nome}!`,
+            "RIGORE_ARBITRO",
             target
         );
 
@@ -613,7 +644,7 @@ function renderIconaEvento(valore) {
 }
 
 
-function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral') {
+function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral', iconaForzata = null) {
     const colonne = {
         home: document.getElementById('col-home'),
         neutral: document.getElementById('col-neutral'),
@@ -630,7 +661,10 @@ function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral') {
     if (tipoEvento === "PARATA") divMessaggio.classList.add('parata');
     if (tipoEvento === "AZIONE") divMessaggio.classList.add('azione');
 
-    const valoreIcona = EMOJI_EVENTI[tipoEvento] || EMOJI_EVENTI.AZIONE;
+    const valoreIcona = iconaForzata
+        ? EMOJI_EVENTI[iconaForzata]
+        : EMOJI_EVENTI[tipoEvento] || EMOJI_EVENTI.AZIONE;
+
     const iconaHtml = renderIconaEvento(valoreIcona);
     divMessaggio.innerHTML = `${iconaHtml} ${testo}`;
 
