@@ -17,20 +17,110 @@ header, footer {
 nav {
     display: flex;
     justify-content: center;
-    background-color: #7ed957;
-    padding: 10px 0;
+    align-items: center;
+    gap: 10px;
+
+    background: rgba(126, 217, 87, 0.75); /* Verde semi-trasparente */
+    backdrop-filter: blur(6px);          /* Effetto vetro */
+    -webkit-backdrop-filter: blur(6px);
+
+    padding: 12px 0;
+    position: sticky;                    /* Rimane visibile */
+    top: 0;
+    z-index: 1000;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-nav a {
+.nav-dropdown-title {
+    display: flex;
+    align-items: center;   /* Centra verticalmente */
+    padding: 6px 10px;     /* Stesso padding dei link */
+    border-radius: 6px;    /* Stesso border-radius dei link */
+    cursor: pointer;
+    user-select: none;
+    height: auto;          /* Rimuove il 100% */
+}
+
+
+nav a,
+.nav-dropdown-title {
     color: white;
     text-decoration: none;
-    margin: 0 15px;
+    margin: 0 10px;
     font-weight: bold;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-nav a:hover {
-    text-decoration: underline;
+nav a:hover,
+.nav-dropdown:hover .nav-dropdown-title {
+    background-color: rgba(0, 191, 99, 0.35);
 }
+
+
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.nav-dropdown-title {
+    cursor: pointer;
+    user-select: none;
+}
+
+.nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+
+    background: rgba(126, 217, 87, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    border-radius: 12px;
+    min-width: 200px;
+    padding: 10px 0;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    z-index: 2000;
+}
+
+.nav-dropdown-menu a {
+    display: block;
+    padding: 16px 30px;   /* PIÙ SPAZIO */
+    color: white;
+    text-decoration: none;
+    min-width: 220px; /* più largo */
+    padding: 12px 0;  /* più verticale */
+    font-size: 1.05em;
+    font-weight: 500;
+    transition: background-color 0.25s ease;
+}
+
+.nav-dropdown-menu a:hover {
+    background-color: rgba(0, 191, 99, 0.45);
+}
+
+/* Apertura menu stabile */
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown-menu:hover {
+    display: block;
+}
+
+/* Assicuriamo che i link siano cliccabili */
+.nav-dropdown-menu {
+    pointer-events: auto;
+}
+
+.nav-dropdown-menu {
+    top: 100%;        /* subito sotto la navbar */
+    margin-top: 4px;  /* piccolo distacco */
+}
+
 
 .container {
     margin-top: 30px;
@@ -128,6 +218,38 @@ nav a:hover {
 .button-row button:hover {
     background-color: #00994d;
 }
+
+
+/* --- PAGINA DI DETTAGLIO GIOCATORE --- */
+
+.figurina-giocatore {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 30px;
+}
+
+.figurina-img {
+    max-width: 350px;
+    max-height: 350px;
+}
+
+.bottom-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 50px;              /* Spazio reale tra testo e heatmap */
+    margin-top: 10px;       /* Risale tutta la sezione */
+}
+
+
+.heatmap {
+    flex: 0 0 auto;
+    max-width: 280px;
+    max-height: 280px;
+}
+
 
 
 /* --- STRUTTURA GRAFICA PER I FORM DI REGISTRAZIONE --- */
