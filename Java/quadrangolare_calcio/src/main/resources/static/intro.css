@@ -137,3 +137,34 @@ button:hover {
         opacity: 1;
     }
 }
+
+/* --- INTRO-REPLAY --- */
+
+/* Bottone rosso "Esci" */
+button.btn-exit {
+    background-color: #c41616;
+    background-image: linear-gradient(135deg, #7a0f0f, #c41616);
+    color: #fff;
+    border: 2px solid rgba(255, 80, 80, 0.7);
+    box-shadow:
+        0 0 15px rgba(255, 0, 0, 0.4),
+        0 0 30px rgba(255, 0, 0, 0.2);
+}
+
+/* Hover */
+button.btn-exit:hover {
+    background-color: #ff2b2b;
+    background-image: linear-gradient(135deg, #a31212, #ff2b2b);
+    box-shadow:
+        0 0 20px rgba(255, 0, 0, 0.7),
+        0 0 40px rgba(255, 0, 0, 0.5);
+    transform: scale(1.05);
+}
+
+/* Click */
+button.btn-exit:active {
+    transform: scale(0.97);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+}
+
+
