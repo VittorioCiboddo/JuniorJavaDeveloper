@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intro-Replay</title>
+    <link rel="stylesheet" href="intro.css">
+
+    <style>
+        .hidden {
+            display: none;
+        }
+        .fade-in {
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="video-container">
+
+    <video id="matchVideo" autoplay muted>
+        <source src="/videos/trailer-homepage.mp4" type="video/mp4">
+    </video>
+
+    <div id="blackOverlay" class="overlay hidden"></div>
+
+    <div class="logo-container hidden" id="logoContainer">
+        <img src="/images/logo.png" alt="Logo Generation Sport">
+    </div>
+
+    <div class="buttons hidden" id="buttonContainer">
+        <button class="btn-exit" onclick="esci()">Esci</button>
+    </div>
+
+</div>
+
+<script>
+    const video = document.getElementById('matchVideo');
+    const blackOverlay = document.getElementById('blackOverlay');
+    const logoContainer = document.getElementById('logoContainer');
+    const buttonContainer = document.getElementById('buttonContainer');
+
+    let transitionStarted = false;
+
+    // Fine naturale del video
+    video.addEventListener('ended', () => {
+        showOverlayAndLogo();
+    });
+
+    function showOverlayAndLogo() {
+        if (transitionStarted) return;
+        transitionStarted = true;
+
+        blackOverlay.classList.remove('hidden');
+        blackOverlay.classList.add('fade-in');
+
+        setTimeout(() => {
+            logoContainer.classList.remove('hidden');
+            logoContainer.classList.add('fade-in');
+
+            setTimeout(() => {
+                buttonContainer.classList.remove('hidden');
+                buttonContainer.classList.add('fade-in');
+            }, 3000);
+
+        }, 1000);
+    }
+
+    function esci() {
+        if (document.referrer) {
+            window.location.href = document.referrer;
+        } else {
+            window.location.href = '/contatti';
+        }
+    }
+</script>
+
+</body>
+</html>
