@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Risultati Torneo</title>
+    <link rel="stylesheet" th:href="@{/generale.css}">
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1 id="header-nome-torneo">Premiazione Torneo</h1>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <a th:href="@{/homepage}">Home</a>
+    <a th:href="@{/contatti}">Chi siamo</a>
+    <a th:href="@{/loginadmin}">Area Admin</a>
+</nav>
+
+<footer>
+    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const nomeTorneo = sessionStorage.getItem('nomeTorneoAttuale') || "Torneo";
+
+        document.getElementById('header-nome-torneo').innerText = "Premiazione " + nomeTorneo;
+    });
+</script>
+
+
+
+</body>
+</html>
