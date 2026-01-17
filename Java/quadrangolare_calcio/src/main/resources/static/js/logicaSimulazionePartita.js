@@ -916,7 +916,7 @@ function salvaERiprosegui(vincitore, perdente) {
         };
     } else {
         btn.innerText = "VAI ALLA PREMIAZIONE";
-        btn.onclick = () => window.location.href = "/archivio";
+        btn.onclick = () => window.location.href = "/premiazione";
     }
 
     btn.style.display = 'block';
