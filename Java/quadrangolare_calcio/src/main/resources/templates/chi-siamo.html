@@ -2,9 +2,131 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Contatti</title>
+    <link rel="stylesheet" th:href="@{/generale.css}">
 </head>
 <body>
+
+<header>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1>Chi siamo</h1>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <a th:href="@{/homepage}">Home</a>
+    <a th:href="@{/squadredisponibili}">Vedi squadre</a>
+    <div class="nav-dropdown">
+        <span class="nav-dropdown-title">
+            Registrazione
+        </span>
+        <div class="nav-dropdown-menu">
+            <a th:href="@{/registra-squadre}">Squadre</a>
+            <a th:href="@{/registra-giocatori}">Giocatori</a>
+        </div>
+    </div>
+    <a th:href="@{/archiviotornei}">Archivio</a>
+    <a th:href="@{/contatti}">Chi siamo</a>
+    <a th:href="@{/loginadmin}">Area Admin</a>
+</nav>
+
+
+<div class="container">
+    <div class="timeline">
+
+        <div class="timeline-item">
+            <div class="timeline-icon">
+                <img src="/images/pallone_calcio.png" alt="Icona pallone da calcio">
+            </div>
+            <div class="timeline-content">
+                <h3>Sprint Football Simulation</h3>
+                <p>
+                    Web application nata con finalità esclusivamente didattiche, progettata
+                    per simulare lo svolgimento di un quadrangolare di calcio in modo dinamico,
+                    divertente e realistico.
+                </p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-icon">
+                <img src="/images/azione_calcio.png" alt="Icona scarpa da calcio">
+            </div>
+            <div class="timeline-content">
+                <h3>Dalla console al web</h3>
+                <p>
+                    Il progetto prende origine come estensione di un esercizio sviluppato in Java,
+                    con l’obiettivo di trasformare una semplice simulazione da console in un sistema
+                    più articolato, capace di rappresentare squadre, giocatori, eventi di partita
+                    e fasi a eliminazione diretta attraverso un’interfaccia web completa.
+                </p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-icon">
+                <img src="/images/telecronista.png" alt="Icona telecronista">
+            </div>
+            <div class="timeline-content">
+                <h3>Telecronaca simulata</h3>
+                <p>
+                    All’interno dell’applicazione è possibile gestire la registrazione di squadre e
+                    giocatori, effettuare sorteggi, simulare partite con cronaca testuale in tempo
+                    reale, visualizzare tabellini, marcatori, rigori e fasi finali del torneo.
+                    Ogni elemento è pensato per riprodurre, in chiave simulata, le dinamiche tipiche
+                    di una competizione calcistica.
+                </p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-icon">
+                <img src="/images/rigore_fail.png" alt="">
+            </div>
+            <div class="timeline-content">
+                <h3>Eventi fittizi</h3>
+                <p>
+                    <strong>Sprint Football Simulation</strong> non ha alcuna finalità commerciale e non rappresenta
+                    eventi sportivi reali: tutte le partite, i risultati e gli esiti sono generati
+                    in modo automatico dal sistema. L’intero progetto è stato realizzato come
+                    esercizio di apprendimento e sperimentazione, unendo logica applicativa,
+                    programmazione orientata agli oggetti e sviluppo web.
+                </p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-icon">
+                <img src="/images/fischio_rigore.png" alt="Icona arbitro calcio">
+            </div>
+            <div class="timeline-content">
+                <h3>Scopo formativo</h3>
+                <p>
+                    Questo progetto rappresenta un punto di incontro tra passione per il
+                    calcio e studio della programmazione, con l’intento di dimostrare come un’idea
+                    nata per scopi formativi possa evolversi in un’applicazione strutturata,
+                    curata anche dal punto di vista grafico ed esperienziale.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="button-row">
+        <button onclick="location.href='/intro-replay'">Rivedi Intro</button>
+        <button onclick="location.href='/regolamento'">Regolamento Torneo</button>
+    </div>
+
+
+</div>
+
+
+<footer>
+    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
+</footer>
 
 </body>
 </html>
