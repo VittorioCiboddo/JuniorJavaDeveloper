@@ -102,8 +102,8 @@ const EMOJI_EVENTI = {
     FISCHIO: "/images/icona_fischietto.png",
     RIGORE_ARBITRO: "/images/fischio_rigore.png",
     RECUPERO: "/images/timer_recupero.png",
-    GOL: "⚽",
-    AZIONE: "👟",
+    GOL: "/images/pallone_calcio.png",
+    AZIONE: "/images/azione_calcio.png",
     PALO_TRAVERSA: "🥅",
     PARATA: "🧤",
     RIGORE_OK: "/images/check_verde.png",       // solo lotteria rigori
