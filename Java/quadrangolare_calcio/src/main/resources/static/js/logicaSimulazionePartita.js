@@ -36,7 +36,6 @@ const matchState = {
         }
     },
     rigoreInCorso: null,
-
 };
 const marcatori = {
     home: [],
@@ -107,7 +106,7 @@ const EMOJI_EVENTI = {
     PALO_TRAVERSA: "🥅",
     PARATA: "🧤",
     RIGORE_OK: "/images/check_verde.png",       // solo lotteria rigori
-    RIGORE_KO: "❌",                           // solo lotteria rigori
+    RIGORE_KO: "❌",                           // solo lotteria rigori e tabellino rigore_partita sbagliato
     RIGORE_PARTITA_OK: "/images/rigore_gol.png",
     RIGORE_PARTITA_KO: "/images/rigore_fail.png"
 };
@@ -168,18 +167,11 @@ function selezionaGiocatorePerAzione(team, tipoAzione) {
                 pool = giocatori.filter(g => g.categoria === 'Difensore');
             }
             break;
-
-        case 'FALLO_SUBITO':
-        case 'DRIBBLING':
-            pool = giocatori.filter(g => g.categoria === 'Attaccante' || g.ruolo.tipologia.categoria === 'Centrocampista');
-            break;
-
         case 'PORTIERE':
         case 'PARATA':
         case 'RINVIO':
             pool = giocatori.filter(g => g.categoria === 'Portiere');
             break;
-
         default:
             pool = giocatori.filter(g => g.categoria !== 'Portiere');
     }
