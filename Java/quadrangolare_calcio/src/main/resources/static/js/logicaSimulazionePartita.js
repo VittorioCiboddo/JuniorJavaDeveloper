@@ -218,6 +218,15 @@ function scegliRigorista(team, key) {
     return tutti[indiceScelto];
 }
 
+function scegliRigoristaRigorePartita(team) {
+    // escludo SEMPRE il portiere
+    const candidati = team.giocatori.filter(g => g.categoria !== 'Portiere');
+
+    if (candidati.length === 0) return null;
+
+    return candidati[Math.floor(Math.random() * candidati.length)];
+}
+
 
 
 function formattaMessaggio(
@@ -489,9 +498,9 @@ function generaEvento() {
             targetPortiere
         );
 
-    } else if (rand < 0.30 && !matchState.rigoreInCorso) {
+    } else if (rand < 0.20 && !matchState.rigoreInCorso) {
         // Assegna nuovo rigore in partita
-        const rigorista = scegliRigorista(teamAttacco, isHome ? 'home' : 'away');
+        const rigorista = scegliRigoristaRigorePartita(teamAttacco);
         const delayRigore = 30 + Math.random() * 150;
 
         matchState.rigoreInCorso = {
