@@ -887,6 +887,16 @@ header {
     border-right: 5px solid #c40000 !important;
 }
 
+.commentary-coin {
+    background-color: #fffdf0 !important;
+    border: 2px solid #ffcc00 !important;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: black;
+}
+
 
 
 /* OVERRIDE dei bordi delle colonne */
