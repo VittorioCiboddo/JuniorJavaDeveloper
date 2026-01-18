@@ -560,13 +560,42 @@ function gestisciFinePartita() {
         matchState.pause = true;
         if (gameInterval) clearInterval(gameInterval);
 
+        // Messaggio di pareggio e rigori
         aggiungiCommento("FISCHIO FINALE: Pareggio! Si va ai calci di rigore.", "FISCHIO", "neutral");
 
         document.getElementById('box-rigori').style.display = 'block';
 
-        setTimeout(avviaRigori, 2000);
+        // Avvia i rigori dopo 2 secondi e, prima di far partire la lotteria, estraiamo il sorteggio e scriviamo il messaggio della monetina
+        setTimeout(() => {
+            // Sorteggio 50/50: true = testa = squadra di casa, false = croce = trasferta
+            const testa = Math.random() < 0.5;
+
+            matchState.penalties.turn = testa ? 0 : 1; // 0 = casa, 1 = trasferta
+
+            // Messaggio della monetina
+            const squadraPrima = testa ? matchState.homeTeam.nome : matchState.awayTeam.nome;
+            const lato = testa ? "casa" : "trasferta";
+
+            aggiungiCommento(
+                `L'arbitro lancia la monetina... è uscita ${testa ? "testa" : "croce"}: sarà la squadra in ${lato} a tirare per prima (${squadraPrima}).`,
+                "FISCHIO",
+                "neutral",
+                null,
+                "PARTITA",
+                "commentary-coin"
+            );
+
+            // Aggiorno il matchState.penalties.turn per tenere conto del sorteggio monetina
+            const isCasaTurnoIniziale = testa; // true = casa, false = trasferta
+            matchState.penalties.turn = isCasaTurnoIniziale ? 0 : 1;
+
+            // Avvio vero e proprio della lotteria rigori
+            avviaRigori();
+        }, 2000);
+
         return;
     }
+
 
     // DA QUI IN POI: PARTITA FINITA DAVVERO
     matchState.matchEnded = true;
@@ -608,7 +637,6 @@ function avviaRigori() {
     matchState.pause = true;
 
     matchState.penalties.active = true;
-    matchState.penalties.turn = 0;
     matchState.penalties.count = 0;
     matchState.penalties.results = { home: 0, away: 0 };
     matchState.penalties.tiratori = { home: [], away: [] };
@@ -745,6 +773,11 @@ function aggiungiCommento(testo, tipoEvento = "AZIONE", target = 'neutral', icon
     if (tipoEvento === "INIZIO_FINE_PARTITA" || tipoEvento === "FISCHIO") divMessaggio.classList.add('info');
     if (tipoEvento === "PARATA") divMessaggio.classList.add('parata');
     if (tipoEvento === "AZIONE") divMessaggio.classList.add('azione');
+
+    // --- APPLICA SEMPRE esitoClasse SE FORNITA ---
+    if (esitoClasse && !divMessaggio.classList.contains(esitoClasse)) {
+        divMessaggio.classList.add(esitoClasse);
+    }
 
     const valoreIcona = iconaForzata
         ? EMOJI_EVENTI[iconaForzata]
