@@ -90,16 +90,26 @@
 
 <script>
   function tornaIndietro() {
-        // Controlla se esiste una pagina di provenienza nel browser
-        if (document.referrer && document.referrer !== "" && !document.referrer.includes('/loginadmin')) {
-            // Torna alla pagina esatta da cui l'utente è arrivato
-            window.location.href = document.referrer;
-        } else {
-            // Se non c'è una provenienza (es. accesso diretto all'URL), vai alla Home
-            window.location.href = '/';
-        }
-    }
+      const referrer = document.referrer;
+
+      // Se esiste una pagina di provenienza
+      if (referrer && referrer !== "") {
+
+          // Se la pagina di provenienza contiene "admin", vai in homepage
+          if (referrer.toLowerCase().includes('admin')) {
+              window.location.href = '/homepage';
+              return;
+          }
+
+          // Altrimenti torna alla pagina di provenienza
+          window.location.href = referrer;
+      } else {
+          // Accesso diretto all'URL
+          window.location.href = '/';
+      }
+  }
 </script>
+
 
 </body>
 
