@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Regolamento</title>
+    <link rel="stylesheet" th:href="@{/generale.css}">
+
+    <style>
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        .container {
+            position: relative;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            box-shadow: 0 0 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-size: 1em;
+            line-height: 1.65;
+            color: #222;
+        }
+
+        /* Titolo ARTICOLO (Art. 1, Art. 2, ...) */
+        .section-title {
+            font-size: 1.45em;
+            margin-top: 40px;
+            margin-bottom: 18px;
+            font-weight: 700;
+            color: #0077c8; /* azzurro istituzionale */
+            border-left: 5px solid #0077c8;
+            padding-left: 12px;
+            text-decoration: none;
+        }
+
+        /* Titolo sottoparagrafo (1.1, 2.3, ecc.) */
+        .article-title {
+            font-weight: 600;
+            margin-top: 22px;
+            color: #0077c8;
+        }
+
+        /* Corpo del testo */
+        .article-body {
+            margin-left: 1.4em;
+            margin-bottom: 15px;
+            color: #222;
+            text-align: justify;
+        }
+
+        /* Liste più ordinate e formali */
+        .article-body ul,
+        .article-body ol {
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* Evidenziazioni sobrie */
+        .article-body strong {
+            font-weight: 600;
+            color: #000;
+        }
+
+        /* Link interni al regolamento */
+        .article-body a.reg-link {
+            color: #0077c8;
+            font-weight: 600;
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+
+        .article-body a.reg-link:hover {
+            color: #005fa3;
+        }
+
+
+        /* Logo regolamento (marchio documento) */
+        .regolamento-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            pointer-events: none;
+        }
+
+        .regolamento-logo img {
+            width: 150px;
+            height: auto;
+        }
+
+        /* Solo per il button "Indietro" */
+        .btn-invert {
+            background-color: white;
+            color: #00bf63; /* stesso verde degli altri button */
+            padding: 10px 25px;
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-invert:hover {
+            background-color: #00994d; /* mantiene lo stesso hover degli altri button */
+            color: white; /* cambia testo in bianco */
+        }
+
+    </style>
+
+
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1>Regolamento</h1>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <a th:href="@{/homepage}">Home</a>
+    <a th:href="@{/squadredisponibili}">Team disponibili</a>
+    <div class="nav-dropdown">
+        <span class="nav-dropdown-title">
+            Registrazione
+        </span>
+        <div class="nav-dropdown-menu">
+            <a th:href="@{/registra-squadre}">Squadre</a>
+            <a th:href="@{/registra-giocatori}">Giocatori</a>
+        </div>
+    </div>
+    <a th:href="@{/archiviotornei}">Archivio</a>
+    <a th:href="@{/contatti}">Chi siamo</a>
+    <a th:href="@{/loginadmin}">Area Admin</a>
+</nav>
+
+<div class="container">
+
+    <div class="regolamento-logo">
+        <img src="/images/logo_regolamento.png" alt="Logo Sprint Football Simulation">
+    </div>
+
+    <div class="section-title">Art. 1 Definizioni</div>
+
+    <div class="article-title">1.1</div>
+    <div class="article-body">
+        Nel presente regolamento, i termini riportati con lettera maiuscola avranno il significato di seguito specificato:
+        <ul>
+            <li><strong>“Competizione”</strong> indica la simulazione del quadrangolare di calcio.</li>
+            <li><strong>“Squadra”</strong> indica ciascuna delle quattro partecipanti registrate.</li>
+            <li><strong>“Partita”</strong> indica l’incontro simulato tra due Squadre.</li>
+        </ul>
+    </div>
+
+    <div class="section-title">Art. 2 Organizzazione della Competizione</div>
+
+    <div class="article-title" id="art2-1">2.1</div>
+    <div class="article-body">
+        La Competizione si articola nelle seguenti fasi:
+        <ol>
+            <li>Semifinali (due incontri eliminatori);</li>
+            <li>Finale per il terzo posto;</li>
+            <li>Finale per il primo posto.</li>
+        </ol>
+    </div>
+
+    <div class="article-title">2.2</div>
+    <div class="article-body">
+        Le partite sono simulate automaticamente dal sistema. Tutti i risultati e gli eventi
+        relativi alle partite sono generati dal simulatore e non corrispondono ad eventi sportivi reali.
+    </div>
+
+    <div class="section-title">Art. 3 Partecipazione</div>
+
+    <div class="article-title">3.1</div>
+    <div class="article-body">
+        Possono partecipare Squadre <a th:href="@{/registra-squadre}" class="reg-link">regolarmente registrate</a> e conformi ai criteri di iscrizione previsti dal sistema.
+    </div>
+
+    <div class="article-title" id="art3-2">3.2</div>
+    <div class="article-body">
+        Ogni Squadra deve schierare <strong><u>esattamente</u></strong> undici (11) giocatori per incontro. La selezione dei giocatori è effettuata tramite <a th:href="@{/registra-giocatori}" class="reg-link">l’interfaccia di registrazione</a>.
+    </div>
+
+    <div class="article-title">3.3</div>
+    <div class="article-body">
+        La rosa di ogni squadra regolarmente iscritta alla Competizione <strong>non può</strong> prevedere un numero di giocatori maggiore a quello indicato nel paragrafo <a href="#art3-2" class="reg-link">3.2</a>, pena l'esclusione dalla Competizione.
+    </div>
+
+    <div class="section-title">Art. 4 Modalità di gioco</div>
+
+    <div class="article-title">4.1</div>
+    <div class="article-body">
+        Ciascuna Partita si svolge secondo una simulazione di novanta (90) minuti regolamentari, suddivisi equamente in due tempi di gioco da quarantacinque (45) minuti ciascuno.
+    </div>
+
+    <div class="article-title">4.2</div>
+    <div class="article-body">
+        Alla fine di ciascuno dei due tempi regolamentari, il sistema si riserva il diritto di assegnare il recupero. L'entità dello stesso è simulata all'interno dell'intervallo tra zero (0) e sette (7) minuti.
+    </div>
+
+    <div class="article-title">4.3</div>
+    <div class="article-body">
+        In caso di parità al termine dei minuti regolamentari nelle semifinali o nei match decisivi,
+        la vincente sarà determinata tramite una sequenza di calci di rigore simulati (vedasi la sezione <a href="#articolo6" class="reg-link">Rigori</a>).
+    </div>
+
+    <div class="article-title">4.4</div>
+    <div class="article-body">
+        La simulazione della Partita <strong><u>non</u> prevede</strong>:
+        <ul>
+            <li>Sostituzioni;</li>
+            <li>Infortuni;</li>
+            <li>Falli gravi di gioco;</li>
+            <li>Provvedimenti disciplinari (ammonizioni, espulsioni, squalifiche).</li>
+        </ul>
+    </div>
+
+    <div class="article-title">4.5</div>
+    <div class="article-body">
+        La simulazione della Partita <strong>prevede</strong>:
+        <ul>
+            <li>Rigori.</li>
+        </ul>
+    </div>
+
+    <div class="section-title">Art. 5 Punteggio e Classifica</div>
+
+    <div class="article-title">5.1</div>
+    <div class="article-body">
+        Per ciascun incontro valgono i seguenti criteri di esito:
+        <ul>
+            <li>Vittoria: passaggio del turno;</li>
+            <li>Pareggio: spareggio ai calci di rigore;</li>
+            <li>Sconfitta: eliminazione.</li>
+        </ul>
+    </div>
+
+    <div class="article-title">5.2</div>
+    <div class="article-body">
+        La classifica finale della Competizione è determinata sulla base del numero di vittorie di ciascuna Squadra nelle fasi previste (<a href="#art2-1" class="reg-link">paragrafo 2.1</a>).
+    </div>
+
+    <div class="section-title" id="articolo6">Art. 6 Rigori (spareggio)</div>
+
+    <div class="article-title">6.1</div>
+    <div class="article-body">
+        Nel caso in cui una Partita finisca in parità in fasi determinanti, la modalità di spareggio
+        prevista è la battuta dei calci di rigore simulati fino all’esito finale.
+    </div>
+
+    <div class="article-title">6.2</div>
+    <div class="article-body">
+        La procedura di spareggio si svolge secondo le seguenti modalità:
+        <ul>
+            <li>Un sorteggio decreta la Squadra che inizia la battuta dei calci di rigore;</li>
+            <li>Seguendo il criterio dell'alternanza, ciascuna Squadra ha diritto a battere un numero di cinque (5) rigori;</li>
+            <li>
+            In caso di ulteriore parità, si applica il principio dell’oltranza,
+            con l’esecuzione alternata di un (1) calcio di rigore per ciascuna Squadra,
+            fino alla determinazione di una Squadra vincente.
+            </li>
+        </ul>
+    </div>
+
+    <div class="section-title">Art. 7 Disposizioni Finali</div>
+
+    <div class="article-title">7.1</div>
+    <div class="article-body">
+        Il presente regolamento può essere aggiornato o modificato dall’Organizzazione del progetto in qualsiasi momento.
+    </div>
+
+    <div class="article-title">7.2</div>
+    <div class="article-body">
+        Per quanto non espressamente previsto dal presente regolamento, si fa riferimento alle norme standard del “Giuoco del Calcio” secondo le convenzioni di simulazione adottate.
+    </div>
+
+</div>
+
+<div style="margin-bottom: 50px; margin-left: 515px">
+    <button class="btn-invert" onclick="tornaIndietro()">Indietro</button>
+</div>
+
+<footer>
+    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
+</footer>
+
+<script>
+    function tornaIndietro() {
+        // Controlla se esiste una pagina di provenienza nel browser
+        if (document.referrer && document.referrer !== "" && !document.referrer.includes('/loginadmin')) {
+            // Torna alla pagina esatta da cui l'utente è arrivato
+            window.location.href = document.referrer;
+        } else {
+            // Se non c'è una provenienza (es. accesso diretto all'URL), vai alla Home
+            window.location.href = '/';
+        }
+    }
+</script>
+
+</body>
+</html>
