@@ -8,50 +8,110 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            margin: 0 auto;
-            padding: 0 5%;
+            margin: 0;
+            padding: 0;
             background: none !important;
-            background-color: none !important;
             color: #222;
-        }
-
-        header, footer {
-            background-color: #00bf63;
-            color: white;
-            padding: 15px 0;
-            text-align: center;
         }
 
         nav {
             display: flex;
             justify-content: center;
-            background-color: #7ed957;
-            padding: 10px 0;
+            align-items: center;
+            gap: 10px;
+
+            background: linear-gradient(
+                to right,
+                rgba(126, 217, 87, 0) 0%,          /* Trasparente a sinistra */
+                rgba(126, 217, 87, 0.85) 5%,      /* Inizio colore */
+                rgba(126, 217, 87, 0.85) 95%,      /* Fine colore */
+                rgba(126, 217, 87, 0) 100%         /* Trasparente a destra */
+            );
+
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        nav a {
+        /* Wrapper trasparente a tutta larghezza */
+        .nav-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Navbar vera e propria, centrata come il campo */
+        .nav-local {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+
+            padding: 12px 0;
+        }
+
+        /* Link invariati (riuso stile globale) */
+        .nav-local a {
             color: white;
             text-decoration: none;
-            margin: 0 15px;
             font-weight: bold;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.25s ease;
         }
 
-        nav a:hover {
-            text-decoration: underline;
+        .nav-local a:hover {
+            background-color: rgba(0, 191, 99, 0.35);
         }
+
+
+        /* ================= HEADER & FOOTER ================= */
+
+        header, footer {
+            background-color: #00bf63;
+            color: white;
+            text-align: center;
+            padding-left: 15%;
+            padding-right: 15%;
+        }
+
+        /* Footer INCOLLATO al campo */
+        footer {
+            margin-top: 0 !important;
+            padding-top: 10px;
+        }
+
+        /* ================= CAMPO ================= */
 
         .campo-container {
             position: relative;
             max-width: 900px;
-            margin: 40px auto;
+            margin: 0 auto;
+            height: 1300px;
+
             background: url('/images/bg-campo.png') no-repeat center center;
             background-size: contain;
-            background-repeat: no-repeat;
             background-color: rgba(255, 255, 255, 0.6);
+
             border-radius: 15px;
+            border-bottom-left-radius: 0;   /* elimina bianco sotto */
+            border-bottom-right-radius: 0;  /* elimina bianco sotto */
+
             padding-top: 30px;
-            height: 1300px;
+            z-index: 2;
         }
+
+        /* ================= FIGURINE ================= */
 
         .figurina {
             position: absolute;
@@ -62,17 +122,59 @@
         }
 
         .figurina:hover {
-            transform: scale(1.25); /* Zoom del 25% */
-            z-index: 999; /* Porta l'immagine sopra alle altre */
+            transform: scale(1.25);
+            z-index: 999;
         }
 
         .ALL { top: 60px; left: 50px; width: 80px; }
         .STADIO { top: 60px; right: 50px; width: 80px; }
 
-        .button-row {
-            margin-bottom: 50px;
+        /* ================= BOTTONE "INDIETRO" ================= */
+
+        /* Ponte invisibile tra campo e footer */
+        .campo-footer-bridge {
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
         }
 
+        /* Il bottone gestisce lo spazio, non il layout */
+        .campo-footer-bridge button {
+            margin: 12px 0;
+        }
+
+        /* ================= TRIBUNE LATERALI ================= */
+
+        .tribuna-laterale {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+
+            width: 14vw;
+            max-width: 220px;
+            min-width: 120px;
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            filter: grayscale(40%) brightness(0.85) blur(0.6px);
+            opacity: 0.8;
+
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .tribuna-sx {
+            left: 0;
+            background-image: url('/images/tribuna_sx.jpg');
+        }
+
+        .tribuna-dx {
+            right: 0;
+            background-image: url('/images/tribuna_dx.jpg');
+        }
     </style>
 
     <link th:href="@{'/' + ${modulo} + '.css'}" rel="stylesheet" />
@@ -90,10 +192,24 @@
 
 <nav>
     <a th:href="@{/homepage}">Home</a>
-    <a th:href="@{/squadre-disponibili}">Squadre disponibili</a>
-    <a th:href="@{/registra-squadre}">Registra rose</a>
+    <a th:href="@{/squadredisponibili}">Vedi squadre</a>
+    <div class="nav-dropdown">
+        <span class="nav-dropdown-title">
+            Registrazione
+        </span>
+        <div class="nav-dropdown-menu">
+            <a th:href="@{/registra-squadre}">Squadre</a>
+            <a th:href="@{/registra-giocatori}">Giocatori</a>
+        </div>
+    </div>
+    <a th:href="@{/archiviotornei}">Archivio</a>
+    <a th:href="@{/contatti}">Chi siamo</a>
     <a th:href="@{/loginadmin}">Area Admin</a>
 </nav>
+
+
+
+<div class="tribuna-laterale tribuna-sx"></div>
 
 <div class="campo-container">
     <div th:each="giocatore : ${giocatori}">
@@ -114,9 +230,12 @@
             <img th:src="@{${stadio.immagine}}" class="figurina STADIO"
                  th:alt="${stadio.nome}" />
         </a>
+
 </div>
 
-<div class="button-row">
+<div class="tribuna-laterale tribuna-dx"></div>
+
+<div class="campo-footer-bridge button-row">
     <button onclick="tornaIndietro()">Indietro</button>
 </div>
 
