@@ -3,137 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Dettaglio Stadio</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0 auto;
-            padding: 0 5%;
-            background: url('/images/bg-campo.png') no-repeat center top fixed;
-            background-size: cover;
-            color: #222;
-        }
-
-        header, footer {
-            background-color: #00bf63;
-            color: white;
-            padding: 15px 0;
-            text-align: center;
-        }
-
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #7ed957;
-            padding: 10px 0;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        .container {
-            margin-top: 30px;
-            background-color: rgba(255, 255, 255, 0.75);
-            padding: 30px;
-            border-radius: 12px;
-        }
-
-        .top-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .top-section h2 {
-            font-size: 2.2em;
-            margin: 0;
-            font-weight: bold;
-        }
-
-        .top-section img {
-            height: 2.2em;
-            vertical-align: middle;
-        }
-
-        .middle-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-top: 30px;
-        }
-
-        .info-list {
-            flex: 1;
-            margin-top: 50px;
-            margin-left: 30px;
-        }
-
-        .info-list ul {
-            list-style: none;
-            padding: 0;
-            font-size: 1.1em;
-        }
-
-        .info-list ul li {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .info-list ul li img.icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        .figurina-stadio {
-            flex: 0 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: 10px;
-            margin-right: 30px;
-        }
-
-        .figurina-img {
-            max-width: 350px;
-            max-height: 350px;
-        }
-
-        .bottom-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-top: 40px;
-        }
-
-        .description {
-            flex: 1;
-            font-size: 1.1em;
-            text-align: justify;
-            margin-right: 30px;
-        }
-
-    </style>
+    <link rel="stylesheet" th:href="@{/generale.css}">
 </head>
 <body>
+
 <header>
-    <h1>Dettaglio Stadio</h1>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1>Dettaglio Stadio</h1>
+        </div>
+    </div>
 </header>
 
 <nav>
-    <a href="/registra-squadre">Registra rose</a>
-    <a href="/squadre">Archivio</a>
-    <a href="#">Chi Siamo</a>
-    <a href="#">Area Admin</a>
+    <a th:href="@{/homepage}">Home</a>
+    <a th:href="@{/squadredisponibili}">Vedi squadre</a>
+    <div class="nav-dropdown">
+        <span class="nav-dropdown-title">
+            Registrazione
+        </span>
+        <div class="nav-dropdown-menu">
+            <a th:href="@{/registra-squadre}">Squadre</a>
+            <a th:href="@{/registra-giocatori}">Giocatori</a>
+        </div>
+    </div>
+    <a th:href="@{/archiviotornei}">Archivio</a>
+    <a th:href="@{/contatti}">Chi siamo</a>
+    <a th:href="@{/loginadmin}">Area Admin</a>
 </nav>
 
 <div class="container">
@@ -171,10 +68,29 @@
             <p th:text="${stadio.descrizione}">Descrizione dello stadio</p>
         </div>
     </div>
+
+    <div class="button-row" style="margin-bottom: 50px">
+        <button onclick="tornaIndietro()">Indietro</button>
+    </div>
+
 </div>
 
 <footer>
     <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
 </footer>
+
+<script>
+    function tornaIndietro() {
+        // Controlla se esiste una pagina di provenienza nel browser
+        if (document.referrer && document.referrer !== "" && !document.referrer.includes('/loginadmin')) {
+            // Torna alla pagina esatta da cui l'utente è arrivato
+            window.location.href = document.referrer;
+        } else {
+            // Se non c'è una provenienza (es. accesso diretto all'URL), vai alla Home
+            window.location.href = '/';
+        }
+    }
+</script>
+
 </body>
 </html>
