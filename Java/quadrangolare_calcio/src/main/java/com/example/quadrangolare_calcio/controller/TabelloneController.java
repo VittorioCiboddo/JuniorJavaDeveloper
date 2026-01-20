@@ -40,7 +40,7 @@ public class TabelloneController {
 
         }).collect(Collectors.toList());
 
-        model.addAttribute("squadre", squadreSemplici); // Passiamo questa al JS
+        model.addAttribute("squadre", squadreSemplici);
         model.addAttribute("isPronta", squadreComplete.size() >= 4);
 
         return "tabellone";
