@@ -1280,69 +1280,160 @@ header {
 }
 
 
-/* ---------------------- MINI-TABELLONE PERCORSO TORNEO ---------------------- */
+/* ================= MINI TABELLONE ================= */
+
 .mini-tabellone {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 30px;
-    max-width: 600px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.05); /* leggera trasparenza sul podio */
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+
+    overflow: hidden;
+
+    margin: 60px auto;
+    padding: 40px;
+    max-width: 900px;
+
+    background: #e5f7ee;
+    border: 3px solid #00bf63;
+    border-radius: 20px;
 }
 
-.mini-tabellone .mini-title {
+.mini-title {
     text-align: center;
-    font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: #fff;
-    text-shadow: 0 0 3px #000;
+    font-size: 1.6rem;
+    color: #00bf63;
+    margin-bottom: 40px;
 }
 
-/* Singola partita */
-.mini-match {
+/* BRACKET GRID */
+.bracket {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 60px 80px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* MATCH */
+.match {
+    position: relative;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #00bf63;
+    width: fit-content; /* Ristringe il box alla dimensione del contenuto */
+    min-width: 200px;   /* Evita che diventino troppo piccoli se i nomi sono brevi */
+    margin: 0 auto;     /* Centra i box nelle colonne della grid */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.match-label {
+    display: block;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #00bf63;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #00bf63;
+    padding-bottom: 5px;
+}
+
+/* POSIZIONAMENTO */
+.semi1 { grid-column: 1; grid-row: 1; }
+.semi2 { grid-column: 1; grid-row: 2; }
+.finale { grid-column: 2; grid-row: 1 / span 2; }
+.finalina { grid-column: 3; grid-row: 2; }
+
+/* TEAM */
+.team {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-family: sans-serif;
-    font-size: 14px;
-    color: #fff;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
-/* Ridimensiona i loghi delle squadre */
-.mini-match img {
+.team-info img {
     width: 50px;
     height: 50px;
     object-fit: contain;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: #fff;
-    padding: 2px;
+    padding-left: 50px;
 }
 
-/* Risultato della partita */
-.mini-match span {
-    min-width: 80px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 14px;
-    color: #ffd700; /* colore dorato per evidenziare il punteggio */
-    text-shadow: 0 0 2px #000;
+.team span {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #000;
 }
 
-/* Aggiungi stili particolari per finalissima e finalina */
-.mini-match.finale span {
-    color: #ff6347; /* arancione/rosso per evidenziare la finalissima */
-    font-size: 15px;
+/* Container info squadra (Logo + Gol principali) */
+.team-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.mini-match.finalina span {
-    color: #87ceeb; /* azzurro per la finale 3°-4° posto */
-    font-size: 14px;
+/* Numerini dei Gol principali (ora vicini al logo) */
+.main-score {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #222;
+    min-width: 20px;
+    padding-left: 5px;
+}
+
+/* Numerini dei Rigori (piccoli a destra) */
+.penalty-score {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: 2px;
+}
+
+
+/* ================= LINEE BRACKET ================= */
+
+/* Solo per il mini-tabellone */
+.bracket-row-connector {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 900px; /* Deve combaciare con la larghezza della tua riga loghi */
+    margin: 0 auto;
+    height: 40px;
+}
+
+
+/* Linee orizzontali che uniscono i match */
+.semi::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: 50%;
+    width: 60px;
+    height: 3px;
+    background: #00bf63;
+}
+
+/* Linea verticale "chiusura" che connette alla finale */
+.finale::before {
+    content: "";
+    position: absolute;
+    left: -42px;
+    top: -19%;    /* Si estende verso l'alto fino alla semi1 */
+    bottom: -20%; /* Si estende verso il basso fino alla semi2 */
+    width: 3px;
+    background: #00bf63;
+}
+
+
+/* Puntale orizzontale che entra fisicamente nella finale */
+.finale::after {
+    content: "";
+    position: absolute;
+    left: -42px;
+    top: 50%;
+    width: 42px;
+    height: 3px;
+    background: #00bf63;
 }
 
 
