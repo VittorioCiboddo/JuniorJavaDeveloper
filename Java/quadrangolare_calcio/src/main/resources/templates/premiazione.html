@@ -22,19 +22,202 @@
     <a th:href="@{/loginadmin}">Area Admin</a>
 </nav>
 
+<div class="container">
+
+    <!-- PODIO -->
+    <section class="podio epico">
+
+        <div class="podio-step secondo anim-enter">
+            <img id="logo-secondo">
+            <h3 id="nome-secondo"></h3>
+            <span class="medaglia">🥈</span>
+            <div class="gradino"></div>
+        </div>
+
+        <div class="podio-step primo anim-enter vincitore">
+            <div class="logo-wrapper">
+                <img id="logo-primo">
+                <span class="trofeo">🏆</span>
+            </div>
+            <h3 id="nome-primo"></h3>
+            <span class="medaglia">🥇</span>
+            <div class="gradino"></div>
+        </div>
+
+
+        <div class="podio-step terzo anim-enter">
+            <img id="logo-terzo">
+            <h3 id="nome-terzo"></h3>
+            <span class="medaglia">🥉</span>
+            <div class="gradino"></div>
+        </div>
+
+        <div class="podio-step quarto anim-enter fuori-podio">
+            <img id="logo-quarto">
+            <h3 id="nome-quarto"></h3>
+            <span class="medaglia-4">4</span>
+            <div class="gradino"></div>
+        </div>
+
+    </section>
+
+    <!-- CORIANDOLI -->
+    <div id="confetti"></div>
+
+
+    <section class="mini-tabellone">
+
+        <h3 class="mini-title">Percorso del Torneo</h3>
+
+        <div class="mini-match">
+            <img id="logo-sf1-a">
+            <span id="ris-sf1"></span>
+            <img id="logo-sf1-b">
+        </div>
+
+        <div class="mini-match">
+            <img id="logo-sf2-a">
+            <span id="ris-sf2"></span>
+            <img id="logo-sf2-b">
+        </div>
+
+        <div class="mini-match finale">
+            <img id="logo-fin-a">
+            <span id="ris-fin"></span>
+            <img id="logo-fin-b">
+        </div>
+
+        <div class="mini-match finalina">
+            <img id="logo-finl-a">
+            <span id="ris-finl"></span>
+            <img id="logo-finl-b">
+        </div>
+
+    </section>
+
+
+</div>
+
+
 <footer>
     <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
 </footer>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const nomeTorneo = sessionStorage.getItem('nomeTorneoAttuale') || "Torneo";
 
-        document.getElementById('header-nome-torneo').innerText = "Premiazione " + nomeTorneo;
+        // Nome torneo
+        const nomeTorneo =
+            sessionStorage.getItem("nomeTorneoAttuale") || "Torneo";
+
+        document.getElementById("header-nome-torneo").innerText =
+            "Premiazione " + nomeTorneo;
+
+        // Dati torneo
+        const data = JSON.parse(sessionStorage.getItem("risultatoTorneo"));
+        if (!data) {
+            window.location.href = "/homepage";
+            return;
+        }
+
+        // 🥇 PRIMO POSTO
+        document.getElementById("nome-primo").innerText = data.primo.nome;
+        document.getElementById("logo-primo").src = data.primo.logo;
+
+        // 🥈 SECONDO POSTO
+        document.getElementById("nome-secondo").innerText = data.secondo.nome;
+        document.getElementById("logo-secondo").src = data.secondo.logo;
+
+        // 🥉 TERZO POSTO
+        document.getElementById("nome-terzo").innerText = data.terzo.nome;
+        document.getElementById("logo-terzo").src = data.terzo.logo;
+
+        // QUARTO POSTO
+        document.getElementById("nome-quarto").innerText = data.quarto.nome;
+        document.getElementById("logo-quarto").src = data.quarto.logo;
     });
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const confetti = document.getElementById("confetti");
 
+        for (let i = 0; i < 120; i++) {
+            const c = document.createElement("div");
+            c.style.position = "absolute";
+            c.style.left = Math.random() * 100 + "vw";
+            c.style.top = "-20px";
+            c.style.width = "10px";
+            c.style.height = "10px";
+            c.style.background = ["gold", "white", "red"][Math.floor(Math.random()*3)];
+            c.style.animation = `fall ${3 + Math.random()*3}s linear infinite`;
+            c.style.opacity = Math.random();
+            confetti.appendChild(c);
+        }
+    });
+</script>
+
+<style>
+    @keyframes fall {
+        to {
+            transform: translateY(110vh) rotate(720deg);
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const stato = JSON.parse(sessionStorage.getItem("statoTorneo"));
+        if (!stato || !stato.risultati) return;
+
+        const risultati = stato.risultati;
+
+        function formattaRisultato(match) {
+            if (!match) return '';
+            // Controlla se ci sono rigori
+            const homeGol = match.vincente.gol ?? 0;
+            const awayGol = match.perdente.gol ?? 0;
+            const rigoriHome = match.vincente.rigori ?? 0;
+            const rigoriAway = match.perdente.rigori ?? 0;
+
+            if (rigoriHome || rigoriAway) {
+                return `${homeGol}-${awayGol} (${rigoriHome}-${rigoriAway} d.c.r.)`;
+            } else {
+                return `${homeGol}-${awayGol}`;
+            }
+        }
+
+        // SEMIFINALE 1
+        if (risultati.semi1) {
+            document.getElementById("logo-sf1-a").src = risultati.semi1.vincente.logo;
+            document.getElementById("ris-sf1").innerText = formattaRisultato(risultati.semi1);
+            document.getElementById("logo-sf1-b").src = risultati.semi1.perdente.logo;
+        }
+
+        // SEMIFINALE 2
+        if (risultati.semi2) {
+            document.getElementById("logo-sf2-a").src = risultati.semi2.vincente.logo;
+            document.getElementById("ris-sf2").innerText = formattaRisultato(risultati.semi2);
+            document.getElementById("logo-sf2-b").src = risultati.semi2.perdente.logo;
+        }
+
+        // FINALE 3°-4° POSTO
+        if (risultati.finale34) {
+            document.getElementById("logo-finl-a").src = risultati.finale34.vincente.logo;
+            document.getElementById("ris-finl").innerText = formattaRisultato(risultati.finale34);
+            document.getElementById("logo-finl-b").src = risultati.finale34.perdente.logo;
+        }
+
+        // FINALE
+        if (risultati.finalissima) {
+            document.getElementById("logo-fin-a").src = risultati.finalissima.vincente.logo;
+            document.getElementById("ris-fin").innerText = formattaRisultato(risultati.finalissima);
+            document.getElementById("logo-fin-b").src = risultati.finalissima.perdente.logo;
+        }
+
+    });
+</script>
 
 </body>
 </html>
