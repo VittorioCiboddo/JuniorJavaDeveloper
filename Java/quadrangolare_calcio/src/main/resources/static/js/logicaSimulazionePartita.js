@@ -490,7 +490,7 @@ function generaEvento() {
             targetPortiere
         );
 
-    } else if (rand < 0.20 && !matchState.rigoreInCorso) {
+    } else if (rand < 0.25 && !matchState.rigoreInCorso) {
         // Assegna nuovo rigore in partita
         const rigorista = scegliRigoristaRigorePartita(teamAttacco);
         const delayRigore = 30 + Math.random() * 150;
@@ -626,7 +626,16 @@ function gestisciFinePartita() {
 
     matchState.matchEnded = true;
 
-    salvaERiprosegui(vincitore, perdente);
+    let infoRigori = null;
+
+    if (matchState.penalties.active) {
+        infoRigori = {
+            home: matchState.penalties.results.home,
+            away: matchState.penalties.results.away
+        };
+    }
+
+    salvaERiprosegui(vincitore, perdente, infoRigori);
 }
 
 
@@ -659,7 +668,6 @@ function avviaRigori() {
 
 
 function eseguiTurnoRigore() {
-
     const isHomeTurn = matchState.penalties.turn === 0;
 
     // Target
@@ -689,9 +697,7 @@ function eseguiTurnoRigore() {
 
     // Messaggio telecronaca
     const categoria = segnato ? 'SEGNATO' : 'ERRORE';
-
     const tipoEmoji = segnato ? "RIGORE_OK" : "RIGORE_KO";
-
     const esitoClasse = categoria === 'SEGNATO' ? 'segnato' : 'sbagliato';
 
     aggiungiCommento(
@@ -703,13 +709,11 @@ function eseguiTurnoRigore() {
         esitoClasse
     );
 
-
-
     // Alternanza turni
     matchState.penalties.turn = isHomeTurn ? 1 : 0;
 
-    // Conta solo dopo entrambi i tiri
-    if (matchState.penalties.turn === 0) {
+    // Incremento count solo quando entrambi hanno tirato lo stesso numero di rigori
+    if (!isHomeTurn) {
         matchState.penalties.count++;
     }
 }
@@ -717,18 +721,23 @@ function eseguiTurnoRigore() {
 
 function checkFineRigori() {
     const { home, away } = matchState.penalties.results;
-    const rounds = matchState.penalties.count;
 
-    // variabile di controllo per i rigori ad oltranza
-    const fineCoppia = matchState.penalties.turn === 0;
+    // numero di rigori già tirati
+    const tiriHome = matchState.penalties.tiratori.home.length;
+    const tiriAway = matchState.penalties.tiratori.away.length;
 
-    if (rounds >= 5 && fineCoppia && home !== away) {
+    // Fine normale: entrambe hanno tirato almeno 5 rigori e punteggio non pari
+    if (tiriHome >= 5 && tiriAway >= 5 && home !== away) {
+        return true;
+    }
+
+    // Oltranza: se entrambe hanno tirato lo stesso numero di rigori e c'è un vantaggio
+    if (tiriHome === tiriAway && home !== away && tiriHome > 5) {
         return true;
     }
 
     return false;
 }
-
 
 
 
@@ -922,15 +931,43 @@ function renderMarcatori() {
 
 
 
-function salvaERiprosegui(vincitore, perdente) {
+function salvaERiprosegui(vincitore, perdente, rigori = null) {
     let stato = JSON.parse(sessionStorage.getItem('statoTorneo'));
 
     // Salvataggi risultati
-    if (stato.faseAttuale === 1) stato.risultati.semi1 = { vincente: vincitore, perdente };
-    if (stato.faseAttuale === 2) stato.risultati.semi2 = { vincente: vincitore, perdente };
-    if (stato.faseAttuale === 3) stato.risultati.finale34 = { vincente: vincitore, perdente };
+    if (stato.faseAttuale === 1) stato.risultati.semi1 = {
+                                     home: matchState.homeTeam,
+                                     away: matchState.awayTeam,
+                                     vincente: vincitore,
+                                     perdente,
+                                     rigori
+                                 };
+
+    if (stato.faseAttuale === 2) stato.risultati.semi2 = {
+                                     home: matchState.homeTeam,
+                                     away: matchState.awayTeam,
+                                     vincente: vincitore,
+                                     perdente,
+                                     rigori
+                                 };
+
+    if (stato.faseAttuale === 3) stato.risultati.finale34 = {
+                                     home: matchState.homeTeam,
+                                     away: matchState.awayTeam,
+                                     vincente: vincitore,
+                                     perdente,
+                                     rigori
+                                 };
+
     if (stato.faseAttuale === 4) {
-        stato.risultati.finalissima = { vincente: vincitore, perdente: perdente };
+                                stato.risultati.finalissima = {
+                                    home: matchState.homeTeam,
+                                    away: matchState.awayTeam,
+                                    vincente: vincitore,
+                                    perdente,
+                                    rigori
+                                };
+
         sessionStorage.setItem('statoTorneo', JSON.stringify(stato));
     }
 
@@ -963,6 +1000,7 @@ function salvaERiprosegui(vincitore, perdente) {
                 terzo: stato.risultati.finale34.vincente,
                 quarto: stato.risultati.finale34.perdente
             };
+
 
             // Salvataggio dedicato SOLO alla premiazione
             sessionStorage.setItem(
