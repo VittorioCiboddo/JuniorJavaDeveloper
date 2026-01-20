@@ -66,35 +66,89 @@
 
 
     <section class="mini-tabellone">
-
         <h3 class="mini-title">Percorso del Torneo</h3>
 
-        <div class="mini-match">
-            <img id="logo-sf1-a">
-            <span id="ris-sf1"></span>
-            <img id="logo-sf1-b">
-        </div>
+        <div class="bracket">
+            <div class="match semi semi1">
+                <span class="match-label">SEMIFINALE 1</span>
+                <div class="team">
+                    <div class="team-info">
+                        <img id="logo-sf1-a" src="" alt="">
+                        <span id="gol-sf1-a" class="main-score"></span>
+                    </div>
+                    <span id="gol-sf1-a-rig" class="penalty-score"></span>
+                </div>
+                <div class="team">
+                    <div class="team-info">
+                        <img id="logo-sf1-b" src="" alt="">
+                        <span id="gol-sf1-b" class="main-score"></span>
+                    </div>
+                    <span id="gol-sf1-b-rig" class="penalty-score"></span>
+                </div>
+            </div>
 
-        <div class="mini-match">
-            <img id="logo-sf2-a">
-            <span id="ris-sf2"></span>
-            <img id="logo-sf2-b">
-        </div>
+            <div class="match semi semi2">
+                <span class="match-label">SEMIFINALE 2</span>
+                <div class="team">
+                    <div class="team-info">
+                        <img id="logo-sf2-a" src="" alt="">
+                        <span id="gol-sf2-a" class="main-score"></span>
+                    </div>
+                    <span id="gol-sf2-a-rig" class="penalty-score"></span>
+                </div>
+                <div class="team">
+                    <div class="team-info">
+                        <img id="logo-sf2-b" src="" alt="">
+                        <span id="gol-sf2-b" class="main-score"></span>
+                    </div>
+                    <span id="gol-sf2-b-rig" class="penalty-score"></span>
+                </div>
+            </div>
 
-        <div class="mini-match finale">
-            <img id="logo-fin-a">
-            <span id="ris-fin"></span>
-            <img id="logo-fin-b">
-        </div>
+            <div class="match finale">
+                <span class="match-label">FINALISSIMA</span>
+                <div class="team">
+                    <div class="team-info">
+                        <img id="logo-fin-a" src="" alt="">
+                        <span id="gol-fin-a" class="main-score"></span>
+                    </div>
+                    <span id="gol-fin-a-rig" class="penalty-score"></span>
+                </div>
+                <div class="team">
+                    <div class="team-info">
+                        <img id="logo-fin-b" src="" alt="">
+                        <span id="gol-fin-b" class="main-score"></span>
+                    </div>
+                    <span id="gol-fin-b-rig" class="penalty-score"></span>
+                </div>
+            </div>
 
-        <div class="mini-match finalina">
-            <img id="logo-finl-a">
-            <span id="ris-finl"></span>
-            <img id="logo-finl-b">
+            <div class="match finalina">
+                <span class="match-label">FINALE 3°-4° POSTO</span>
+                <div class="team">
+                    <div class="team-info">
+                        <img id="logo-finl-a" src="" alt="">
+                        <span id="gol-finl-a" class="main-score"></span>
+                    </div>
+                    <span id="gol-finl-a-rig" class="penalty-score"></span>
+                </div>
+                <div class="team">
+                    <div class="team-info">
+                        <img id="logo-finl-b" src="" alt="">
+                        <span id="gol-finl-b" class="main-score"></span>
+                    </div>
+                    <span id="gol-finl-b-rig" class="penalty-score"></span>
+                </div>
+            </div>
         </div>
-
     </section>
 
+
+    <div class="button-row">
+        <button th:attr="onclick=|window.location.href='/stats/tornei'|">Statistiche Torneo</button>
+        <button th:attr="onclick=|window.location.href='/tabellone'|">Nuovo Torneo</button>
+        <button th:attr="onclick=|window.location.href='/homepage'|">Home Page</button>
+    </div>
 
 </div>
 
@@ -171,50 +225,36 @@
         const stato = JSON.parse(sessionStorage.getItem("statoTorneo"));
         if (!stato || !stato.risultati) return;
 
-        const risultati = stato.risultati;
+        function render(match, la, ga, lb, gb) {
+            if (!match) return;
 
-        function formattaRisultato(match) {
-            if (!match) return '';
-            // Controlla se ci sono rigori
-            const homeGol = match.vincente.gol ?? 0;
-            const awayGol = match.perdente.gol ?? 0;
-            const rigoriHome = match.vincente.rigori ?? 0;
-            const rigoriAway = match.perdente.rigori ?? 0;
+            // LOGHI
+            document.getElementById(la).src = match.home.logo;
+            document.getElementById(lb).src = match.away.logo;
 
-            if (rigoriHome || rigoriAway) {
-                return `${homeGol}-${awayGol} (${rigoriHome}-${rigoriAway} d.c.r.)`;
+            // GOL TEMPI REGOLAMENTARI
+            document.getElementById(ga).innerText = match.home.gol;
+            document.getElementById(gb).innerText = match.away.gol;
+
+            // RIGORI (se presenti)
+            const rigA = document.getElementById(ga + "-rig");
+            const rigB = document.getElementById(gb + "-rig");
+
+            if (match.rigori) {
+                rigA.innerText = "(" + match.rigori.home + ")";
+                rigB.innerText = "(" + match.rigori.away + ")";
             } else {
-                return `${homeGol}-${awayGol}`;
+                rigA.innerText = "";
+                rigB.innerText = "";
             }
         }
 
-        // SEMIFINALE 1
-        if (risultati.semi1) {
-            document.getElementById("logo-sf1-a").src = risultati.semi1.vincente.logo;
-            document.getElementById("ris-sf1").innerText = formattaRisultato(risultati.semi1);
-            document.getElementById("logo-sf1-b").src = risultati.semi1.perdente.logo;
-        }
+        const r = stato.risultati;
 
-        // SEMIFINALE 2
-        if (risultati.semi2) {
-            document.getElementById("logo-sf2-a").src = risultati.semi2.vincente.logo;
-            document.getElementById("ris-sf2").innerText = formattaRisultato(risultati.semi2);
-            document.getElementById("logo-sf2-b").src = risultati.semi2.perdente.logo;
-        }
-
-        // FINALE 3°-4° POSTO
-        if (risultati.finale34) {
-            document.getElementById("logo-finl-a").src = risultati.finale34.vincente.logo;
-            document.getElementById("ris-finl").innerText = formattaRisultato(risultati.finale34);
-            document.getElementById("logo-finl-b").src = risultati.finale34.perdente.logo;
-        }
-
-        // FINALE
-        if (risultati.finalissima) {
-            document.getElementById("logo-fin-a").src = risultati.finalissima.vincente.logo;
-            document.getElementById("ris-fin").innerText = formattaRisultato(risultati.finalissima);
-            document.getElementById("logo-fin-b").src = risultati.finalissima.perdente.logo;
-        }
+        render(r.semi1, "logo-sf1-a", "gol-sf1-a", "logo-sf1-b", "gol-sf1-b");
+        render(r.semi2, "logo-sf2-a", "gol-sf2-a", "logo-sf2-b", "gol-sf2-b");
+        render(r.finalissima, "logo-fin-a", "gol-fin-a", "logo-fin-b", "gol-fin-b");
+        render(r.finale34, "logo-finl-a", "gol-finl-a", "logo-finl-b", "gol-finl-b");
 
     });
 </script>
