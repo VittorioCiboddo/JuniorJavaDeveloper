@@ -929,7 +929,11 @@ function salvaERiprosegui(vincitore, perdente) {
     if (stato.faseAttuale === 1) stato.risultati.semi1 = { vincente: vincitore, perdente };
     if (stato.faseAttuale === 2) stato.risultati.semi2 = { vincente: vincitore, perdente };
     if (stato.faseAttuale === 3) stato.risultati.finale34 = { vincente: vincitore, perdente };
-    if (stato.faseAttuale === 4) stato.risultati.finalissima = { vincente: vincitore, perdente };
+    if (stato.faseAttuale === 4) {
+        stato.risultati.finalissima = { vincente: vincitore, perdente: perdente };
+        sessionStorage.setItem('statoTorneo', JSON.stringify(stato));
+    }
+
 
     const faseCorrente = stato.faseAttuale;
     const prossimaFase = faseCorrente + 1;
@@ -950,7 +954,25 @@ function salvaERiprosegui(vincitore, perdente) {
         };
     } else {
         btn.innerText = "VAI ALLA PREMIAZIONE";
-        btn.onclick = () => window.location.href = "/premiazione";
+        btn.onclick = () => {
+
+            // Costruzione dati premiazione
+            const risultatoTorneo = {
+                primo: stato.risultati.finalissima.vincente,
+                secondo: stato.risultati.finalissima.perdente,
+                terzo: stato.risultati.finale34.vincente,
+                quarto: stato.risultati.finale34.perdente
+            };
+
+            // Salvataggio dedicato SOLO alla premiazione
+            sessionStorage.setItem(
+                "risultatoTorneo",
+                JSON.stringify(risultatoTorneo)
+            );
+
+            window.location.href = "/premiazione";
+        };
+
     }
 
     btn.style.display = 'block';
