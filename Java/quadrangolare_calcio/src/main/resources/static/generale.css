@@ -1305,25 +1305,36 @@ header {
 /* BRACKET GRID */
 .bracket {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 60px 80px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
     align-items: center;
-    max-width: 1200px;
+
+    max-width: 100%;
     margin: 0 auto;
 }
 
+
 /* MATCH */
 .match {
+    overflow: visibile;
     position: relative;
     background: rgba(255, 255, 255, 0.9);
     padding: 12px;
     border-radius: 10px;
     border: 2px solid #00bf63;
-    width: fit-content; /* Ristringe il box alla dimensione del contenuto */
-    min-width: 200px;   /* Evita che diventino troppo piccoli se i nomi sono brevi */
-    margin: 0 auto;     /* Centra i box nelle colonne della grid */
+
+    width: 100%;
+    max-width: 240px;   /* NON 260 */
+    margin: 0 auto;
+
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
+
+.match .team {
+    justify-self: start;
+}
+
 
 .match-label {
     display: block;
@@ -1345,11 +1356,18 @@ header {
 
 /* TEAM */
 .team {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 8px;
+    padding: 4px 6px;
+    border-radius: 8px;
+}
+
+
+.team:not(.winner) {
+    background: transparent;
 }
 
 .team-info img {
@@ -1368,9 +1386,14 @@ header {
 /* Container info squadra (Logo + Gol principali) */
 .team-info {
     display: flex;
+    position: relative;
     align-items: center;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 8px;
+    max-width: fit-content;
 }
+
+
 
 /* Numerini dei Gol principali (ora vicini al logo) */
 .main-score {
@@ -1392,48 +1415,134 @@ header {
 /* ================= LINEE BRACKET ================= */
 
 /* Solo per il mini-tabellone */
-.bracket-row-connector {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    max-width: 900px; /* Deve combaciare con la larghezza della tua riga loghi */
-    margin: 0 auto;
-    height: 40px;
-}
-
-
-/* Linee orizzontali che uniscono i match */
+/* Linee orizzontali semifinali → finale */
 .semi::after {
     content: "";
     position: absolute;
-    right: -60px;
+    right: -15px;
     top: 50%;
-    width: 60px;
+    width: 16px;
     height: 3px;
     background: #00bf63;
 }
 
-/* Linea verticale "chiusura" che connette alla finale */
+/* Linea verticale che unisce le due semi */
 .finale::before {
     content: "";
     position: absolute;
-    left: -42px;
-    top: -19%;    /* Si estende verso l'alto fino alla semi1 */
-    bottom: -20%; /* Si estende verso il basso fino alla semi2 */
+    left: -30px;
+    top: -8%;
+    bottom: -9%;
     width: 3px;
     background: #00bf63;
 }
 
-
-/* Puntale orizzontale che entra fisicamente nella finale */
+/* Ingresso nella finale */
 .finale::after {
     content: "";
     position: absolute;
-    left: -42px;
+    left: -30px;
     top: 50%;
-    width: 42px;
+    width: 30px;
     height: 3px;
     background: #00bf63;
+}
+
+
+/* =========================
+   VINCENTE MATCH
+   ========================= */
+.team.winner {
+    background: rgba(0, 191, 99, 0.15);
+    border-radius: 8px;
+    padding: 4px 6px;
+}
+
+.team.winner .main-score,
+.team.winner .penalty-score {
+    color: #00bf63;
+    font-weight: 900;
+}
+
+/* =========================
+   VINCITORE TORNEO (FINALE)
+   ========================= */
+
+.match.finale .team.winner {
+    background-color: #fffdf0;
+    border: 2px solid #f1c40f;
+}
+
+.match.finale .team:not(.winner) {
+    border: 3px solid silver;
+}
+
+.match.finalina .team.winner {
+    border: 3px solid #cd7f32;
+    background: none;
+}
+
+.match.finale .team.winner .main-score,
+.match.finale .team.winner .penalty-score {
+    color: #b8860b;
+    font-weight: 900;
+}
+
+.match.finale .team:not(.winner) .main-score,
+.match.finale .team:not(.winner) .penalty-score {
+    color: #7f7f7f;
+    font-weight: 900;
+}
+
+.match.finalina .team.winner .main-score,
+.match.finalina .team.winner .penalty-score {
+    color: #cd7f32;
+    font-weight: 900;
+}
+
+
+.match.finale .team.winner .team-info::after {
+    content: "🏆";
+    position: absolute;
+    top: 0;   /* sopra il logo */
+    right: 80px; /* a destra del logo */
+    font-size: 2.2rem;
+    z-index: 5;
+    color: gold;
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+}
+
+/* Medaglia secondo posto */
+.match.finale .team:not(.winner) .team-info::after {
+    content: "🥈";
+    position: absolute;
+    top: 0;
+    right: 80px;
+    font-size: 2rem;
+    z-index: 5;
+}
+
+/* Medaglia terzo posto (vincitore finalina) */
+.match.finalina .team.winner .team-info::after {
+    content: "🥉";
+    position: absolute;
+    top: 0;
+    right: 80px;
+    font-size: 2rem;
+    z-index: 5;
+}
+
+/* =========================
+   BOX FINALE
+   ========================= */
+.match.finale {
+    border: 3px solid gold;
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.6);
+    transform: scale(1.05);
+}
+
+.match.finale .team.winner {
+    position: relative;
 }
 
 
