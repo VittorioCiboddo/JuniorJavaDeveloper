@@ -256,6 +256,39 @@
         render(r.finalissima, "logo-fin-a", "gol-fin-a", "logo-fin-b", "gol-fin-b");
         render(r.finale34, "logo-finl-a", "gol-finl-a", "logo-finl-b", "gol-finl-b");
 
+        function highlightWinner(match, matchSelector) {
+            if (!match) return;
+
+            const teams = document.querySelectorAll(matchSelector + " .team");
+            if (teams.length !== 2) return;
+
+            let winnerIndex = null;
+
+            // vince nei tempi
+            if (match.home.gol > match.away.gol) winnerIndex = 0;
+            else if (match.home.gol < match.away.gol) winnerIndex = 1;
+
+            // vince ai rigori
+            if (winnerIndex === null && match.rigori) {
+                if (match.rigori.home > match.rigori.away) winnerIndex = 0;
+                else winnerIndex = 1;
+            }
+
+            if (winnerIndex !== null) {
+                teams[winnerIndex].classList.add("winner");
+            }
+        }
+
+        // semifinali → chi va in finale
+        highlightWinner(r.semi1, ".semi1");
+        highlightWinner(r.semi2, ".semi2");
+
+        // finale → vincitore torneo
+        highlightWinner(r.finalissima, ".finale");
+
+        // finalina → vincitore 3° posto
+        highlightWinner(r.finale34, ".finalina");
+
     });
 </script>
 
