@@ -622,6 +622,11 @@ function gestisciFinePartita() {
             : matchState.homeTeam;
     }
 
+    // flag utili graficamente per mini-tabellone in premiazione.html
+    vincitore.isWinner = true;
+    perdente.isWinner = false;
+
+
     aggiungiCommento(`MATCH CONCLUSO! Vince ${vincitore.nome.toUpperCase()}.`, "INIZIO_FINE_PARTITA", "neutral");
 
     matchState.matchEnded = true;
