@@ -27,8 +27,9 @@ public class TabelloneController {
             map.put("nome", s.getNome());
             map.put("logo", s.getLogo());
 
-            List<Map<String, String>> giocatoriSemplici = s.getGiocatori().stream().map(g -> {
-                Map<String, String> gMap = new HashMap<>();
+            List<Map<String, Object>> giocatoriSemplici = s.getGiocatori().stream().map(g -> {
+                Map<String, Object> gMap = new HashMap<>();
+                gMap.put("idGiocatore", g.getIdGiocatore());
                 gMap.put("nome", g.getNome());
                 gMap.put("cognome", g.getCognome());
                 gMap.put("categoria", g.getRuolo().getTipologia().getCategoria());
