@@ -1,5 +1,7 @@
 package com.example.quadrangolare_calcio.service.impl;
 
+import com.example.quadrangolare_calcio.dto.EventoDTO;
+import com.example.quadrangolare_calcio.dto.PartitaDTO;
 import com.example.quadrangolare_calcio.dto.TorneoSalvataggioDTO;
 import com.example.quadrangolare_calcio.model.*;
 import com.example.quadrangolare_calcio.repository.*;
@@ -54,9 +56,6 @@ public class TorneoServiceImpl implements TorneoService {
         torneo.setNome(dto.getNomeTorneo());
         Torneo torneoSalvato = torneoRepository.save(torneo);
 
-        // Recuperiamo l'evento "GOL" una volta sola (Punto 4)
-        EventoPartita eventoGol = eventoPartitaRepository.findByTipoEvento("Goal");
-
         // 2. AGGIORNAMENTO PARTECIPAZIONE SQUADRE (Punto 2)
         // Usiamo un Set per essere sicuri di incrementare solo una volta per squadra
         Set<Integer> idsPartecipanti = new HashSet<>(Arrays.asList(
@@ -70,7 +69,7 @@ public class TorneoServiceImpl implements TorneoService {
         }
 
         // 3. CICLO SALVATAGGIO PARTITE
-        for (TorneoSalvataggioDTO.PartitaDTO pDto : dto.getPartite()) {
+        for (PartitaDTO pDto : dto.getPartite()) {
             Partita partita = new Partita();
             partita.setTorneo(torneoSalvato);
             partita.setRisultatoRegular(pDto.getRisultatoRegular());
@@ -94,7 +93,7 @@ public class TorneoServiceImpl implements TorneoService {
 
             // 4. CICLO TABELLINO E ARCHIVIO GIOCATORI (Punti 1 e 4)
             if (pDto.getEventi() != null) {
-                for (TorneoSalvataggioDTO.EventoDTO eDto : pDto.getEventi()) {
+                for (EventoDTO eDto : pDto.getEventi()) {
                     TabellinoPartita tabellino = new TabellinoPartita();
                     tabellino.setPartita(partitaSalvata);
                     tabellino.setMinuto(eDto.getMinuto());
@@ -103,15 +102,40 @@ public class TorneoServiceImpl implements TorneoService {
                     Giocatore g = giocatoreRepository.findById((long) eDto.getIdGiocatore()).orElse(null);
                     tabellino.setGiocatore(g);
 
-                    EventoPartita ep = eventoPartitaRepository.findByTipoEvento("Goal");
+                    EventoPartita ep;
+
+                    // Se è un gol normale (non rigore)
+                    if (eDto.getTipoEvento().equalsIgnoreCase("Tiro") && eDto.getEsitoEvento().equalsIgnoreCase("Goal")) {
+                        ep = eventoPartitaRepository.findByTipoEventoAndEsitoEvento("Tiro", "Goal");
+                    }
+
+                    // Se è un gol su rigore
+                    else if (eDto.getTipoEvento().equalsIgnoreCase("Rigore") && eDto.getEsitoEvento().equalsIgnoreCase("Goal")) {
+                        ep = eventoPartitaRepository.findByTipoEventoAndEsitoEvento("Rigore", "Goal");
+                    }
+
+                    // Altri casi: parato, fuori, palo/trasversa, calcio d'angolo, ecc.
+                    else {
+                        ep = eventoPartitaRepository.findByTipoEventoAndEsitoEvento(
+                                eDto.getTipoEvento(),
+                                eDto.getEsitoEvento()
+                        );
+                    }
+
+                    if (ep == null) {
+                        throw new RuntimeException("EventoPartita non trovato: " + eDto.getTipoEvento() + " / " + eDto.getEsitoEvento());
+                    }
+
                     tabellino.setEventoPartita(ep);
+
 
                     tabellinoPartitaRepository.save(tabellino);
 
                     // AGGIORNA ARCHIVIO GIOCATORE (Punto 1)
-                    if (g != null) {
+                    if ("Goal".equalsIgnoreCase(eDto.getTipoEvento())) {
                         archivioGiocatoreService.aggiornaGol(g);
                     }
+
                 }
             }
 
@@ -130,7 +154,7 @@ public class TorneoServiceImpl implements TorneoService {
         squadraRepository.findById((long) dto.getIdQuarto()).ifPresent(s -> archivioSquadraService.registraPiazzamentoTorneo(s, 4));
     }
 
-    private void aggiornaStatisticheSquadre(TorneoSalvataggioDTO.PartitaDTO pDto, Squadra home, Squadra away) {
+    private void aggiornaStatisticheSquadre(PartitaDTO pDto, Squadra home, Squadra away) {
         // Dividiamo il punteggio (es. "5-3")
         String[] gol = pDto.getRisultatoFinale().split("-");
         int gH = Integer.parseInt(gol[0]);
