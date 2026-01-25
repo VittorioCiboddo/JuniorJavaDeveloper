@@ -60,7 +60,7 @@ public class PartitaServiceImpl implements PartitaService {
             boolean isLotteria = evento.getMinuto() > 90;
 
             if (idEvento == 4) { // Goal
-                archivioGiocatoreService.aggiungiGol(evento.getGiocatore());
+                archivioGiocatoreService.aggiornaGol(evento.getGiocatore());
             } else if (idEvento == 5) { // Rigore Goal
                 archivioGiocatoreService.aggiungiRigoreSegnato(evento.getGiocatore(), isLotteria);
             } else if (idEvento == 6) { // Rigore Parato
@@ -205,7 +205,7 @@ public class PartitaServiceImpl implements PartitaService {
         Giocatore g = giocatoreRepository.getReferenceById(idGiocatore);
 
         if (idEvento == 4) { // Assumendo 4 = Goal su azione
-            archivioGiocatoreService.aggiungiGol(g);
+            archivioGiocatoreService.aggiornaGol(g);
         } else if (idEvento == 5) { // Assumendo 5 = Rigore Segnato
             // Se il tempo supera i 300 secondi (fine match JS), è lotteria
             boolean isLotteria = minuto > 90;
