@@ -1,5 +1,6 @@
 package com.example.quadrangolare_calcio.service;
 
+import com.example.quadrangolare_calcio.dto.TorneoSalvataggioDTO;
 import com.example.quadrangolare_calcio.model.Squadra;
 import com.example.quadrangolare_calcio.model.Torneo;
 
@@ -8,10 +9,12 @@ import java.util.Map;
 
 public interface TorneoService {
 
-    // Crea un nuovo torneo e registra la partecipazione delle 4 squadre
+    void salvaTorneoIntero(TorneoSalvataggioDTO dto);
+
+    // Nuovo torneo e registrazione della partecipazione delle 4 squadre
     Torneo avviaTorneo(String nomeTorneo, List<Squadra> partecipanti);
 
-    // Chiude il torneo, decreta il vincitore e aggiorna l'albo d'oro
+    // Chiudo il torneo, decreta il vincitore e aggiorna l'albo d'oro
     void chiudiTorneo(Long idTorneo);
 
     // Recupera lo storico di un torneo
