@@ -28,13 +28,8 @@ public class ArchivioSquadraServiceImpl implements ArchivioSquadraService {
     public void aggiornaStatistichePartita(Squadra squadra, int golFatti, int golSubiti,
                                            boolean vinta, boolean vintaAiRigori, boolean persaAiRigori) {
 
-        // Cerchiamo l'archivio usando la query derivata (ricordati di aggiungerla alla repo!)
-        ArchivioSquadra archivio = archivioSquadraRepository.findBySquadraIdSquadra(squadra.getIdSquadra())
-                .orElseGet(() -> {
-                    ArchivioSquadra nuovo = new ArchivioSquadra();
-                    nuovo.setSquadra(squadra);
-                    return nuovo;
-                });
+        // Cerchiamo l'archivio usando la query derivata
+        ArchivioSquadra archivio = getOrCreateArchivio(squadra);
 
         // Sommiamo i dati correnti
         archivio.setGolFattiTotali(archivio.getGolFattiTotali() + golFatti);
@@ -172,14 +167,13 @@ public class ArchivioSquadraServiceImpl implements ArchivioSquadraService {
     }
 
     @Override
+    @Transactional
     public void incrementaPartecipazione(Squadra squadra) {
+        // USA IL TUO METODO QUI:
+        ArchivioSquadra archivio = getOrCreateArchivio(squadra);
 
-        ArchivioSquadra arc = archivioSquadraRepository.findBySquadra(squadra)
-                .orElseThrow(() -> new RuntimeException("Archivio non trovato per la squadra: " + squadra.getNome()));
-
-        arc.setTorneiPartecipati(arc.getTorneiPartecipati() + 1);
-
-        archivioSquadraRepository.save(arc);
+        archivio.setTorneiPartecipati(archivio.getTorneiPartecipati() + 1);
+        archivioSquadraRepository.save(archivio);
     }
 
 
