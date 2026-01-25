@@ -1,12 +1,9 @@
 package com.example.quadrangolare_calcio.service.impl;
 
-import com.example.quadrangolare_calcio.model.ArchivioSquadra;
-import com.example.quadrangolare_calcio.model.Partita;
-import com.example.quadrangolare_calcio.model.Squadra;
-import com.example.quadrangolare_calcio.model.Torneo;
-import com.example.quadrangolare_calcio.repository.ArchivioSquadraRepository;
-import com.example.quadrangolare_calcio.repository.SquadraRepository;
-import com.example.quadrangolare_calcio.repository.TorneoRepository;
+import com.example.quadrangolare_calcio.dto.TorneoSalvataggioDTO;
+import com.example.quadrangolare_calcio.model.*;
+import com.example.quadrangolare_calcio.repository.*;
+import com.example.quadrangolare_calcio.service.ArchivioGiocatoreService;
 import com.example.quadrangolare_calcio.service.ArchivioSquadraService;
 import com.example.quadrangolare_calcio.service.TorneoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +17,149 @@ import java.util.stream.Collectors;
 public class TorneoServiceImpl implements TorneoService {
 
     @Autowired
+    private PartitaRepository partitaRepository;
+
+    @Autowired
+    private TipoPartitaRepository tipoPartitaRepository;
+
+    @Autowired
+    private GiocatoreRepository giocatoreRepository;
+
+    @Autowired
+    private EventoPartitaRepository eventoPartitaRepository;
+
+    @Autowired
+    private TabellinoPartitaRepository tabellinoPartitaRepository;
+
+    @Autowired
     private TorneoRepository torneoRepository;
 
     @Autowired
     private ArchivioSquadraService archivioSquadraService;
 
     @Autowired
+    private ArchivioGiocatoreService archivioGiocatoreService;
+
+    @Autowired
     private ArchivioSquadraRepository archivioSquadraRepository;
 
     @Autowired
     private SquadraRepository squadraRepository;
+
+    @Override
+    @Transactional
+    public void salvaTorneoIntero(TorneoSalvataggioDTO dto) {
+        // 1. SALVATAGGIO TORNEO
+        Torneo torneo = new Torneo();
+        torneo.setNome(dto.getNomeTorneo());
+        Torneo torneoSalvato = torneoRepository.save(torneo);
+
+        // Recuperiamo l'evento "GOL" una volta sola (Punto 4)
+        EventoPartita eventoGol = eventoPartitaRepository.findByTipoEvento("Goal");
+
+        // 2. AGGIORNAMENTO PARTECIPAZIONE SQUADRE (Punto 2)
+        // Usiamo un Set per essere sicuri di incrementare solo una volta per squadra
+        Set<Integer> idsPartecipanti = new HashSet<>(Arrays.asList(
+                dto.getIdPrimo(), dto.getIdSecondo(), dto.getIdTerzo(), dto.getIdQuarto()
+        ));
+
+        for (Integer idSquadra : idsPartecipanti) {
+            squadraRepository.findById((long) idSquadra).ifPresent(squadra -> {
+                archivioSquadraService.incrementaPartecipazione(squadra); // Crea questo metodo nel Service o usa il Repository
+            });
+        }
+
+        // 3. CICLO SALVATAGGIO PARTITE
+        for (TorneoSalvataggioDTO.PartitaDTO pDto : dto.getPartite()) {
+            Partita partita = new Partita();
+            partita.setTorneo(torneoSalvato);
+            partita.setRisultatoRegular(pDto.getRisultatoRegular());
+            partita.setRisultatoFinale(pDto.getRisultatoFinale());
+            partita.setRigori(pDto.isRigori());
+
+            // FIX PUNTO 3: Recupero TipoPartita dall'oggetto reale nel DB
+            TipoPartita tipo = tipoPartitaRepository.findByTipo(pDto.getTipoPartita());
+            if (tipo == null) {
+                System.out.println("ERRORE: Tipo partita '" + pDto.getTipoPartita() + "' non trovato nel DB!");
+            }
+            partita.setTipoPartita(tipo);
+
+            // Recupero Squadre
+            Squadra home = squadraRepository.findById((long) pDto.getIdSquadraHome()).orElse(null);
+            Squadra away = squadraRepository.findById((long) pDto.getIdSquadraAway()).orElse(null);
+            partita.setSquadraHome(home);
+            partita.setSquadraAway(away);
+
+            Partita partitaSalvata = partitaRepository.save(partita);
+
+            // 4. CICLO TABELLINO E ARCHIVIO GIOCATORI (Punti 1 e 4)
+            if (pDto.getEventi() != null) {
+                for (TorneoSalvataggioDTO.EventoDTO eDto : pDto.getEventi()) {
+                    TabellinoPartita tabellino = new TabellinoPartita();
+                    tabellino.setPartita(partitaSalvata);
+                    tabellino.setMinuto(eDto.getMinuto());
+
+                    // Colleghiamo il giocatore reale
+                    Giocatore g = giocatoreRepository.findById((long) eDto.getIdGiocatore()).orElse(null);
+                    tabellino.setGiocatore(g);
+
+                    EventoPartita ep = eventoPartitaRepository.findByTipoEvento("Goal");
+                    tabellino.setEventoPartita(ep);
+
+                    tabellinoPartitaRepository.save(tabellino);
+
+                    // AGGIORNA ARCHIVIO GIOCATORE (Punto 1)
+                    if (g != null) {
+                        archivioGiocatoreService.aggiornaGol(g);
+                    }
+                }
+            }
+
+            // 5. AGGIORNAMENTO STATISTICHE MATCH (Vittorie/Sconfitte/Gol fatti)
+            aggiornaStatisticheSquadre(pDto, home, away);
+        }
+
+        // 6. REGISTRAZIONE PODIO
+        registraPodio(dto);
+    }
+
+    private void registraPodio(TorneoSalvataggioDTO dto) {
+        squadraRepository.findById((long) dto.getIdPrimo()).ifPresent(s -> archivioSquadraService.registraPiazzamentoTorneo(s, 1));
+        squadraRepository.findById((long) dto.getIdSecondo()).ifPresent(s -> archivioSquadraService.registraPiazzamentoTorneo(s, 2));
+        squadraRepository.findById((long) dto.getIdTerzo()).ifPresent(s -> archivioSquadraService.registraPiazzamentoTorneo(s, 3));
+        squadraRepository.findById((long) dto.getIdQuarto()).ifPresent(s -> archivioSquadraService.registraPiazzamentoTorneo(s, 4));
+    }
+
+    private void aggiornaStatisticheSquadre(TorneoSalvataggioDTO.PartitaDTO pDto, Squadra home, Squadra away) {
+        // Dividiamo il punteggio (es. "5-3")
+        String[] gol = pDto.getRisultatoFinale().split("-");
+        int gH = Integer.parseInt(gol[0]);
+        int gA = Integer.parseInt(gol[1]);
+
+        boolean vintaHome = gH > gA;
+        boolean vintaAway = gA > gH;
+        boolean isRigori = pDto.isRigori();
+
+        // Aggiornamento Home
+        archivioSquadraService.aggiornaStatistichePartita(
+                home,
+                gH,
+                gA,
+                vintaHome,
+                isRigori,
+                (!vintaHome && isRigori) // persa ai rigori?
+        );
+
+        // Aggiornamento Away
+        archivioSquadraService.aggiornaStatistichePartita(
+                away,
+                gA,
+                gH,
+                vintaAway,
+                isRigori,
+                (!vintaAway && isRigori) // persa ai rigori?
+        );
+    }
 
     @Override
     @Transactional
