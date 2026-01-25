@@ -24,40 +24,38 @@ public class ArchivioGiocatoreServiceImpl implements ArchivioGiocatoreService {
     @Autowired
     private TabellinoPartitaRepository tabellinoPartitaRepository;
 
+
     @Override
     @Transactional
     public ArchivioGiocatore getOrCreateArchivio(Giocatore giocatore) {
-        return archivioGiocatoreRepository.findByGiocatoreIdGiocatore(giocatore.getIdGiocatore())
+        return archivioGiocatoreRepository
+                .findByGiocatoreIdGiocatore(giocatore.getIdGiocatore())
                 .orElseGet(() -> {
                     ArchivioGiocatore nuovo = new ArchivioGiocatore();
                     nuovo.setGiocatore(giocatore);
-                    return nuovo;
+
+                    nuovo.setGolTotali(0);
+                    nuovo.setRigoriSegnati(0);
+                    nuovo.setRigoriRegolariSegnati(0);
+                    nuovo.setRigoriParati(0);
+                    nuovo.setRigoriRegolariParati(0);
+
+                    return archivioGiocatoreRepository.save(nuovo);
                 });
     }
+
 
     // In ArchivioGiocatoreServiceImpl.java
     @Override
     public void aggiornaGol(Giocatore giocatore) {
         // Se non esiste la riga per questo giocatore, la creiamo!
-        ArchivioGiocatore arc = archivioGiocatoreRepository.findByGiocatore(giocatore)
-                .orElseGet(() -> {
-                    ArchivioGiocatore nuovo = new ArchivioGiocatore();
-                    nuovo.setGiocatore(giocatore);
-                    nuovo.setGolTotali(0);
-                    return nuovo;
-                });
+        ArchivioGiocatore arc = getOrCreateArchivio(giocatore);
 
         arc.setGolTotali(arc.getGolTotali() + 1);
         archivioGiocatoreRepository.save(arc);
     }
 
-    @Override
-    @Transactional
-    public void aggiungiGol(Giocatore giocatore) {
-        ArchivioGiocatore archivio = getOrCreateArchivio(giocatore);
-        archivio.setGolTotali(archivio.getGolTotali() + 1);
-        archivioGiocatoreRepository.save(archivio);
-    }
+
 
     @Override
     @Transactional
