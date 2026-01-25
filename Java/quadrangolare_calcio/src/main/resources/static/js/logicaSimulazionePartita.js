@@ -123,13 +123,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (data) {
         matchState.tipoPartita = data.tipo;
 
+        matchState.homeTeam.id = data.home.id;
         matchState.homeTeam.nome = data.home.nome;
         matchState.homeTeam.logo = data.home.logo;
-        matchState.homeTeam.giocatori = data.home.giocatori || [];
+        matchState.homeTeam.giocatori = (data.home.giocatori || []).map(g => ({
+                    id: g.idGiocatore || g.id, // Assicuriamoci di prendere l'ID corretto dal DB
+                    cognome: g.cognome,
+                    categoria: g.categoria
+                }));
 
-        matchState.awayTeam.logo = data.away.logo;
+        matchState.awayTeam.id = data.away.id;
         matchState.awayTeam.nome = data.away.nome;
-        matchState.awayTeam.giocatori = data.away.giocatori || [];
+        matchState.awayTeam.logo = data.away.logo;
+        matchState.awayTeam.giocatori = (data.away.giocatori || []).map(g => ({
+            id: g.idGiocatore || g.id,
+            cognome: g.cognome,
+            categoria: g.categoria
+        }));
+
 
         // Aggiornamento Grafica Iniziale
         document.getElementById('tipo-partita-titolo').innerText = data.tipo;
@@ -152,6 +163,10 @@ function getPortiere(team) {
 function selezionaGiocatorePerAzione(team, tipoAzione) {
     const giocatori = team.giocatori;
     if (!giocatori || giocatori.length === 0) return null;
+
+    console.log("TEAM:", team.nome, "TIPO AZIONE:", tipoAzione);
+    console.log("GIOCATORI DISPONIBILI:", giocatori);
+
 
     let pool = [];
     const r = Math.random() * 100;
@@ -179,8 +194,11 @@ function selezionaGiocatorePerAzione(team, tipoAzione) {
     // Fallback: se il filtro è troppo stretto e il pool è vuoto, prendi un giocatore qualsiasi
     if (pool.length === 0) pool = giocatori;
 
+    console.log("GIOCATORE SELEZIONATO DAL POOL:", pool[Math.floor(Math.random() * pool.length)]);
+
     return pool[Math.floor(Math.random() * pool.length)];
 }
+
 
 function scegliRigorista(team, key) {
     const tutti = team.giocatori;
@@ -257,9 +275,14 @@ function formattaMessaggio(
     }
 
     // CASO NORMALE
-    const giocatoreAzione = giocatoreForzato
+    const baseGiocatore = giocatoreForzato
         ? giocatoreForzato
         : selezionaGiocatorePerAzione(teamAttacco, categoria);
+
+    const giocatoreAzione = {
+        id: baseGiocatore.id,
+        cognome: baseGiocatore.cognome
+    };
 
     const portiere = getPortiere(teamDifesa);
 
@@ -342,10 +365,14 @@ function tick() {
 
                 registraMarcatore(
                     r.target,
-                    r.rigorista.cognome,
+                    {
+                        id: r.rigorista.id,
+                        cognome: r.rigorista.cognome
+                    },
                     r.tempoEsecuzione,
                     true
                 );
+
             } else {
                 registraRigoreSbagliato(
                     r.target,
@@ -440,7 +467,15 @@ function generaEvento() {
             if (segnato) {
 
                 teamAttacco.gol++;
-                registraMarcatore(target, rigorista.cognome, tempoEsecuzione, true);
+                registraMarcatore(
+                    target,
+                    {
+                        id: rigorista.id,
+                        cognome: rigorista.cognome
+                    },
+                    tempoEsecuzione,
+                    true
+                );
 
                 document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
 
@@ -512,18 +547,22 @@ function generaEvento() {
 
     } else if (rand < 0.50) {
         // GOAL NORMALE
-        const marcatore = selezionaGiocatorePerAzione(teamAttacco, 'GOL');
+        const chiSegna = selezionaGiocatorePerAzione(teamAttacco, 'GOL'); // Sceglie l'oggetto giocatore
         teamAttacco.gol++;
 
+        // passiamo solo i dati necessari del giocatore che ha segnato
         registraMarcatore(
             target,
-            marcatore.cognome,
+            {
+                id: chiSegna.id,
+                cognome: chiSegna.cognome
+            },
             matchState.currentTime,
             false
         );
 
         aggiungiCommento(
-            `[${tempo}] GOAL! ${formattaMessaggio('GOL', null, teamAttacco, teamDifesa, marcatore)}`,
+            `[${tempo}] GOAL! ${formattaMessaggio('GOL', null, teamAttacco, teamDifesa, chiSegna)}`,
             "GOL",
             target
         );
@@ -852,25 +891,44 @@ function calcolaMinutoUfficiale(secondiEvento) {
     return `${base}+${extra}'`;
 }
 
-function registraMarcatore(teamKey, nome, secondi, isRigore = false) {
-    const lista = marcatori[teamKey];
-    const minuto = calcolaMinutoUfficiale(secondi);
+function registraMarcatore(teamKey, giocatoreOggetto, secondi, isRigore = false) {
 
-    let entry = lista.find(m => m.nome === nome);
+    console.log("REGISTRA GOL:", giocatoreOggetto.cognome, "ID:", giocatoreOggetto.id);
+
+    const lista = marcatori[teamKey];
+    const minutoUfficiale = calcolaMinutoUfficiale(secondi);
+
+    // --- FIX: RICERCA ROBUSTA ---
+    // Cerchiamo il giocatore. Se gli ID sono validi usiamo quelli,
+    // altrimenti usiamo il cognome per distinguere i giocatori.
+    let entry = lista.find(m => {
+        if (m.id && giocatoreOggetto.id) {
+            return m.id === giocatoreOggetto.id;
+        }
+        return m.nome === giocatoreOggetto.cognome;
+    });
 
     if (!entry) {
+        // Se è il suo primo gol, creiamo la sua riga nel tabellino
         entry = {
-            nome,
+            id: giocatoreOggetto.id, // Nota: se è undefined, rimarrà tale, ma ora li distinguiamo visivamente
+            nome: giocatoreOggetto.cognome,
             gol: [],
             ordine: lista.length
         };
         lista.push(entry);
     }
 
-    entry.gol.push({ minuto, rigore: isRigore, sbagliato: false});
+    // Aggiungiamo il gol alla sua lista personale
+    entry.gol.push({
+        minuto: minutoUfficiale,
+        rigore: isRigore,
+        sbagliato: false
+    });
 
     renderMarcatori();
 }
+
 
 function registraRigoreSbagliato(teamKey, nome, secondi) {
     const lista = marcatori[teamKey];
@@ -941,24 +999,24 @@ function salvaERiprosegui(vincitore, perdente, rigori = null) {
 
     // Salvataggi risultati
     if (stato.faseAttuale === 1) stato.risultati.semi1 = {
-                                     home: matchState.homeTeam,
-                                     away: matchState.awayTeam,
+                                     home: { ...matchState.homeTeam, marcatori: [...marcatori.home] },
+                                     away: { ...matchState.awayTeam, marcatori: [...marcatori.away] },
                                      vincente: vincitore,
                                      perdente,
                                      rigori
                                  };
 
     if (stato.faseAttuale === 2) stato.risultati.semi2 = {
-                                     home: matchState.homeTeam,
-                                     away: matchState.awayTeam,
+                                     home: { ...matchState.homeTeam, marcatori: [...marcatori.home] },
+                                     away: { ...matchState.awayTeam, marcatori: [...marcatori.away] },
                                      vincente: vincitore,
                                      perdente,
                                      rigori
                                  };
 
     if (stato.faseAttuale === 3) stato.risultati.finale34 = {
-                                     home: matchState.homeTeam,
-                                     away: matchState.awayTeam,
+                                     home: { ...matchState.homeTeam, marcatori: [...marcatori.home] },
+                                     away: { ...matchState.awayTeam, marcatori: [...marcatori.away] },
                                      vincente: vincitore,
                                      perdente,
                                      rigori
@@ -966,8 +1024,8 @@ function salvaERiprosegui(vincitore, perdente, rigori = null) {
 
     if (stato.faseAttuale === 4) {
                                 stato.risultati.finalissima = {
-                                    home: matchState.homeTeam,
-                                    away: matchState.awayTeam,
+                                    home: { ...matchState.homeTeam, marcatori: [...marcatori.home] },
+                                    away: { ...matchState.awayTeam, marcatori: [...marcatori.away] },
                                     vincente: vincitore,
                                     perdente,
                                     rigori
@@ -996,7 +1054,7 @@ function salvaERiprosegui(vincitore, perdente, rigori = null) {
         };
     } else {
         btn.innerText = "VAI ALLA PREMIAZIONE";
-        btn.onclick = () => {
+        btn.onclick = async () => {
 
             // Costruzione dati premiazione
             const risultatoTorneo = {
@@ -1007,13 +1065,25 @@ function salvaERiprosegui(vincitore, perdente, rigori = null) {
             };
 
 
-            // Salvataggio dedicato SOLO alla premiazione
+            // Salvataggio dedicato SOLO alla premiazione (sessionStorage)
             sessionStorage.setItem(
                 "risultatoTorneo",
                 JSON.stringify(risultatoTorneo)
             );
 
-            window.location.href = "/premiazione";
+            // Salvataggio automatico DB
+            btn.innerText = "SALVATAGGIO IN CORSO...";
+            btn.disabled = true;
+
+            try {
+                await salvaTorneoNelDB(stato);
+                console.log("Salvataggio riuscito");
+            } catch (error) {
+                console.error("Salvataggio fallito:", error);
+                alert("Errore salvataggio DB: " + error.message);
+            } finally {
+                window.location.href = "/premiazione";
+            }
         };
 
     }
@@ -1031,4 +1101,100 @@ function getNomeFase(fase) {
         4: "FINALE"
     };
     return nomi[fase] || "FINE";
+}
+
+
+function convertiMinutoPerDB(minutoStringa) {
+    // Se è "45+2'", prende il 45 e aggiunge il 2 = 47
+    if (minutoStringa.includes('+')) {
+        const parti = minutoStringa.replace("'", "").split('+');
+        return parseInt(parti[0]) + parseInt(parti[1]);
+    }
+    // Se è "23'", toglie l'apice e diventa 23
+    return parseInt(minutoStringa.replace("'", ""));
+}
+
+
+// Funzione ASINCRONA che permette il salvataggio di tutto il torneo nel DB
+async function salvaTorneoNelDB(stato) {
+    const nomiFasi = {
+        semi1: "Semifinale1",
+        semi2: "Semifinale2",
+        finale34: "Finale3-4",
+        finalissima: "Finale"
+    };
+
+    // Helper per pulire il minuto (es. "45+2'" -> 47)
+    const convertiMinutoPerDB = (minutoStringa) => {
+        if (!minutoStringa) return 0;
+        let pulito = minutoStringa.replace("'", "");
+        if (pulito.includes('+')) {
+            const parti = pulito.split('+');
+            return parseInt(parti[0]) + parseInt(parti[1]);
+        }
+        return parseInt(pulito);
+    };
+
+    try {
+        const partiteArray = Object.keys(nomiFasi).map(chiave => {
+            const p = stato.risultati[chiave];
+            if (!p) throw new Error(`Dati mancanti per la fase: ${chiave}`);
+
+            const eventiPerJava = [];
+
+            // Trasformiamo la struttura dei marcatori in una lista piatta di eventi per il DB
+            const estraiDatiGol = (squadraMarcatori) => {
+                (squadraMarcatori || []).forEach(m => {
+                    (m.gol || []).forEach(g => {
+                        if (!g.sbagliato) {
+                            eventiPerJava.push({
+                                idGiocatore: m.id, // L'ID salvato nel punto 1
+                                tipoEvento: "Goal", // Deve corrispondere alla stringa nel tuo DB
+                                minuto: convertiMinutoPerDB(g.minuto)
+                            });
+                        }
+                    });
+                });
+            };
+
+            estraiDatiGol(p.home.marcatori);
+            estraiDatiGol(p.away.marcatori);
+
+            return {
+                tipoPartita: nomiFasi[chiave],
+                idSquadraHome: p.home.id,
+                idSquadraAway: p.away.id,
+                risultatoRegular: `${p.home.gol}-${p.away.gol}`,
+                risultatoFinale: p.rigori ? `${p.rigori.home}-${p.rigori.away}` : `${p.home.gol}-${p.away.gol}`,
+                rigori: !!p.rigori,
+                eventi: eventiPerJava
+            };
+        });
+
+        const payload = {
+            nomeTorneo: sessionStorage.getItem('nomeTorneoAttuale'),
+            partite: partiteArray,
+            idPrimo: stato.risultati.finalissima.vincente.id,
+            idSecondo: stato.risultati.finalissima.perdente.id,
+            idTerzo: stato.risultati.finale34.vincente.id,
+            idQuarto: stato.risultati.finale34.perdente.id
+        };
+
+        console.log("Payload finale inviato al Java:", payload);
+
+        const response = await fetch('/stats/tornei/salva-completo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        console.log("Salvataggio completato con successo!");
+        return true;
+
+    } catch (error) {
+        console.error("ERRORE DURANTE IL SALVATAGGIO:", error);
+        throw error;
+    }
 }
