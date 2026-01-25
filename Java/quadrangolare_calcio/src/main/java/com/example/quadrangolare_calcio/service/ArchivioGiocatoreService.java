@@ -28,4 +28,6 @@ public interface ArchivioGiocatoreService {
 
     ArchivioGiocatore getOrCreateArchivio(Giocatore giocatore);
 
+    void aggiornaGol(Giocatore giocatore);
+
 }
