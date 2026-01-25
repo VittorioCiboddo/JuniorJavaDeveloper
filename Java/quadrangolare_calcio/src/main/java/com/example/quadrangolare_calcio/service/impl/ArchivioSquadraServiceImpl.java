@@ -171,6 +171,17 @@ public class ArchivioSquadraServiceImpl implements ArchivioSquadraService {
                 });
     }
 
+    @Override
+    public void incrementaPartecipazione(Squadra squadra) {
+
+        ArchivioSquadra arc = archivioSquadraRepository.findBySquadra(squadra)
+                .orElseThrow(() -> new RuntimeException("Archivio non trovato per la squadra: " + squadra.getNome()));
+
+        arc.setTorneiPartecipati(arc.getTorneiPartecipati() + 1);
+
+        archivioSquadraRepository.save(arc);
+    }
+
 
 }
 
