@@ -25,4 +25,6 @@ public interface ArchivioSquadraService {
 
     ArchivioSquadra getOrCreateArchivio(Squadra squadra);
 
+    void incrementaPartecipazione(Squadra squadra);
+
 }
