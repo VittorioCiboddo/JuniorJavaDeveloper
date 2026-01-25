@@ -1148,8 +1148,9 @@ async function salvaTorneoNelDB(stato) {
                     (m.gol || []).forEach(g => {
                         if (!g.sbagliato) {
                             eventiPerJava.push({
-                                idGiocatore: m.id, // L'ID salvato nel punto 1
-                                tipoEvento: "Goal", // Deve corrispondere alla stringa nel tuo DB
+                                idGiocatore: m.id,                 // ID giocatore reale
+                                tipoEvento: g.rigore ? "Rigore" : "Tiro", // Tipo evento corretto
+                                esitoEvento: "Goal",               // Esito sempre Goal
                                 minuto: convertiMinutoPerDB(g.minuto)
                             });
                         }
