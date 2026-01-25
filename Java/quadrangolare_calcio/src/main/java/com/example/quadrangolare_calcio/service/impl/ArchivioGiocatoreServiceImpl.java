@@ -35,6 +35,22 @@ public class ArchivioGiocatoreServiceImpl implements ArchivioGiocatoreService {
                 });
     }
 
+    // In ArchivioGiocatoreServiceImpl.java
+    @Override
+    public void aggiornaGol(Giocatore giocatore) {
+        // Se non esiste la riga per questo giocatore, la creiamo!
+        ArchivioGiocatore arc = archivioGiocatoreRepository.findByGiocatore(giocatore)
+                .orElseGet(() -> {
+                    ArchivioGiocatore nuovo = new ArchivioGiocatore();
+                    nuovo.setGiocatore(giocatore);
+                    nuovo.setGolTotali(0);
+                    return nuovo;
+                });
+
+        arc.setGolTotali(arc.getGolTotali() + 1);
+        archivioGiocatoreRepository.save(arc);
+    }
+
     @Override
     @Transactional
     public void aggiungiGol(Giocatore giocatore) {
@@ -126,4 +142,6 @@ public class ArchivioGiocatoreServiceImpl implements ArchivioGiocatoreService {
                     return m;
                 }).orElse(null);
     }
+
+
 }
