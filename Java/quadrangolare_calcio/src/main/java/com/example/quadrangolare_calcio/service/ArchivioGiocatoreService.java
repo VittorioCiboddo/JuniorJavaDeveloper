@@ -8,8 +8,6 @@ import java.util.Map;
 
 public interface ArchivioGiocatoreService {
 
-    void aggiungiGol(Giocatore giocatore);
-
     void aggiungiRigoreSegnato(Giocatore giocatore, boolean lotteriaFinali);
 
     void aggiungiRigoreParato(Giocatore giocatore, boolean lotteriaFinali);
