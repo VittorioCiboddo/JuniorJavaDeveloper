@@ -875,21 +875,26 @@ function formattaTempo(secondi) {
 function calcolaMinutoUfficiale(secondiEvento) {
     const half = matchState.half;
     const limite = half === 1 ? 45 * 60 : 90 * 60;
+    const base = half === 1 ? 45 : 90;
 
-    // minuto reale (si conta da 1)
+    // CASO SPECIALE: gol ESATTO a 45:00 o 90:00
+    if (secondiEvento === limite) {
+        return `${base}+1'`;
+    }
+
     const minutoBase = Math.floor(secondiEvento / 60) + 1;
 
-    // NON recupero
-    if (secondiEvento <= limite) {
+    // TEMPO REGOLAMENTARE NORMALE
+    if (secondiEvento < limite) {
         return `${minutoBase}'`;
     }
 
     // RECUPERO
-    const base = half === 1 ? 45 : 90;
     const extra = minutoBase - base;
-
     return `${base}+${extra}'`;
 }
+
+
 
 function registraMarcatore(teamKey, giocatoreOggetto, secondi, isRigore = false) {
 
