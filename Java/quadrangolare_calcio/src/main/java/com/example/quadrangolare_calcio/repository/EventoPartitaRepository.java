@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventoPartitaRepository extends JpaRepository<EventoPartita, Long> {
 
+    EventoPartita findByTipoEvento(String tipoEvento);
+
 
 }
