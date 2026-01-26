@@ -64,8 +64,8 @@
         <input type="hidden" name="ruolo" id="hiddenRuolo"/>
 
         <!-- Dati anagrafici -->
-        <input type="text" name="nome" id="nome" placeholder="Nome (facoltativo)">
-        <input type="text" name="cognome" id="cognome" placeholder="Cognome" required>
+        <input type="text" name="nome" id="nome" placeholder="Nome (facoltativo)" pattern="^[A-Za-zÀ-ÖØ-öø-ÿ. ]+$">
+        <input type="text" name="cognome" id="cognome" placeholder="Cognome" pattern="^[A-Za-zÀ-ÖØ-öø-ÿ. ]+$" required>
         <input type="file" name="immagine" id="immagine" accept="image/*" required>
         <input type="number" name="numeroMaglia" id="numeroMaglia" min="1" max="99" placeholder="Numero di maglia"
                required>
