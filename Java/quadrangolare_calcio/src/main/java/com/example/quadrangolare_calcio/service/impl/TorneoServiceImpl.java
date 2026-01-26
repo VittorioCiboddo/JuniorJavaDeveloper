@@ -337,13 +337,12 @@ public class TorneoServiceImpl implements TorneoService {
     @Override
     public List<Map<String, Object>> getMedagliereStorico() {
         return archivioSquadraRepository.findAll().stream()
-                .sorted(Comparator.comparingInt(ArchivioSquadra::getTorneiVinti).reversed()
-                        .thenComparingInt(ArchivioSquadra::getSecondiPosti).reversed()
-                        .thenComparingInt(ArchivioSquadra::getTerziPosti).reversed()
-                        .thenComparingInt(ArchivioSquadra::getQuartiPosti).reversed())
+                .sorted(Comparator.comparingInt(ArchivioSquadra::getTorneiVinti).reversed() // 1. Vittorie DESC
+                        .thenComparing(a -> a.getSquadra().getNome()))                      // 2. Nome ASC (Alfabetico)
                 .map(a -> {
                     Map<String, Object> riga = new LinkedHashMap<>();
                     riga.put("squadra", a.getSquadra().getNome());
+                    riga.put("partecipazioni", a.getTorneiPartecipati());
                     riga.put("ori", a.getTorneiVinti());
                     riga.put("argenti", a.getSecondiPosti());
                     riga.put("bronzi", a.getTerziPosti());
