@@ -1546,3 +1546,126 @@ header {
 }
 
 
+
+/* archivio-tornei.html */
+
+.no-tornei-container {
+    margin: 80px auto;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 50px 40px;
+    border-radius: 20px;
+    max-width: 600px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.no-tornei-container h2 {
+    font-size: 2.2rem;
+    color: #00bf63;
+    margin-bottom: 20px;
+}
+
+.no-tornei-container p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+    color: #333;
+}
+
+.archivio-tornei {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+.archivio-section {
+    background: rgba(255, 255, 255, 0.75);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+
+.albo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.albo-card {
+    background: rgba(255,255,255,0.9);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 2px solid #00bf63;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.albo-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+.albo-card img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.albo-card h3 {
+    margin: 10px 0 5px;
+    color: #00bf63;
+}
+
+.albo-card span {
+    font-weight: bold;
+    color: #333;
+}
+
+.ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.ranking-table th {
+    background-color: #00bf63;
+    color: white;
+    padding: 12px;
+}
+
+.ranking-table td {
+    padding: 10px;
+    background: rgba(255,255,255,0.85);
+    border-bottom: 1px solid #ddd;
+}
+
+.ranking-table tr:hover td {
+    background-color: rgba(0,191,99,0.15);
+}
+
+.record-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 25px;
+}
+
+.record-card {
+    background: rgba(255,255,255,0.9);
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 6px solid gold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.record-card h4 {
+    margin: 0 0 10px;
+    color: #00bf63;
+}
+
+.record-card p {
+    margin: 0;
+    font-weight: bold;
+}
+
+
