@@ -13,6 +13,15 @@
             border-bottom: 3px solid #00bf63;
             padding-bottom: 8px;
         }
+
+        .icon-ranking {
+            width: 40px;
+            height: 40px;
+            vertical-align: middle;
+            margin-right: 5px;
+            object-fit: contain;
+        }
+
     </style>
 
 </head>
@@ -56,9 +65,12 @@
 
     <!-- ALBO D'ORO -->
     <section class="archivio-section">
-        <h2 class="section-title">🏆 Albo d’Oro</h2>
+        <h2 class="section-title"> <img th:src="@{/images/albo_oro.png}" class="icon-ranking" alt="AlboD'Oro"> Albo d’Oro</h2>
         <div class="albo-grid" id="albo-oro">
-            <!-- popolato via JS -->
+            <div th:each="record : ${alboDOro}">
+                <p><strong th:text="${record['torneo']}">Torneo</strong>:
+                    <span th:text="${record['vincitore']}">Vincitore</span></p>
+            </div>
         </div>
     </section>
 
@@ -71,12 +83,22 @@
                 <th>#</th>
                 <th>Squadra</th>
                 <th>Tornei</th>
-                <th>Vittorie</th>
-                <th>Podi</th>
+                <th>Vittorie (🏆)</th>
+                <th>Podi (🥇/🥈/🥉)</th>
             </tr>
             </thead>
             <tbody id="ranking-squadre">
-            <!-- JS -->
+            <tr th:each="squadra, stat : ${rankingSquadre}">
+                <td th:text="${stat.index + 1}">1</td>
+                <td th:text="${squadra['squadra']}">Squadra</td>
+                <td th:text="${squadra['partecipazioni'] ?: 0}">0</td>
+                <td th:text="${squadra['ori']}">0</td>
+                <td>
+                    <span th:text="${squadra['ori']}">0</span> /
+                    <span th:text="${squadra['argenti']}">0</span> /
+                    <span th:text="${squadra['bronzi']}">0</span>
+                </td>
+            </tr>
             </tbody>
         </table>
     </section>
@@ -85,7 +107,9 @@
     <section class="archivio-section">
         <h2 class="section-title">⭐ Hall of Fame</h2>
         <div class="record-grid" id="hall-of-fame">
-            <!-- JS -->
+            <div th:each="entry : ${hallOfFame}">
+                <p><strong th:text="${entry.key}"></strong>: <span th:text="${entry.value}"></span></p>
+            </div>
         </div>
     </section>
 
