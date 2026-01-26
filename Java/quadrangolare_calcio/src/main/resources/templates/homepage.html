@@ -16,7 +16,19 @@
 </header>
 
 <nav>
-    <a th:href="@{/archiviotornei}">Archivio</a>
+    <a th:href="@{/tabellone}">Nuovo Torneo</a>
+    <a th:href="@{/regolamento}">Regolamento</a>
+    <a th:href="@{/squadredisponibili}">Team disponibili</a>
+    <div class="nav-dropdown">
+        <span class="nav-dropdown-title">
+            Registrazione
+        </span>
+        <div class="nav-dropdown-menu">
+            <a th:href="@{/registra-squadre}">Squadre</a>
+            <a th:href="@{/registra-giocatori}">Giocatori</a>
+        </div>
+    </div>
+    <a th:href="@{/stats/tornei}">Archivio</a>
     <a th:href="@{/contatti}">Chi siamo</a>
     <a th:href="@{/loginadmin}">Area Admin</a>
 </nav>
@@ -62,7 +74,7 @@
             </div>
         </a>
 
-        <a th:href="@{/archiviotornei}" class="home-card card-base">
+        <a th:href="@{/stats/tornei}" class="home-card card-base">
             <img src="/images/archivio-torneo_homepage.png" alt="ArchivioTorneo">
             <div class="card-body">
                 <h3>Archivio Tornei</h3>
