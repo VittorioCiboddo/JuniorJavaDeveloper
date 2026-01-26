@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <title>Archivio Tornei</title>
     <link rel="stylesheet" th:href="@{/generale.css}">
+
+    <style>
+        .section-title {
+            color: #00bf63;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #00bf63;
+            padding-bottom: 8px;
+        }
+    </style>
+
 </head>
 <body>
 
@@ -20,11 +31,9 @@
     <a th:href="@{/homepage}">Home</a>
     <a th:href="@{/tabellone}">Nuovo Torneo</a>
     <a th:href="@{/regolamento}">Regolamento</a>
-    <a th:href="@{/squadredisponibili}">Team disponibili</a>
+    <a th:href="@{/squadre-disponibili}">Team disponibili</a>
     <div class="nav-dropdown">
-        <span class="nav-dropdown-title">
-            Registrazione
-        </span>
+        <span class="nav-dropdown-title">Registrazione</span>
         <div class="nav-dropdown-menu">
             <a th:href="@{/registra-squadre}">Squadre</a>
             <a th:href="@{/registra-giocatori}">Giocatori</a>
@@ -35,8 +44,52 @@
 </nav>
 
 
+<!-- MESSAGGIO NESSUN TORNEO -->
+<div th:if="${!esistonoTornei}" class="no-tornei-container">
+    <h2>⚽ Nessun torneo simulato</h2>
+    <p>Non è ancora stata completata nessuna competizione.</p>
+    <p>Simula un torneo per iniziare a creare lo storico!</p>
+</div>
 
 
+<div th:if="${esistonoTornei}" class="container archivio-tornei">
+
+    <!-- ALBO D'ORO -->
+    <section class="archivio-section">
+        <h2 class="section-title">🏆 Albo d’Oro</h2>
+        <div class="albo-grid" id="albo-oro">
+            <!-- popolato via JS -->
+        </div>
+    </section>
+
+    <!-- RANKING SQUADRE -->
+    <section class="archivio-section">
+        <h2 class="section-title">📊 Ranking Storico Squadre</h2>
+        <table class="ranking-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Squadra</th>
+                <th>Tornei</th>
+                <th>Vittorie</th>
+                <th>Podi</th>
+            </tr>
+            </thead>
+            <tbody id="ranking-squadre">
+            <!-- JS -->
+            </tbody>
+        </table>
+    </section>
+
+    <!-- RECORD INDIVIDUALI -->
+    <section class="archivio-section">
+        <h2 class="section-title">⭐ Hall of Fame</h2>
+        <div class="record-grid" id="hall-of-fame">
+            <!-- JS -->
+        </div>
+    </section>
+
+</div>
 
 <footer>
     <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
