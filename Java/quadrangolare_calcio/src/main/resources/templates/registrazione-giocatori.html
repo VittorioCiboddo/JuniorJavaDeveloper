@@ -17,10 +17,20 @@
 </header>
 
 <nav>
-    <a href="/registra-squadre">Registra rose</a>
-    <a href="#">Archivio</a>
-    <a href="#">Chi Siamo</a>
-    <a href="#">Area Admin</a>
+    <a th:href="@{/homepage}">Home</a>
+    <a th:href="@{/squadredisponibili}">Team disponibili</a>
+    <div class="nav-dropdown">
+        <span class="nav-dropdown-title">
+            Registrazione
+        </span>
+        <div class="nav-dropdown-menu">
+            <a th:href="@{/registra-squadre}">Squadre</a>
+            <a th:href="@{/registra-giocatori}">Giocatori</a>
+        </div>
+    </div>
+    <a th:href="@{/archiviotornei}">Archivio</a>
+    <a th:href="@{/contatti}">Chi siamo</a>
+    <a th:href="@{/loginadmin}">Area Admin</a>
 </nav>
 
 <div class="form-container">
