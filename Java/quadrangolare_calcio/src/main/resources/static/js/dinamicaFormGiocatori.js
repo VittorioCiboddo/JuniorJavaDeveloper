@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     const submitButton = document.querySelector('input[type="submit"]');
 
+    const numeroMagliaInput = document.getElementById('numeroMaglia');
+    let numeriMagliaUsati = [];
+
     const hiddenSquadra = document.getElementById('hiddenSquadra');
     const hiddenModulo = document.getElementById('hiddenModulo');
     const hiddenTipologia = document.getElementById('hiddenTipologia');
@@ -108,6 +111,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const squadraId = this.value;
         if (!squadraId) return;
         hiddenSquadra.value = squadraId;
+
+        fetch(`/registra-giocatori/numeri-maglia-usati/${squadraId}`)
+            .then(res => res.json())
+            .then(data => {
+                numeriMagliaUsati = data;
+                numeroMagliaInput.value = ""; // reset se cambio squadra
+                numeroMagliaInput.setCustomValidity("");
+            });
 
         setVisible(moduloSelect);
         moduloSelect.innerHTML = `<option value="" disabled selected hidden>Scegli il modulo di gioco</option>`;
@@ -239,4 +250,35 @@ document.addEventListener("DOMContentLoaded", function () {
         el.classList.add('hidden-field');
         el.disabled = true;
     }
+
+    numeroMagliaInput.addEventListener('input', function () {
+        const valore = parseInt(this.value);
+
+        if (numeriMagliaUsati.includes(valore)) {
+            this.setCustomValidity("Numero di maglia già utilizzato in questa squadra");
+        } else {
+            this.setCustomValidity("");
+        }
+    });
+
+    const nomeInput = document.getElementById("nome");
+    const cognomeInput = document.getElementById("cognome");
+
+    const nomeRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ. ]+$/;
+
+    function validaNomeCognome(input) {
+        if (input.value === "") return; // nome è facoltativo
+        if (!nomeRegex.test(input.value)) {
+            input.setCustomValidity(
+                "Sono ammesse solo lettere, spazi e il punto"
+            );
+        } else {
+            input.setCustomValidity("");
+        }
+    }
+
+    nomeInput.addEventListener("input", () => validaNomeCognome(nomeInput));
+    cognomeInput.addEventListener("input", () => validaNomeCognome(cognomeInput));
+
+
 });
