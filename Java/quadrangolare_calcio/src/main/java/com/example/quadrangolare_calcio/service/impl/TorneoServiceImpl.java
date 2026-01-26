@@ -132,9 +132,15 @@ public class TorneoServiceImpl implements TorneoService {
                     tabellinoPartitaRepository.save(tabellino);
 
                     // AGGIORNA ARCHIVIO GIOCATORE (Punto 1)
-                    if ("Goal".equalsIgnoreCase(eDto.getTipoEvento())) {
+                    if ("Goal".equalsIgnoreCase(eDto.getEsitoEvento())) {
                         archivioGiocatoreService.aggiornaGol(g);
+
+                        // Se è un rigore, aggiorna anche il contatore rigori
+                        if ("Rigore".equalsIgnoreCase(eDto.getTipoEvento())) {
+                            archivioGiocatoreService.aggiungiRigoreSegnato(g, false);
+                        }
                     }
+
 
                 }
             }
