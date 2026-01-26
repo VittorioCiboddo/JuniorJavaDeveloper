@@ -20,7 +20,7 @@
     <a th:href="@{/homepage}">Home</a>
     <a th:href="@{/tabellone}">Nuovo Torneo</a>
     <a th:href="@{/regolamento}">Regolamento</a>
-    <a th:href="@{/squadredisponibili}">Team disponibili</a>
+    <a th:href="@{/squadre-disponibili}">Team disponibili</a>
     <div class="nav-dropdown">
         <span class="nav-dropdown-title">
             Registrazione
@@ -30,7 +30,7 @@
             <a th:href="@{/registra-giocatori}">Giocatori</a>
         </div>
     </div>
-    <a th:href="@{/stats/tornei}">Archivio</a>
+    <a th:href="@{/archivio/tornei}">Archivio</a>
     <a th:href="@{/contatti}">Chi siamo</a>
     <a th:href="@{/loginadmin}">Area Admin</a>
 </nav>
@@ -158,7 +158,7 @@
 
 
     <div class="button-row">
-        <button th:attr="onclick=|window.location.href='/stats/tornei'|">Statistiche Torneo</button>
+        <button th:attr="onclick=|window.location.href='/archivio/tornei'|">Statistiche Torneo</button>
         <button th:attr="onclick=|window.location.href='/tabellone'|">Nuovo Torneo</button>
         <button th:attr="onclick=|window.location.href='/homepage'|">Home Page</button>
     </div>
