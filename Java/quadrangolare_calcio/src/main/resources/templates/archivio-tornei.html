@@ -2,9 +2,44 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Archivio Tornei</title>
+    <link rel="stylesheet" th:href="@{/generale.css}">
 </head>
 <body>
+
+<header>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1>Archivio Tornei</h1>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <a th:href="@{/homepage}">Home</a>
+    <a th:href="@{/squadredisponibili}">Team disponibili</a>
+    <div class="nav-dropdown">
+        <span class="nav-dropdown-title">
+            Registrazione
+        </span>
+        <div class="nav-dropdown-menu">
+            <a th:href="@{/registra-squadre}">Squadre</a>
+            <a th:href="@{/registra-giocatori}">Giocatori</a>
+        </div>
+    </div>
+    <a th:href="@{/archiviotornei}">Archivio</a>
+    <a th:href="@{/contatti}">Chi siamo</a>
+    <a th:href="@{/loginadmin}">Area Admin</a>
+</nav>
+
+
+
+
+
+<footer>
+    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
+</footer>
 
 </body>
 </html>
