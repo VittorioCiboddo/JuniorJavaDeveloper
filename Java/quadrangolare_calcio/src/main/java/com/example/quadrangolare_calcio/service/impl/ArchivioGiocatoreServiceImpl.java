@@ -35,9 +35,9 @@ public class ArchivioGiocatoreServiceImpl implements ArchivioGiocatoreService {
                     nuovo.setGiocatore(giocatore);
 
                     nuovo.setGolTotali(0);
-                    nuovo.setRigoriSegnati(0);
+                    nuovo.setRigoriLotteriaSegnati(0);
                     nuovo.setRigoriRegolariSegnati(0);
-                    nuovo.setRigoriParati(0);
+                    nuovo.setRigoriLotteriaParati(0);
                     nuovo.setRigoriRegolariParati(0);
 
                     return archivioGiocatoreRepository.save(nuovo);
@@ -63,7 +63,7 @@ public class ArchivioGiocatoreServiceImpl implements ArchivioGiocatoreService {
         ArchivioGiocatore archivio = getOrCreateArchivio(giocatore);
 
         // Un rigore segnato incrementa sempre il totale rigori
-        archivio.setRigoriSegnati(archivio.getRigoriSegnati() + 1);
+        archivio.setRigoriRegolariSegnati(archivio.getRigoriRegolariSegnati() + 1);
 
         // Se è avvenuto durante i 90 min, incrementa anche il contatore specifico
         if (!lotteriaFinali) {
@@ -80,7 +80,7 @@ public class ArchivioGiocatoreServiceImpl implements ArchivioGiocatoreService {
     public void aggiungiRigoreParato(Giocatore giocatore, boolean lotteriaFinali) {
         ArchivioGiocatore archivio = getOrCreateArchivio(giocatore);
 
-        archivio.setRigoriParati(archivio.getRigoriParati() + 1);
+        archivio.setRigoriRegolariParati(archivio.getRigoriRegolariParati() + 1);
 
         if (!lotteriaFinali) {
             archivio.setRigoriRegolariParati(archivio.getRigoriRegolariParati() + 1);
