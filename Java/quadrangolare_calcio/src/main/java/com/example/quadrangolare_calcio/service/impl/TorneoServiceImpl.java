@@ -48,6 +48,9 @@ public class TorneoServiceImpl implements TorneoService {
     @Autowired
     private SquadraRepository squadraRepository;
 
+    @Autowired
+    private ArchivioGiocatoreRepository archivioGiocatoreRepository;
+
     @Override
     @Transactional
     public void salvaTorneoIntero(TorneoSalvataggioDTO dto) {
@@ -354,17 +357,83 @@ public class TorneoServiceImpl implements TorneoService {
 
     @Override
     public Map<String, Object> getHallOfFame() {
-        Map<String, Object> hall = new HashMap<>();
-
-        // Squadra con più gol fatti nella storia
-        archivioSquadraRepository.findAll().stream()
-                .max(Comparator.comparingInt(ArchivioSquadra::getGolFattiTotali))
-                .ifPresent(a -> hall.put("migliorAttaccoStorico", a.getSquadra().getNome() + " (" + a.getGolFattiTotali() + " gol)"));
+        Map<String, Object> hall = new LinkedHashMap<>();
 
         // Squadra con più vittorie totali (Regolari + Rigori)
+        // 1. Troviamo il numero massimo di vittorie totali tra tutte le squadre
+        int maxVittorie = archivioSquadraRepository.findAll().stream()
+                .mapToInt(a -> a.getVittorieRegolari() + a.getVittorieRigori())
+                .max()
+                .orElse(0);
+
+        // 2. Se il massimo è > 0, prendiamo tutte le squadre che hanno quel valore
+        if (maxVittorie > 0) {
+            String squadreVincenti = archivioSquadraRepository.findAll().stream()
+                    .filter(a -> (a.getVittorieRegolari() + a.getVittorieRigori()) == maxVittorie)
+                    .map(a -> a.getSquadra().getNome())
+                    .collect(Collectors.joining(", ")); // Le unisce con una virgola
+
+            hall.put("Più Partite Vinte", squadreVincenti + " (" + maxVittorie + " vittorie)");
+        }
+
+        // 1. MIGLIOR ATTACCO STORICO (Squadra con più gol fatti)
         archivioSquadraRepository.findAll().stream()
-                .max(Comparator.comparingInt(a -> a.getVittorieRegolari() + a.getVittorieRigori()))
-                .ifPresent(a -> hall.put("piuVincente", a.getSquadra().getNome()));
+                .max(Comparator.comparingInt(ArchivioSquadra::getGolFattiTotali))
+                .ifPresent(a -> hall.put("Miglior Attacco", a.getSquadra().getNome() + " (" + a.getGolFattiTotali() + " gol)"));
+
+        // 2. MURO DIFENSIVO (Squadra con meno gol subiti - con almeno 2 tornei)
+        archivioSquadraRepository.findAll().stream()
+                .filter(a -> a.getTorneiPartecipati() >= 2)
+                .min(Comparator.comparingInt(ArchivioSquadra::getGolSubitiTotali))
+                .ifPresent(a -> hall.put("Muro Difensivo", a.getSquadra().getNome() + " (" + a.getGolSubitiTotali() + " subiti)"));
+
+        // 3. PICHICHI STORICO (Giocatore con più gol totali)
+        int maxGol = archivioGiocatoreRepository.findAll().stream()
+                .mapToInt(ArchivioGiocatore::getGolTotali)
+                .max()
+                .orElse(0);
+
+        if (maxGol > 0) {
+            String nomiPichichi = archivioGiocatoreRepository.findAll().stream()
+                    .filter(ag -> ag.getGolTotali() == maxGol)
+                    .map(ag -> ag.getGiocatore().getNome() + " " + ag.getGiocatore().getCognome())
+                    .collect(Collectors.joining(", "));
+
+            hall.put("Pichichi Storico", nomiPichichi + " (" + maxGol + " gol)");
+        }
+
+        // 4. SARACINESCA (Solo tra i giocatori che sono Portieri)
+        archivioGiocatoreRepository.findAll().stream()
+                .filter(ag -> ag.getGiocatore().getRuolo() != null &&
+                        "Portiere".equalsIgnoreCase(ag.getGiocatore().getRuolo().getTipologia().getCategoria()))
+                .max(Comparator.comparingInt(ag -> ag.getRigoriParati() + ag.getRigoriRegolariParati()))
+                .ifPresent(ag -> {
+                    int totali = ag.getRigoriParati() + ag.getRigoriRegolariParati();
+                    hall.put("Miglior Portiere", ag.getGiocatore().getCognome() + " (" + totali + " rigori parati)");
+                });
+
+        // 5. PARTITA RECORD (Più gol segnati in un solo match)
+        // Nota: assumendo che 'risultato_regular' sia in formato "3-2"
+        partitaRepository.findAll().stream()
+                .max(Comparator.comparingInt(p -> {
+                    // Calcoliamo la somma dei gol basandoci sul tempo regolare (es. "3-2")
+                    String[] parti = p.getRisultatoRegular().split("-");
+                    return Integer.parseInt(parti[0].trim()) + Integer.parseInt(parti[1].trim());
+                }))
+                .ifPresent(p -> {
+                    // Costruiamo la base del nome della partita e il risultato regolare
+                    String descrizione = p.getSquadraHome().getNome() + " vs " + p.getSquadraAway().getNome() +
+                            " (" + p.getRisultatoRegular();
+
+                    // Se la partita è finita ai rigori, aggiungiamo i dettagli extra
+                    if (p.isRigori()) { // Assicurati che il getter sia isRigori() o getRigori()
+                        descrizione += ", " + p.getRisultatoFinale() + " d.c.r.";
+                    }
+
+                    descrizione += ")"; // Chiudiamo la parentesi tonda
+
+                    hall.put("Partita Spettacolo", descrizione);
+                });
 
         return hall;
     }
