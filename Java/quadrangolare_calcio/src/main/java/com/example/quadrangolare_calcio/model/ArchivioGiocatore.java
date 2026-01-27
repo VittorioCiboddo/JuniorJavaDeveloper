@@ -23,14 +23,14 @@ public class ArchivioGiocatore {
     @Column(name = "rigori_regolari_segnati")
     private int rigoriRegolariSegnati;
 
-    @Column(name = "rigori_segnati")
-    private int rigoriSegnati;
+    @Column(name = "rigori_lotteria_segnati")
+    private int rigoriLotteriaSegnati;
 
     @Column(name = "rigori_regolari_parati")
     private int rigoriRegolariParati;
 
-    @Column(name = "rigori_parati")
-    private int rigoriParati;
+    @Column(name = "rigori_lotteria_parati")
+    private int rigoriLotteriaParati;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "fk_id_giocatore", referencedColumnName = "id_giocatore")
