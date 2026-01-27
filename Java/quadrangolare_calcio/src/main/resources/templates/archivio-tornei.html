@@ -15,8 +15,8 @@
         }
 
         .icon-ranking {
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             vertical-align: middle;
             margin-right: 5px;
             object-fit: contain;
@@ -68,22 +68,22 @@
         <h2 class="section-title"> <img th:src="@{/images/albo_oro.png}" class="icon-ranking" alt="AlboD'Oro"> Albo d’Oro</h2>
         <div class="albo-grid" id="albo-oro">
             <div th:each="record : ${alboDOro}">
-                <p><strong th:text="${record['torneo']}">Torneo</strong>:
-                    <span th:text="${record['vincitore']}">Vincitore</span></p>
+                <p><strong th:text="${record['torneo']}">Torneo</strong>:</p>
+                <p><span th:text="${record['vincitore']}">Vincitore</span></p>
             </div>
         </div>
     </section>
 
     <!-- RANKING SQUADRE -->
     <section class="archivio-section">
-        <h2 class="section-title">📊 Ranking Storico Squadre</h2>
+        <h2 class="section-title"> <img th:src="@{/images/ranking.png}" class="icon-ranking" alt="Ranking"> Ranking Storico Squadre</h2>
         <table class="ranking-table">
             <thead>
             <tr>
                 <th>#</th>
                 <th>Squadra</th>
-                <th>Tornei</th>
-                <th>Vittorie (🏆)</th>
+                <th>Partecipazioni</th>
+                <th>Tornei vinti (🏆)</th>
                 <th>Podi (🥇/🥈/🥉)</th>
             </tr>
             </thead>
@@ -105,10 +105,21 @@
 
     <!-- RECORD INDIVIDUALI -->
     <section class="archivio-section">
-        <h2 class="section-title">⭐ Hall of Fame</h2>
-        <div class="record-grid" id="hall-of-fame">
-            <div th:each="entry : ${hallOfFame}">
-                <p><strong th:text="${entry.key}"></strong>: <span th:text="${entry.value}"></span></p>
+        <h2 class="section-title"> <img th:src="@{/images/hall_of_fame.png}" class="icon-ranking" alt="Ranking"> Hall of Fame</h2>
+        <div class="record-grid">
+            <div th:each="entry : ${hallOfFame}" class="record-card">
+                <div class="record-icon-box">
+                    <img th:if="${entry.key == 'Più Partite Vinte'}" th:src="@{/images/piu_vittorie.png}" class="icon-ranking">
+                    <img th:if="${entry.key == 'Miglior Attacco'}" th:src="@{/images/best_attacco.png}" class="icon-ranking">
+                    <img th:if="${entry.key == 'Muro Difensivo'}" th:src="@{/images/muro_difesa.png}" class="icon-ranking">
+                    <img th:if="${entry.key == 'Pichichi Storico'}" th:src="@{/images/pichichi.png}" class="icon-ranking">
+                    <img th:if="${entry.key == 'Miglior Portiere'}" th:src="@{/images/best_portiere.png}" class="icon-ranking">
+                    <img th:if="${entry.key == 'Partita Spettacolo'}" th:src="@{/images/partita_show.png}" class="icon-ranking">
+                </div>
+                <div class="record-info">
+                    <h4 th:text="${entry.key}">Titolo Record</h4>
+                    <p th:text="${entry.value}">Nome Squadra/Giocatore (Valore)</p>
+                </div>
             </div>
         </div>
     </section>
