@@ -59,15 +59,14 @@ public class TorneoServiceImpl implements TorneoService {
         torneo.setNome(dto.getNomeTorneo());
         Torneo torneoSalvato = torneoRepository.save(torneo);
 
-        // 2. AGGIORNAMENTO PARTECIPAZIONE SQUADRE (Punto 2)
-        // Usiamo un Set per essere sicuri di incrementare solo una volta per squadra
+        // 2. AGGIORNAMENTO PARTECIPAZIONE SQUADRE
         Set<Integer> idsPartecipanti = new HashSet<>(Arrays.asList(
                 dto.getIdPrimo(), dto.getIdSecondo(), dto.getIdTerzo(), dto.getIdQuarto()
         ));
 
         for (Integer idSquadra : idsPartecipanti) {
             squadraRepository.findById((long) idSquadra).ifPresent(squadra -> {
-                archivioSquadraService.incrementaPartecipazione(squadra); // Crea questo metodo nel Service o usa il Repository
+                archivioSquadraService.incrementaPartecipazione(squadra);
             });
         }
 
@@ -79,14 +78,9 @@ public class TorneoServiceImpl implements TorneoService {
             partita.setRisultatoFinale(pDto.getRisultatoFinale());
             partita.setRigori(pDto.isRigori());
 
-            // FIX PUNTO 3: Recupero TipoPartita dall'oggetto reale nel DB
             TipoPartita tipo = tipoPartitaRepository.findByTipo(pDto.getTipoPartita());
-            if (tipo == null) {
-                System.out.println("ERRORE: Tipo partita '" + pDto.getTipoPartita() + "' non trovato nel DB!");
-            }
             partita.setTipoPartita(tipo);
 
-            // Recupero Squadre
             Squadra home = squadraRepository.findById((long) pDto.getIdSquadraHome()).orElse(null);
             Squadra away = squadraRepository.findById((long) pDto.getIdSquadraAway()).orElse(null);
             partita.setSquadraHome(home);
@@ -94,61 +88,58 @@ public class TorneoServiceImpl implements TorneoService {
 
             Partita partitaSalvata = partitaRepository.save(partita);
 
-            // 4. CICLO TABELLINO E ARCHIVIO GIOCATORI (Punti 1 e 4)
+            // 4. CICLO TABELLINO E ARCHIVIO GIOCATORI
             if (pDto.getEventi() != null) {
                 for (EventoDTO eDto : pDto.getEventi()) {
-                    TabellinoPartita tabellino = new TabellinoPartita();
-                    tabellino.setPartita(partitaSalvata);
-                    tabellino.setMinuto(eDto.getMinuto());
 
-                    // Colleghiamo il giocatore reale
-                    Giocatore g = giocatoreRepository.findById((long) eDto.getIdGiocatore()).orElse(null);
-                    tabellino.setGiocatore(g);
+                    // --- 1. NON CREARE NUOVI EVENTI. CERCA QUELLO ESISTENTE NEL DB ---
+                    EventoPartita ep = eventoPartitaRepository.findByTipoEventoAndEsitoEvento(
+                            eDto.getTipoEvento(),
+                            eDto.getEsitoEvento()
+                    );
 
-                    EventoPartita ep;
-
-                    // Se è un gol normale (non rigore)
-                    if (eDto.getTipoEvento().equalsIgnoreCase("Tiro") && eDto.getEsitoEvento().equalsIgnoreCase("Goal")) {
-                        ep = eventoPartitaRepository.findByTipoEventoAndEsitoEvento("Tiro", "Goal");
-                    }
-
-                    // Se è un gol su rigore
-                    else if (eDto.getTipoEvento().equalsIgnoreCase("Rigore") && eDto.getEsitoEvento().equalsIgnoreCase("Goal")) {
-                        ep = eventoPartitaRepository.findByTipoEventoAndEsitoEvento("Rigore", "Goal");
-                    }
-
-                    // Altri casi: parato, fuori, palo/trasversa, calcio d'angolo, ecc.
-                    else {
-                        ep = eventoPartitaRepository.findByTipoEventoAndEsitoEvento(
-                                eDto.getTipoEvento(),
-                                eDto.getEsitoEvento()
-                        );
-                    }
-
+                    // Se per caso non lo trova (errore di battitura nel JS), lancia un errore o logga
                     if (ep == null) {
-                        throw new RuntimeException("EventoPartita non trovato: " + eDto.getTipoEvento() + " / " + eDto.getEsitoEvento());
+                        System.out.println("ERRORE: Evento non trovato nel DB per " + eDto.getTipoEvento() + " - " + eDto.getEsitoEvento());
+                        continue;
                     }
 
-                    tabellino.setEventoPartita(ep);
+                    // --- 2. CREA IL TABELLINO PUNTANDO ALL'EVENTO STATICO ---
+                    TabellinoPartita tp = new TabellinoPartita();
+                    tp.setPartita(partitaSalvata);
+                    tp.setMinuto(eDto.getMinuto());
+                    tp.setEventoPartita(ep);
 
+                    Giocatore g = giocatoreRepository.findById((long) eDto.getIdGiocatore()).orElse(null);
+                    tp.setGiocatore(g);
+                    tabellinoPartitaRepository.save(tp);
 
-                    tabellinoPartitaRepository.save(tabellino);
+                    // --- AGGIORNAMENTO STATISTICHE ARCHIVIO ---
+                    if (g != null) {
+                        ArchivioGiocatore ag = archivioGiocatoreService.getOrCreateArchivio(g);
 
-                    // AGGIORNA ARCHIVIO GIOCATORE (Punto 1)
-                    if ("Goal".equalsIgnoreCase(eDto.getEsitoEvento())) {
-                        archivioGiocatoreService.aggiornaGol(g);
+                        String tipoEv = eDto.getTipoEvento();
+                        String esitoEv = eDto.getEsitoEvento();
 
-                        // Se è un rigore, aggiorna anche il contatore rigori
-                        if ("Rigore".equalsIgnoreCase(eDto.getTipoEvento())) {
-                            archivioGiocatoreService.aggiungiRigoreSegnato(g, false);
+                        // GOL NORMALE
+                        if ("Tiro".equalsIgnoreCase(tipoEv) && "Goal".equalsIgnoreCase(esitoEv)) {
+                            ag.setGolTotali(ag.getGolTotali() + 1);
                         }
+                        // RIGORE REGOLARE PARATO (dal portiere)
+                        else if ("Rigore_regolare".equalsIgnoreCase(tipoEv) && "Parato".equalsIgnoreCase(esitoEv)) {
+                            ag.setRigoriRegolariParati(ag.getRigoriRegolariParati() + 1);
+                        }
+                        // RIGORE LOTTERIA PARATO (dal portiere)
+                        else if ("Rigore_lotteria".equalsIgnoreCase(tipoEv) && "Parato".equalsIgnoreCase(esitoEv)) {
+                            ag.setRigoriLotteriaParati(ag.getRigoriLotteriaParati() + 1);
+                        }
+
+                        archivioGiocatoreRepository.save(ag);
                     }
-
-
                 }
             }
 
-            // 5. AGGIORNAMENTO STATISTICHE MATCH (Vittorie/Sconfitte/Gol fatti)
+            // 5. AGGIORNAMENTO STATISTICHE MATCH SQUADRE
             aggiornaStatisticheSquadre(pDto, home, away);
         }
 
@@ -376,16 +367,34 @@ public class TorneoServiceImpl implements TorneoService {
             hall.put("Più Partite Vinte", squadreVincenti + " (" + maxVittorie + " vittorie)");
         }
 
-        // 1. MIGLIOR ATTACCO STORICO (Squadra con più gol fatti)
-        archivioSquadraRepository.findAll().stream()
-                .max(Comparator.comparingInt(ArchivioSquadra::getGolFattiTotali))
-                .ifPresent(a -> hall.put("Miglior Attacco", a.getSquadra().getNome() + " (" + a.getGolFattiTotali() + " gol)"));
+        // 1. MIGLIOR ATTACCO STORICO (Squadra con più gol totali fatti, comprende ex-Aequo)
+        int maxGolFatti = archivioSquadraRepository.findAll().stream()
+                .mapToInt(ArchivioSquadra::getGolFattiTotali)
+                .max()
+                .orElse(0);
 
-        // 2. MURO DIFENSIVO (Squadra con meno gol subiti - con almeno 2 tornei)
-        archivioSquadraRepository.findAll().stream()
-                .filter(a -> a.getTorneiPartecipati() >= 2)
-                .min(Comparator.comparingInt(ArchivioSquadra::getGolSubitiTotali))
-                .ifPresent(a -> hall.put("Muro Difensivo", a.getSquadra().getNome() + " (" + a.getGolSubitiTotali() + " subiti)"));
+        if (maxGolFatti > 0) {
+            String nomiAttacco = archivioSquadraRepository.findAll().stream()
+                    .filter(as -> as.getGolFattiTotali() == maxGolFatti)
+                    .map(as -> as.getSquadra().getNome())
+                    .collect(Collectors.joining(", "));
+            hall.put("Miglior Attacco", nomiAttacco + " (" + maxGolFatti + " gol)");
+        }
+
+        // 2. MURO DIFENSIVO (Ex-Aequo - Squadra con meno gol subiti - min 2 tornei)
+        int minGolSubiti = archivioSquadraRepository.findAll().stream()
+                .filter(as -> as.getTorneiPartecipati() >= 2)
+                .mapToInt(ArchivioSquadra::getGolSubitiTotali)
+                .min()
+                .orElse(-1);
+
+        if (minGolSubiti != -1) {
+            String nomiDifesa = archivioSquadraRepository.findAll().stream()
+                    .filter(as -> as.getTorneiPartecipati() >= 2 && as.getGolSubitiTotali() == minGolSubiti)
+                    .map(as -> as.getSquadra().getNome())
+                    .collect(Collectors.joining(", "));
+            hall.put("Muro Difensivo", nomiDifesa + " (" + minGolSubiti + " subiti)");
+        }
 
         // 3. PICHICHI STORICO (Giocatore con più gol totali)
         int maxGol = archivioGiocatoreRepository.findAll().stream()
@@ -406,10 +415,10 @@ public class TorneoServiceImpl implements TorneoService {
         archivioGiocatoreRepository.findAll().stream()
                 .filter(ag -> ag.getGiocatore().getRuolo() != null &&
                         "Portiere".equalsIgnoreCase(ag.getGiocatore().getRuolo().getTipologia().getCategoria()))
-                .max(Comparator.comparingInt(ag -> ag.getRigoriParati() + ag.getRigoriRegolariParati()))
+                .max(Comparator.comparingInt(ag -> ag.getRigoriRegolariParati() + ag.getRigoriLotteriaParati()))
                 .ifPresent(ag -> {
-                    int totali = ag.getRigoriParati() + ag.getRigoriRegolariParati();
-                    hall.put("Miglior Portiere", ag.getGiocatore().getCognome() + " (" + totali + " rigori parati)");
+                    int totali = ag.getRigoriRegolariParati() + ag.getRigoriLotteriaParati();
+                    hall.put("Para rigori", ag.getGiocatore().getCognome() + " (" + totali + " rigori parati)");
                 });
 
         // 5. PARTITA RECORD (Più gol segnati in un solo match)
