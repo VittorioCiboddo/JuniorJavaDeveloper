@@ -41,6 +41,7 @@ const marcatori = {
     home: [],
     away: []
 };
+let eventiPerJava = [];
 
 
 // --- DIZIONARIO TELECRONACA ---
@@ -297,14 +298,14 @@ function formattaMessaggio(
 
 
 
-
-
 let gameInterval = null;
 let penaltyInterval = null;
 
 function avviaSimulazione() {
 
     document.getElementById('col-neutral').innerHTML = "";
+
+    eventiPerJava = [];
 
     aggiungiCommento("L'arbitro fischia l'inizio della partita!", "FISCHIO", "neutral");
 
@@ -374,6 +375,19 @@ function tick() {
                 );
 
             } else {
+
+                const randomIndex = Math.floor(Math.random() * DIZIONARIO_LIVE.RIGORE_PARTITA.PARATO_ERRORE.length);
+
+                if (randomIndex === 0 || randomIndex === 2) {
+                    const portiere = r.target === 'home' ? getPortiere(matchState.awayTeam) : getPortiere(matchState.homeTeam);
+                    eventiPerJava.push({
+                        minuto: Math.floor(r.tempoEsecuzione / 60),
+                        idGiocatore: portiere.id,
+                        tipoEvento: "Rigore_regolare",
+                        esitoEvento: "Parato"
+                    });
+                }
+
                 registraRigoreSbagliato(
                     r.target,
                     r.rigorista.cognome,
@@ -480,6 +494,20 @@ function generaEvento() {
                 document.getElementById('punteggio-live').innerText = `${matchState.homeTeam.gol} - ${matchState.awayTeam.gol}`;
 
             } else {
+
+                const randomIndex = Math.floor(Math.random() * DIZIONARIO_LIVE.RIGORE_PARTITA.PARATO_ERRORE.length);
+
+                if (randomIndex === 0 || randomIndex === 2) {
+                    const portiere = target === 'home' ? getPortiere(matchState.awayTeam) : getPortiere(matchState.homeTeam);
+                    if (portiere) {
+                        eventiPerJava.push({
+                            minuto: Math.floor(matchState.currentTime / 60),
+                            idGiocatore: portiere.id,
+                            tipoEvento: "Rigore_regolare",
+                            esitoEvento: "Parato"
+                        });
+                    }
+                }
 
                 registraRigoreSbagliato(
                     target,
@@ -743,6 +771,24 @@ function eseguiTurnoRigore() {
     const categoria = segnato ? 'SEGNATO' : 'ERRORE';
     const tipoEmoji = segnato ? "RIGORE_OK" : "RIGORE_KO";
     const esitoClasse = categoria === 'SEGNATO' ? 'segnato' : 'sbagliato';
+
+    if (!segnato) {
+
+        const randomIndex = Math.floor(Math.random() * DIZIONARIO_LIVE.LOTTERIA_RIGORI.ERRORE.length);
+
+        // Indici 0 e 3 nel tuo dizionario sono: "PARATO!" e "INCREDIBILE! {PT} rimane fermo..."
+        if (randomIndex === 0 || randomIndex === 3) {
+            const portiere = teamDifesa.giocatori.find(g => g.categoria === 'Portiere');
+            if (portiere) {
+                eventiPerJava.push({
+                    minuto: 121,
+                    idGiocatore: portiere.id,
+                    tipoEvento: "Rigore_lotteria",
+                    esitoEvento: "Parato"
+                });
+            }
+        }
+    }
 
     aggiungiCommento(
         `[RIGORI] ${formattaMessaggio('LOTTERIA_RIGORI', categoria, teamAttacco, teamDifesa, rigorista)}`,
@@ -1008,7 +1054,8 @@ function salvaERiprosegui(vincitore, perdente, rigori = null) {
                                      away: { ...matchState.awayTeam, marcatori: [...marcatori.away] },
                                      vincente: vincitore,
                                      perdente,
-                                     rigori
+                                     rigori,
+                                     eventi: [...eventiPerJava]
                                  };
 
     if (stato.faseAttuale === 2) stato.risultati.semi2 = {
@@ -1016,7 +1063,8 @@ function salvaERiprosegui(vincitore, perdente, rigori = null) {
                                      away: { ...matchState.awayTeam, marcatori: [...marcatori.away] },
                                      vincente: vincitore,
                                      perdente,
-                                     rigori
+                                     rigori,
+                                     eventi: [...eventiPerJava]
                                  };
 
     if (stato.faseAttuale === 3) stato.risultati.finale34 = {
@@ -1024,7 +1072,8 @@ function salvaERiprosegui(vincitore, perdente, rigori = null) {
                                      away: { ...matchState.awayTeam, marcatori: [...marcatori.away] },
                                      vincente: vincitore,
                                      perdente,
-                                     rigori
+                                     rigori,
+                                     eventi: [...eventiPerJava]
                                  };
 
     if (stato.faseAttuale === 4) {
@@ -1033,7 +1082,8 @@ function salvaERiprosegui(vincitore, perdente, rigori = null) {
                                     away: { ...matchState.awayTeam, marcatori: [...marcatori.away] },
                                     vincente: vincitore,
                                     perdente,
-                                    rigori
+                                    rigori,
+                                    eventi: [...eventiPerJava]
                                 };
 
         sessionStorage.setItem('statoTorneo', JSON.stringify(stato));
@@ -1082,6 +1132,7 @@ function salvaERiprosegui(vincitore, perdente, rigori = null) {
 
             try {
                 await salvaTorneoNelDB(stato);
+                eventiPerJava = [];
                 console.log("Salvataggio riuscito");
             } catch (error) {
                 console.error("Salvataggio fallito:", error);
@@ -1122,6 +1173,7 @@ function convertiMinutoPerDB(minutoStringa) {
 
 // Funzione ASINCRONA che permette il salvataggio di tutto il torneo nel DB
 async function salvaTorneoNelDB(stato) {
+
     const nomiFasi = {
         semi1: "Semifinale1",
         semi2: "Semifinale2",
@@ -1145,16 +1197,16 @@ async function salvaTorneoNelDB(stato) {
             const p = stato.risultati[chiave];
             if (!p) throw new Error(`Dati mancanti per la fase: ${chiave}`);
 
-            const eventiPerJava = [];
+            const eventiDaInviare = [...(p.eventi || [])];
 
             // Trasformiamo la struttura dei marcatori in una lista piatta di eventi per il DB
             const estraiDatiGol = (squadraMarcatori) => {
                 (squadraMarcatori || []).forEach(m => {
                     (m.gol || []).forEach(g => {
                         if (!g.sbagliato) {
-                            eventiPerJava.push({
+                            eventiDaInviare.push({
                                 idGiocatore: m.id,                 // ID giocatore reale
-                                tipoEvento: g.rigore ? "Rigore" : "Tiro", // Tipo evento corretto
+                                tipoEvento: g.rigore ? "Rigore_regolare" : "Tiro", // Tipo evento corretto
                                 esitoEvento: "Goal",               // Esito sempre Goal
                                 minuto: convertiMinutoPerDB(g.minuto)
                             });
@@ -1173,7 +1225,7 @@ async function salvaTorneoNelDB(stato) {
                 risultatoRegular: `${p.home.gol}-${p.away.gol}`,
                 risultatoFinale: p.rigori ? `${p.rigori.home}-${p.rigori.away}` : `${p.home.gol}-${p.away.gol}`,
                 rigori: !!p.rigori,
-                eventi: eventiPerJava
+                eventi: eventiDaInviare
             };
         });
 
