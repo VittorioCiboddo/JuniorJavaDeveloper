@@ -1587,40 +1587,75 @@ header {
 
 .albo-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
 }
 
 .albo-card {
-    background: rgba(255,255,255,0.9);
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 12px;
-    padding: 20px;
+    padding: 15px;
     text-align: center;
-    border: 2px solid #00bf63;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
 }
 
 .albo-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
 
 .albo-card img {
-    width: 90px;
-    height: 90px;
+    width: 80px;
+    height: 80px;
     object-fit: contain;
     margin-bottom: 10px;
 }
 
 .albo-card h3 {
-    margin: 10px 0 5px;
     color: #00bf63;
+    margin: 10px 0 5px 0;
+    font-size: 1.2rem;
 }
 
-.albo-card span {
-    font-weight: bold;
-    color: #333;
+.vincitore-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
 }
+
+.vincitore-box img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 2px solid gold;
+    padding: 2px;
+}
+
+.vincitore-box p {
+    font-weight: bold;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.medaglia-trophy {
+    position: absolute;
+    top: 80px;
+    right: 30px;
+    font-size: 2rem;
+    filter: drop-shadow(0 0 4px gold);
+    animation: bounceMedal 1.6s ease-in-out infinite;
+}
+
+@keyframes bounceMedal {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
 
 .ranking-table {
     width: 100%;
