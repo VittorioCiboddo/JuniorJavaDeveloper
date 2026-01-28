@@ -22,6 +22,10 @@
             object-fit: contain;
         }
 
+        .medaglia-4 {
+            font-size: 65%;
+        }
+
     </style>
 
 </head>
@@ -70,14 +74,32 @@
 
     <!-- ALBO D'ORO -->
     <section class="archivio-section">
-        <h2 class="section-title"> <img th:src="@{/images/albo_oro.png}" class="icon-ranking" alt="AlboD'Oro"> Albo d’Oro</h2>
-        <div class="albo-grid" id="albo-oro">
-            <div th:each="record : ${alboDOro}">
-                <p><strong th:text="${record['torneo']}">Torneo</strong>:</p>
-                <p><span th:text="${record['vincitore']}">Vincitore</span></p>
+        <h2 class="section-title">
+            <img th:src="@{/images/albo_oro.png}" class="icon-ranking" alt="AlboD'Oro">
+            Albo d’Oro
+        </h2>
+
+        <div class="albo-grid">
+            <div th:each="record : ${alboDOro}" class="albo-card">
+
+                <!-- Nome torneo -->
+                <h3 th:text="${record['torneo']}">Torneo</h3>
+
+                <!-- Vincitore -->
+                <div class="vincitore-box">
+                    <img th:src="${record['vincitoreLogo']}"
+                         alt="Logo Vincitore"
+                         onerror="this.src='/images/default_logo.png'">
+                    <p th:text="${record['vincitore']}">Squadra Vincitrice</p>
+                </div>
+
+                <!-- Medaglia oro -->
+                <div class="medaglia-trophy">🏆</div>
             </div>
         </div>
     </section>
+
+
 
     <!-- RANKING SQUADRE -->
     <section class="archivio-section">
@@ -90,6 +112,7 @@
                 <th>Partecipazioni</th>
                 <th>Tornei vinti (🏆)</th>
                 <th>Podi (🥇/🥈/🥉)</th>
+                <th>Quarti posti (<span class="medaglia-4">4</span>)</th>
             </tr>
             </thead>
             <tbody id="ranking-squadre">
@@ -103,6 +126,7 @@
                     <span th:text="${squadra['argenti']}">0</span> /
                     <span th:text="${squadra['bronzi']}">0</span>
                 </td>
+                <td th:text="${squadra['quarti']}">0</td>
             </tr>
             </tbody>
         </table>
