@@ -239,12 +239,10 @@ public class TorneoServiceImpl implements TorneoService {
 
     @Override
     public List<Map<String, String>> getAlboDOro() {
-        // Recuperiamo tutti i tornei
         List<Torneo> tornei = torneoRepository.findAll();
         List<Map<String, String>> albo = new ArrayList<>();
 
         for (Torneo t : tornei) {
-            // Cerchiamo la partita di tipo "Finale" per quel torneo
             t.getPartite().stream()
                     .filter(p -> p.getTipoPartita().getTipo().equalsIgnoreCase("Finale"))
                     .findFirst()
@@ -252,18 +250,35 @@ public class TorneoServiceImpl implements TorneoService {
                         Map<String, String> voce = new HashMap<>();
                         voce.put("torneo", t.getNome());
 
-                        // Logica per determinare il vincitore dal risultato finale
+                        // Determina vincitore dal risultato finale
                         String[] punteggio = finale.getRisultatoFinale().split("-");
-                        String vincitore = Integer.parseInt(punteggio[0]) > Integer.parseInt(punteggio[1])
-                                ? finale.getSquadraHome().getNome()
-                                : finale.getSquadraAway().getNome();
+                        boolean homeVince = Integer.parseInt(punteggio[0]) > Integer.parseInt(punteggio[1]);
+                        Squadra vincitoreSquadra = homeVince ? finale.getSquadraHome() : finale.getSquadraAway();
 
-                        voce.put("vincitore", vincitore);
+                        voce.put("vincitore", vincitoreSquadra.getNome());
+
+                        // Logo dual-mode: path o Base64
+                        String logo = vincitoreSquadra.getLogo();
+                        if (logo != null && !logo.isEmpty()) {
+                            if (!logo.startsWith("data:")) {
+                                // è un path, aggiungiamo slash iniziale
+                                logo = "/" + logo;
+                            }
+                            voce.put("vincitoreLogo", logo);
+                        } else {
+                            // fallback logo generico
+                            voce.put("vincitoreLogo", "/images/default_logo.png");
+                        }
+
                         albo.add(voce);
                     });
         }
+
         return albo;
     }
+
+
+
 
     @Override
     public Map<String, Object> getStatsTorneo(int idTorneo) {
@@ -328,11 +343,18 @@ public class TorneoServiceImpl implements TorneoService {
         return podio;
     }
 
+
     @Override
     public List<Map<String, Object>> getMedagliereStorico() {
+
         return archivioSquadraRepository.findAll().stream()
-                .sorted(Comparator.comparingInt(ArchivioSquadra::getTorneiVinti).reversed() // 1. Vittorie DESC
-                        .thenComparing(a -> a.getSquadra().getNome()))                      // 2. Nome ASC (Alfabetico)
+                .sorted(
+                        Comparator.comparingInt(ArchivioSquadra::getTorneiVinti).reversed()
+                                .thenComparing(Comparator.comparingInt(ArchivioSquadra::getSecondiPosti).reversed())
+                                .thenComparing(Comparator.comparingInt(ArchivioSquadra::getTerziPosti).reversed())
+                                .thenComparing(Comparator.comparingInt(ArchivioSquadra::getQuartiPosti)) // ASC
+                                .thenComparing(a -> a.getSquadra().getNome())
+                )
                 .map(a -> {
                     Map<String, Object> riga = new LinkedHashMap<>();
                     riga.put("squadra", a.getSquadra().getNome());
@@ -345,6 +367,8 @@ public class TorneoServiceImpl implements TorneoService {
                 })
                 .collect(Collectors.toList());
     }
+
+
 
     @Override
     public Map<String, Object> getHallOfFame() {
@@ -381,16 +405,15 @@ public class TorneoServiceImpl implements TorneoService {
             hall.put("Miglior Attacco", nomiAttacco + " (" + maxGolFatti + " gol)");
         }
 
-        // 2. MURO DIFENSIVO (Ex-Aequo - Squadra con meno gol subiti - min 2 tornei)
+        // 2. MURO DIFENSIVO (Ex-Aequo - Squadra con meno gol subiti)
         int minGolSubiti = archivioSquadraRepository.findAll().stream()
-                .filter(as -> as.getTorneiPartecipati() >= 2)
                 .mapToInt(ArchivioSquadra::getGolSubitiTotali)
                 .min()
                 .orElse(-1);
 
         if (minGolSubiti != -1) {
             String nomiDifesa = archivioSquadraRepository.findAll().stream()
-                    .filter(as -> as.getTorneiPartecipati() >= 2 && as.getGolSubitiTotali() == minGolSubiti)
+                    .filter(as -> as.getGolSubitiTotali() == minGolSubiti)
                     .map(as -> as.getSquadra().getNome())
                     .collect(Collectors.joining(", "));
             hall.put("Muro Difensivo", nomiDifesa + " (" + minGolSubiti + " subiti)");
@@ -405,7 +428,7 @@ public class TorneoServiceImpl implements TorneoService {
         if (maxGol > 0) {
             String nomiPichichi = archivioGiocatoreRepository.findAll().stream()
                     .filter(ag -> ag.getGolTotali() == maxGol)
-                    .map(ag -> ag.getGiocatore().getNome() + " " + ag.getGiocatore().getCognome())
+                    .map(ag -> ag.getGiocatore().getNome() + " " + ag.getGiocatore().getCognome() + " -" + ag.getGiocatore().getSquadra().getNome())
                     .collect(Collectors.joining(", "));
 
             hall.put("Pichichi Storico", nomiPichichi + " (" + maxGol + " gol)");
@@ -418,10 +441,13 @@ public class TorneoServiceImpl implements TorneoService {
                 .max(Comparator.comparingInt(ag -> ag.getRigoriRegolariParati() + ag.getRigoriLotteriaParati()))
                 .ifPresent(ag -> {
                     int totali = ag.getRigoriRegolariParati() + ag.getRigoriLotteriaParati();
-                    hall.put("Para rigori", ag.getGiocatore().getCognome() + " (" + totali + " rigori parati)");
+                    hall.put("Para rigori", ag.getGiocatore().getCognome()
+                            + " -" + ag.getGiocatore().getSquadra().getNome()
+                            + " (" + totali + " rigori parati)");
+
                 });
 
-        // 5. PARTITA RECORD (Più gol segnati in un solo match)
+        // 5. PARTITA SPETTACOLO (Più gol segnati in un solo match)
         // Nota: assumendo che 'risultato_regular' sia in formato "3-2"
         partitaRepository.findAll().stream()
                 .max(Comparator.comparingInt(p -> {
@@ -430,17 +456,14 @@ public class TorneoServiceImpl implements TorneoService {
                     return Integer.parseInt(parti[0].trim()) + Integer.parseInt(parti[1].trim());
                 }))
                 .ifPresent(p -> {
-                    // Costruiamo la base del nome della partita e il risultato regolare
-                    String descrizione = p.getSquadraHome().getNome() + " vs " + p.getSquadraAway().getNome() +
-                            " (" + p.getRisultatoRegular();
-
-                    // Se la partita è finita ai rigori, aggiungiamo i dettagli extra
-                    if (p.isRigori()) { // Assicurati che il getter sia isRigori() o getRigori()
+                    String descrizione = p.getSquadraHome().getNome() + " vs " + p.getSquadraAway().getNome()
+                            + " (" + p.getRisultatoRegular();
+                    if (p.isRigori()) {
                         descrizione += ", " + p.getRisultatoFinale() + " d.c.r.";
                     }
-
-                    descrizione += ")"; // Chiudiamo la parentesi tonda
-
+                    descrizione += ") - "
+                            + p.getTorneo().getNome()      // Nome torneo
+                            + " - " + p.getTipoPartita().getTipo();   // Fase del torneo (es. Semifinale 1, Finale)
                     hall.put("Partita Spettacolo", descrizione);
                 });
 
