@@ -5,6 +5,7 @@ import com.example.quadrangolare_calcio.model.Partita;
 import com.example.quadrangolare_calcio.model.Squadra;
 import com.example.quadrangolare_calcio.repository.ArchivioSquadraRepository;
 import com.example.quadrangolare_calcio.repository.PartitaRepository;
+import com.example.quadrangolare_calcio.repository.SquadraRepository;
 import com.example.quadrangolare_calcio.service.ArchivioSquadraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,9 @@ public class ArchivioSquadraServiceImpl implements ArchivioSquadraService {
 
     @Autowired
     private PartitaRepository partitaRepository;
+
+    @Autowired
+    private SquadraRepository squadraRepository;
 
     @Override
     @Transactional
@@ -167,9 +171,20 @@ public class ArchivioSquadraServiceImpl implements ArchivioSquadraService {
     }
 
     @Override
+    public ArchivioSquadra getOrCreateArchivioByNome(String nomeSquadra) {
+        Squadra squadra = squadraRepository.findByNome(nomeSquadra); // restituisce Squadra o null
+        if (squadra == null) {
+            throw new RuntimeException("Squadra non trovata: " + nomeSquadra);
+        }
+        return getOrCreateArchivio(squadra);
+    }
+
+
+
+    @Override
     @Transactional
     public void incrementaPartecipazione(Squadra squadra) {
-        // USA IL TUO METODO QUI:
+
         ArchivioSquadra archivio = getOrCreateArchivio(squadra);
 
         archivio.setTorneiPartecipati(archivio.getTorneiPartecipati() + 1);
