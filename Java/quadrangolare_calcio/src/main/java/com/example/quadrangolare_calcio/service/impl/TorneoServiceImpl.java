@@ -1,8 +1,6 @@
 package com.example.quadrangolare_calcio.service.impl;
 
-import com.example.quadrangolare_calcio.dto.EventoDTO;
-import com.example.quadrangolare_calcio.dto.PartitaDTO;
-import com.example.quadrangolare_calcio.dto.TorneoSalvataggioDTO;
+import com.example.quadrangolare_calcio.dto.*;
 import com.example.quadrangolare_calcio.model.*;
 import com.example.quadrangolare_calcio.repository.*;
 import com.example.quadrangolare_calcio.service.ArchivioGiocatoreService;
@@ -111,8 +109,13 @@ public class TorneoServiceImpl implements TorneoService {
                     tp.setEventoPartita(ep);
 
                     Giocatore g = giocatoreRepository.findById((long) eDto.getIdGiocatore()).orElse(null);
+                    if (g == null) {
+                        System.err.println("ERRORE: tentativo di salvare evento per giocatore inesistente, minuto=" + eDto.getMinuto());
+                        continue; // salta questo evento
+                    }
                     tp.setGiocatore(g);
                     tabellinoPartitaRepository.save(tp);
+
 
                     // --- AGGIORNAMENTO STATISTICHE ARCHIVIO ---
                     if (g != null) {
@@ -248,6 +251,7 @@ public class TorneoServiceImpl implements TorneoService {
                     .findFirst()
                     .ifPresent(finale -> {
                         Map<String, String> voce = new HashMap<>();
+                        voce.put("idTorneo", String.valueOf(t.getIdTorneo()));
                         voce.put("torneo", t.getNome());
 
                         // Determina vincitore dal risultato finale
@@ -279,26 +283,280 @@ public class TorneoServiceImpl implements TorneoService {
 
 
 
-
     @Override
     public Map<String, Object> getStatsTorneo(int idTorneo) {
+
         Torneo torneo = torneoRepository.findById((long) idTorneo).orElse(null);
         if (torneo == null) return null;
 
         int golTotali = 0;
+        int partiteAiRigori = 0;
+
+        List<Partita> partitePiuGol = new ArrayList<>();
+        List<Partita> partiteMenoGol = new ArrayList<>();
+        List<Partita> partiteDeciseAiRigori = new ArrayList<>();
+
+        int maxGol = -1;
+        int minGol = Integer.MAX_VALUE;
+
+
+        // 👉 USIAMO GLI ID, NON LE ENTITY
+        Map<Long, Integer> golFatti = new HashMap<>();
+        Map<Long, Integer> golSubiti = new HashMap<>();
+        Map<Long, Squadra> squadreMap = new HashMap<>();
+
+        // 👉 capocannoniere: giocatoreId -> gol
+        Map<Long, Integer> golGiocatori = new HashMap<>();
+        Map<Long, Giocatore> giocatoriMap = new HashMap<>();
+
+        // ======================
+        // PARTITE
+        // ======================
         for (Partita p : torneo.getPartite()) {
+
             String[] reg = p.getRisultatoRegular().split("-");
-            golTotali += (Integer.parseInt(reg[0]) + Integer.parseInt(reg[1]));
+            int golHome = Integer.parseInt(reg[0]);
+            int golAway = Integer.parseInt(reg[1]);
+
+            int golMatch = golHome + golAway;
+
+            golTotali += golMatch;
+
+            // --- gestione ex-aequo per più gol ---
+            if (golMatch > maxGol) {
+                maxGol = golMatch;
+                partitePiuGol.clear();
+                partitePiuGol.add(p);
+            } else if (golMatch == maxGol) {
+                partitePiuGol.add(p);
+            }
+
+            // --- gestione ex-aequo per meno gol ---
+            if (golMatch < minGol) {
+                minGol = golMatch;
+                partiteMenoGol.clear();
+                partiteMenoGol.add(p);
+            } else if (golMatch == minGol) {
+                partiteMenoGol.add(p);
+            }
+
+
+            if (p.getRisultatoFinale() != null &&
+                    !p.getRisultatoFinale().equals(p.getRisultatoRegular())) {
+
+                partiteAiRigori++;
+                partiteDeciseAiRigori.add(p);
+            }
+
+
+            golFatti.merge((long) p.getSquadraHome().getIdSquadra(), golHome, Integer::sum);
+            golFatti.merge((long) p.getSquadraAway().getIdSquadra(), golAway, Integer::sum);
+
+            golSubiti.merge((long) p.getSquadraHome().getIdSquadra(), golAway, Integer::sum);
+            golSubiti.merge((long) p.getSquadraAway().getIdSquadra(), golHome, Integer::sum);
+
+            squadreMap.putIfAbsent(
+                    (long) p.getSquadraHome().getIdSquadra(),
+                    p.getSquadraHome()
+            );
+            squadreMap.putIfAbsent(
+                    (long) p.getSquadraAway().getIdSquadra(),
+                    p.getSquadraAway()
+            );
+
         }
 
+        // ======================
+        // TROVO IL VINCITORE DEL TORNEO
+        // ======================
+        Squadra vincitore = torneo.getPartite().stream()
+                // filtriamo solo la finale
+                .filter(p -> "finale".equalsIgnoreCase(p.getTipoPartita().getTipo()))
+                .findFirst()
+                .map(p -> {
+                    // prendi risultato finale se presente, altrimenti quello regolare
+                    String[] risultato = (p.getRisultatoFinale() != null
+                            ? p.getRisultatoFinale()
+                            : p.getRisultatoRegular())
+                            .split("-");
+                    int golHome = Integer.parseInt(risultato[0]);
+                    int golAway = Integer.parseInt(risultato[1]);
+
+                    // squadra con più gol
+                    if (golHome > golAway) return p.getSquadraHome();
+                    else if (golAway > golHome) return p.getSquadraAway();
+                    else return null; // pareggio impossibile in finale, ma gestiamo il caso
+                })
+                .orElse(null);
+
+
+        // ======================
+        // TABELLINI → GOL GIOCATORI
+        // ======================
+        List<TabellinoPartita> tabellini =
+                tabellinoPartitaRepository.findByPartitaTorneoIdTorneo(idTorneo);
+
+        for (TabellinoPartita t : tabellini) {
+
+            EventoPartita e = t.getEventoPartita();
+
+            // SOLO goal validi
+            if ("goal".equalsIgnoreCase(e.getEsitoEvento())) {
+
+                Giocatore g = t.getGiocatore();
+                long idGiocatore = g.getIdGiocatore();
+
+                giocatoriMap.put(idGiocatore, g);
+                golGiocatori.merge(idGiocatore, 1, Integer::sum);
+            }
+        }
+
+        // ======================
+        // CALCOLI FINALI
+        // ======================
+
+        // Miglior attacco (ex-aequo)
+        int maxGolFatti = golFatti.values().stream()
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        List<Squadra> miglioriAttacchi = golFatti.entrySet().stream()
+                .filter(e -> e.getValue() == maxGolFatti)
+                .map(e -> squadreMap.get(e.getKey()))
+                .toList();
+
+
+        // Miglior difesa (ex-aequo)
+        int minGolSubiti = golSubiti.values().stream()
+                .min(Integer::compareTo)
+                .orElse(0);
+
+        List<Squadra> miglioriDifese = golSubiti.entrySet().stream()
+                .filter(e -> e.getValue() == minGolSubiti)
+                .map(e -> squadreMap.get(e.getKey()))
+                .toList();
+
+
+        // Capocannoniere (ex-aequo)
+        int maxGolGiocatore = golGiocatori.values().stream()
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        List<Giocatore> capocannonieri = golGiocatori.entrySet().stream()
+                .filter(e -> e.getValue() == maxGolGiocatore)
+                .map(e -> giocatoriMap.get(e.getKey()))
+                .toList();
+
+
+        // ======================
+        // MAP DI RITORNO
+        // ======================
         Map<String, Object> stats = new HashMap<>();
+
         stats.put("nomeTorneo", torneo.getNome());
         stats.put("partiteGiocate", torneo.getPartite().size());
+        stats.put("vincitore", vincitore != null ? vincitore.getNome() : "-");
         stats.put("golTotali", golTotali);
-        stats.put("mediaGol", (double) golTotali / torneo.getPartite().size());
+        stats.put("mediaGol", torneo.getPartite().isEmpty()
+                ? 0
+                : (double) golTotali / torneo.getPartite().size());
+
+        stats.put("migliorAttacco",
+                miglioriAttacchi.isEmpty() ? "-" :
+                        miglioriAttacchi.stream()
+                                .map(s -> " > " + s.getNome() + " (" + maxGolFatti + " gol segnati)")
+                                .collect(Collectors.joining("\n"))
+        );
+
+        stats.put("migliorDifesa",
+                miglioriDifese.isEmpty() ? "-" :
+                        miglioriDifese.stream()
+                                .map(s -> " > " + s.getNome() + " (" + minGolSubiti + " gol subiti)")
+                                .collect(Collectors.joining("\n"))
+        );
+
+        stats.put("capocannoniere",
+                capocannonieri.isEmpty() ? "-" :
+                        capocannonieri.stream()
+                                .map(g -> " > " + g.getNome() + " " + g.getCognome()
+                                        + " - " + g.getSquadra().getNome()
+                                        + " (" + maxGolGiocatore + " gol)")
+                                .collect(Collectors.joining("\n"))
+        );
+
+
+        stats.put("partitaPiuGol",
+                partitePiuGol.isEmpty() ? "-" :
+                        partitePiuGol.stream()
+                                .map(p -> " > " + formatPartitaConDettagli(p))
+                                .collect(Collectors.joining("\n")));
+
+        stats.put("partitaMenoGol",
+                partiteMenoGol.isEmpty() ? "-" :
+                        partiteMenoGol.stream()
+                                .map(p -> " > " + formatPartitaConDettagli(p))
+                                .collect(Collectors.joining("\n")));
+
+        stats.put("partiteAiRigori", partiteAiRigori);
+
+        stats.put("partiteAiRigoriDettaglio",
+                partiteDeciseAiRigori.isEmpty() ? "-" :
+                        partiteDeciseAiRigori.stream()
+                                .map(p -> " > " + formatPartitaAiRigori(p))
+                                .collect(Collectors.joining("\n")));
+
 
         return stats;
     }
+
+
+    // metodo helper per "tradurre" lato html le fasi del torneo
+    private String formatPartitaConDettagli(Partita p) {
+
+        if (p == null) return "-";
+
+        String tipoDb = p.getTipoPartita().getTipo();
+        String fase;
+
+        switch (tipoDb.toLowerCase()) {
+            case "semifinale1" -> fase = "Semifinale 1";
+            case "semifinale2" -> fase = "Semifinale 2";
+            case "finale3-4" -> fase = "Finale 3°-4° posto";
+            case "finale" -> fase = "Finale";
+            default -> fase = tipoDb;
+        }
+
+        return p.getSquadraHome().getNome() + " " +
+                p.getRisultatoRegular() + " " +
+                p.getSquadraAway().getNome() +
+                " (" + fase + ")";
+    }
+
+
+    // metodo helper per "tradurre" lato html le partite finite ai rigori
+    private String formatPartitaAiRigori(Partita p) {
+
+        if (p == null) return "-";
+
+        String tipoDb = p.getTipoPartita().getTipo();
+        String fase;
+
+        switch (tipoDb.toLowerCase()) {
+            case "semifinale1" -> fase = "Semifinale 1";
+            case "semifinale2" -> fase = "Semifinale 2";
+            case "finale3-4" -> fase = "Finale 3°-4° posto";
+            case "finale" -> fase = "Finale";
+            default -> fase = tipoDb;
+        }
+
+        return p.getSquadraHome().getNome() + " " +
+                p.getRisultatoRegular() + " " +
+                p.getSquadraAway().getNome() +
+                " (" + p.getRisultatoFinale() + " d.c.r.)" +
+                "\n" + fase;
+    }
+
+
 
     @Override
     public Map<Integer, String> getClassificaTorneo(int idTorneo) {
@@ -469,4 +727,187 @@ public class TorneoServiceImpl implements TorneoService {
 
         return hall;
     }
+
+    @Override
+    public Map<String, MiniMatchDTO> getMiniTabellone(int idTorneo) {
+        Map<String, MiniMatchDTO> tabellone = new HashMap<>();
+
+        List<Partita> partite = torneoRepository
+                .findById((long) idTorneo)
+                .orElseThrow()
+                .getPartite();
+
+        for (Partita p : partite) {
+            // Estrazione gol regolamentari
+            int golHome = 0;
+            int golAway = 0;
+
+            if (p.getRisultatoRegular() != null) {
+                String[] reg = p.getRisultatoRegular().split("-");
+                golHome = Integer.parseInt(reg[0]);
+                golAway = Integer.parseInt(reg[1]);
+            }
+
+            // rigori (SOLO se ci sono)
+            Integer rigoriHome = null;
+            Integer rigoriAway = null;
+
+            if (p.isRigori()) {
+                String[] rig = p.getRisultatoFinale().split("-");
+                rigoriHome = Integer.parseInt(rig[0]);
+                rigoriAway = Integer.parseInt(rig[1]);
+            }
+
+            // vincitore
+            boolean homeWinner;
+            boolean awayWinner;
+
+            if (p.isRigori()) {
+                homeWinner = rigoriHome > rigoriAway;
+                awayWinner = rigoriAway > rigoriHome;
+            } else {
+                homeWinner = golHome > golAway;
+                awayWinner = golAway > golHome;
+            }
+
+
+            // Creo i DTO
+            MiniTeamDTO homeDTO = new MiniTeamDTO(
+                    buildLogoSrc(p.getSquadraHome().getLogo()),
+                    golHome,
+                    rigoriHome,
+                    homeWinner
+            );
+
+
+            MiniTeamDTO awayDTO = new MiniTeamDTO(
+                    buildLogoSrc(p.getSquadraAway().getLogo()),
+                    golAway,
+                    rigoriAway,
+                    awayWinner
+            );
+
+
+            MiniMatchDTO matchDTO = new MiniMatchDTO(homeDTO, awayDTO);
+
+            // Aggiungo alla mappa con chiavi coerenti al template
+            switch (p.getTipoPartita().getTipo().toLowerCase()) {
+                case "semifinale1" -> tabellone.put("semi1", matchDTO);
+                case "semifinale2" -> tabellone.put("semi2", matchDTO);
+                case "finale3-4"   -> tabellone.put("finalina", matchDTO);
+                case "finale"      -> tabellone.put("finale", matchDTO);
+            }
+        }
+
+        return tabellone;
+    }
+
+    @Override
+    public List<ClassificaSquadraDTO> getClassificaTorneoDettagliata(int idTorneo) {
+
+        List<Partita> partite = partitaRepository.findByTorneoIdTorneo(idTorneo);
+
+        // Recupera classifica e stats
+        Map<Integer, String> classifica = getClassificaTorneo(idTorneo); // 1°-4° posto
+        Map<String, Object> stats = getStatsTorneo(idTorneo);
+        System.out.println("STATS TORNEO: " + stats);
+
+        List<ClassificaSquadraDTO> result = new ArrayList<>();
+
+        for (Map.Entry<Integer, String> entry : classifica.entrySet()) {
+            String squadraNome = entry.getValue();
+
+            int golFatti = 0;
+            int golSubiti = 0;
+            int vittorie = 0;
+
+            for (Partita p : partite) {
+
+                boolean isHome = p.getSquadraHome().getNome().equals(squadraNome);
+                boolean isAway = p.getSquadraAway().getNome().equals(squadraNome);
+
+                if (!isHome && !isAway) continue;
+
+                String risultatoGol = p.getRisultatoRegular(); // SEMPRE per gol
+                String risultatoVittoria = p.isRigori()
+                        ? p.getRisultatoFinale()
+                        : p.getRisultatoRegular();
+
+
+                String[] scoreGol = risultatoGol.split("-");
+                String[] scoreVittoria = risultatoVittoria.split("-");
+
+                int golHome = Integer.parseInt(scoreGol[0]);
+                int golAway = Integer.parseInt(scoreGol[1]);
+
+                int winHome = Integer.parseInt(scoreVittoria[0]);
+                int winAway = Integer.parseInt(scoreVittoria[1]);
+
+
+                if (isHome) {
+                    golFatti += golHome;
+                    golSubiti += golAway;
+                    if (winHome > winAway) vittorie++;
+                } else {
+                    golFatti += golAway;
+                    golSubiti += golHome;
+                    if (winAway > winHome) vittorie++;
+                }
+
+            }
+
+
+            ClassificaSquadraDTO dto = new ClassificaSquadraDTO();
+            dto.setPosizione(entry.getKey());
+            dto.setNome(squadraNome);
+
+            // Recupera logo direttamente dall'archivio tramite nome
+            dto.setLogo(buildLogoSrc(getLogoSquadra(squadraNome)));
+
+            int numeroPartite = partitaRepository.countByTorneoIdAndSquadra(squadraNome, idTorneo);
+            dto.setPartiteGiocate(numeroPartite);
+
+            dto.setGolFatti(golFatti);
+            dto.setGolSubiti(golSubiti);
+            dto.setDifferenzaReti(golFatti - golSubiti);
+            dto.setVittorie(vittorie);
+
+            result.add(dto);
+        }
+
+        // Ordina per posizione (1°,2°,3°,4°)
+        result.sort(Comparator.comparingInt(ClassificaSquadraDTO::getPosizione));
+
+        return result;
+    }
+
+    // Metodo helper per recuperare logo tramite nome squadra
+    private String getLogoSquadra(String nomeSquadra) {
+        try {
+            ArchivioSquadra archivio = archivioSquadraService.getOrCreateArchivioByNome(nomeSquadra);
+            return archivio.getSquadra().getLogo();
+        } catch (Exception e) {
+            // log dell’errore, ma non facciamo crashare la pagina
+            System.out.println("Logo non trovato per squadra: " + nomeSquadra + " -> uso default");
+            return "/images/default_logo.png";
+        }
+    }
+
+
+
+    private String buildLogoSrc(String logo) {
+        if (logo == null || logo.isBlank()) {
+            return "/images/default.png";
+        }
+
+        // base64?
+        if (!logo.startsWith("images") && !logo.startsWith("/images")) {
+            return "data:image/png;base64," + logo;
+        }
+
+        // path
+        return logo.startsWith("/") ? logo : "/" + logo;
+    }
+
+
 }
