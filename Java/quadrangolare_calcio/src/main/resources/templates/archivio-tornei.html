@@ -80,22 +80,24 @@
         </h2>
 
         <div class="albo-grid">
-            <div th:each="record : ${alboDOro}" class="albo-card">
+            <a th:each="record : ${alboDOro}"
+               th:href="@{/dettagliotorneo/{id}(id=${record['idTorneo']})}"
+               class="albo-card-link">
 
-                <!-- Nome torneo -->
-                <h3 th:text="${record['torneo']}">Torneo</h3>
+                <div class="albo-card">
 
-                <!-- Vincitore -->
-                <div class="vincitore-box">
-                    <img th:src="${record['vincitoreLogo']}"
-                         alt="Logo Vincitore"
-                         onerror="this.src='/images/default_logo.png'">
-                    <p th:text="${record['vincitore']}">Squadra Vincitrice</p>
+                    <h3 th:text="${record['torneo']}">Torneo</h3>
+
+                    <div class="vincitore-box">
+                        <img th:src="${record['vincitoreLogo']}"
+                             alt="Logo Vincitore"
+                             onerror="this.src='/images/default_logo.png'">
+                        <p th:text="${record['vincitore']}">Squadra Vincitrice</p>
+                    </div>
+
+                    <div class="medaglia-trophy">🏆</div>
                 </div>
-
-                <!-- Medaglia oro -->
-                <div class="medaglia-trophy">🏆</div>
-            </div>
+            </a>
         </div>
     </section>
 
