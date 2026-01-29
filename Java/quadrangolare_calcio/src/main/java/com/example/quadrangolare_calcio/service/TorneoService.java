@@ -1,5 +1,7 @@
 package com.example.quadrangolare_calcio.service;
 
+import com.example.quadrangolare_calcio.dto.ClassificaSquadraDTO;
+import com.example.quadrangolare_calcio.dto.MiniMatchDTO;
 import com.example.quadrangolare_calcio.dto.TorneoSalvataggioDTO;
 import com.example.quadrangolare_calcio.model.Squadra;
 import com.example.quadrangolare_calcio.model.Torneo;
@@ -40,5 +42,9 @@ public interface TorneoService {
 
     // Restituisce la "Squadra Record" (chi ha più vittorie, più gol, ecc.)
     Map<String, Object> getHallOfFame();
+
+    Map<String, MiniMatchDTO> getMiniTabellone(int idTorneo);
+
+    List<ClassificaSquadraDTO> getClassificaTorneoDettagliata(int idTorneo);
 
 }
