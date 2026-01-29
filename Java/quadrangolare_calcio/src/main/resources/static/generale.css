@@ -1620,6 +1620,22 @@ header {
     font-size: 1.2rem;
 }
 
+.albo-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.albo-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.albo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+
 .vincitore-box {
     display: flex;
     flex-direction: column;
@@ -1718,6 +1734,57 @@ header {
     font-weight: bold;
     font-size: 1.1rem;
     color: #333;
+}
+
+
+/* stats dettaglio torneo (dettaglio-torneo.html) */
+
+.overview-torneo {
+    margin-top: 40px;
+    padding: 25px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 15px;
+    border-left: 6px solid #00bf63;
+}
+
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.overview-item {
+    background: rgba(255,255,255,0.9);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.overview-item .label {
+    display: block;
+    font-weight: bold;
+    color: #00bf63;
+    margin-bottom: 5px;
+}
+
+.winner {
+    background-color: #fff2b2;
+    font-weight: bold;
+}
+
+.best-attack {
+    background-color: #d4f5ff;
+}
+
+.best-defense {
+    background-color: #d4ffd4;
+}
+
+.ranking-table .logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-right: 8px;
 }
 
 
