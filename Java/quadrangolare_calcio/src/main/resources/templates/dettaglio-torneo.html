@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dettaglio Torneo</title>
+    <link rel="stylesheet" th:href="@{/generale.css}">
+
+    <style>
+
+        .section-title {
+            color: #00bf63;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #00bf63;
+            padding-bottom: 8px;
+        }
+
+        .icon-ranking {
+            width: 60px;
+            height: 60px;
+            vertical-align: middle;
+            margin-right: 5px;
+            object-fit: contain;
+        }
+
+        .archivio-section {
+            margin-top: 50px;
+            border-left: 6px solid #00bf63;
+        }
+
+        .ranking-table td.team {
+            display: flex;             /* o lascia display:block se vuoi solo testo */
+            align-items: center;       /* centra verticalmente */
+            gap: 8px;                  /* spazio tra logo e nome */
+            padding: 10px;             /* stesso padding delle altre celle */
+            background: rgba(255,255,255,0.85); /* stesso sfondo delle altre celle */
+            border-radius: 0;          /* togli il bordo arrotondato se vuoi uniformità */
+            margin: 0;                 /* togli margini extra */
+        }
+
+        .ranking-table td.team span {
+            font-weight: normal !important;
+            font-size: 16px !important;
+        }
+
+        .ranking-table td.team img.logo {
+            width: 60px;               /* dimensione logo uniforme */
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .ranking-table td span {
+            font-size: 1.3em;
+            vertical-align: middle;
+        }
+
+
+        .ranking-table td span .medaglia-4 {
+            font-size: 75%;
+        }
+
+        /* Trofeo primo classificato */
+        .ranking-table td.team .trophy {
+            font-size: 40px;
+            line-height: 1;
+            margin-left: 20px;
+            display: inline-block;
+            font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+            vertical-align: middle;
+            filter: drop-shadow(0 0 6px gold);
+        }
+
+
+
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+    <div class="header-content">
+        <img src="/images/logo_homepage_negativo-trasparente.png" alt="Logo" class="header-logo-small">
+        <div class="header-text">
+            <h1>Dettaglio Torneo</h1>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <a th:href="@{/homepage}">Home</a>
+    <a th:href="@{/tabellone}">Nuovo Torneo</a>
+    <a th:href="@{/regolamento}">Regolamento</a>
+    <a th:href="@{/squadre-disponibili}">Team disponibili</a>
+    <div class="nav-dropdown">
+        <span class="nav-dropdown-title">Registrazione</span>
+        <div class="nav-dropdown-menu">
+            <a th:href="@{/registra-squadre}">Squadre</a>
+            <a th:href="@{/registra-giocatori}">Giocatori</a>
+        </div>
+    </div>
+    <a th:href="@{/contatti}">Chi siamo</a>
+    <a th:href="@{/loginadmin}">Area Admin</a>
+</nav>
+
+
+<div class="container">
+
+    <h1 th:text="${torneo.nome}" style="text-align: center; color: #00bf63">Nome Torneo</h1>
+
+    <!-- ================= STATS TORNEO ================= -->
+    <section class="overview-torneo">
+
+        <h3 class="section-title">
+            <img th:src="@{/images/overview.png}" class="icon-ranking" alt="AlboD'Oro">
+            Overview del Torneo
+        </h3>
+
+        <div class="overview-grid">
+
+            <div class="overview-item" style="border: 2px solid gold">
+                <span class="label"> <img th:src="@{/images/torneo_homepage.png}" class="icon-ranking" alt="Trofeo Vincitore"> Vincitore</span>
+                <span th:text="${stats.vincitore}"></span>
+            </div>
+
+            <div class="overview-item">
+                <span class="label"> <img th:src="@{/images/pallone_calcio.png}" class="icon-ranking" alt="Gol Totali"> Gol Totali</span>
+                <span th:text="${stats.golTotali}"></span>
+            </div>
+
+            <div class="overview-item">
+                <span class="label"> <img th:src="@{/images/stats_gol-partita.png}" class="icon-ranking" alt="Media Gol/Partita"> Media Gol/Partita</span>
+                <span th:text="${stats.mediaGol}"></span>
+            </div>
+
+            <div class="overview-item" style="white-space: pre-line;">
+                <span class="label"> <img th:src="@{/images/miglior_attacco_dettaglio.png}" class="icon-ranking" alt="Miglior attacco"> Miglior Attacco</span>
+                <span th:text="${stats.migliorAttacco}"></span>
+            </div>
+
+            <div class="overview-item" style="white-space: pre-line;">
+                <span class="label"> <img th:src="@{/images/lucchetto_difesa.png}" class="icon-ranking" alt="Miglior difesa"> Miglior Difesa</span>
+                <span th:text="${stats.migliorDifesa}"></span>
+            </div>
+
+            <div class="overview-item" style="white-space: pre-line;">
+                <span class="label"> <img th:src="@{/images/capocannoniere.png}" class="icon-ranking" alt="Capocannoniere"> Capocannoniere</span>
+                <span th:text="${stats.capocannoniere}"></span>
+            </div>
+
+            <div class="overview-item" style="white-space: pre-line;">
+                <span class="label"> <img th:src="@{/images/stonks.png}" class="icon-ranking" alt="Match con più gol"> Partita con più gol</span>
+                <span th:text="${stats.partitaPiuGol}"></span>
+            </div>
+
+            <div class="overview-item" style="white-space: pre-line;">
+                <span class="label"> <img th:src="@{/images/no_stonks.png}" class="icon-ranking" alt="Match con meno gol"> Partita con meno gol</span>
+                <span th:text="${stats.partitaMenoGol}"></span>
+            </div>
+
+            <div class="overview-item">
+                <span class="label">
+                    <img th:src="@{/images/fischio_rigore.png}" class="icon-ranking" alt="Lotteria Rigori">
+                    Partite decise ai rigori
+                </span>
+
+                <!-- numero -->
+                <span th:text="${stats.partiteAiRigori}"></span>
+
+                <!-- dettaglio: SOLO se almeno 1 -->
+                <div th:if="${stats.partiteAiRigori > 0}"
+                     th:text="${stats.partiteAiRigoriDettaglio}"
+                     class="overview-subtext">
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+
+    <!-- ================= CLASSIFICA ================= -->
+    <section class="archivio-section">
+        <h2 class="section-title">
+            <img th:src="@{/images/classifica.png}" class="icon-ranking" alt="Classifica generale">
+            Classifica Finale
+        </h2>
+
+        <table class="ranking-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Squadra</th>
+                <th>Partite Giocate</th>
+                <th>Vittorie</th>
+                <th>Gol Fatti</th>
+                <th>Gol Subiti</th>
+                <th>Differenza Reti</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${classifica}">
+                <td>
+                    <span th:switch="${r.posizione}">
+                        <span th:case="1">🥇</span>
+                        <span th:case="2">🥈</span>
+                        <span th:case="3">🥉</span>
+                        <span th:case="4" class="medaglia-4">4</span>
+                    </span>
+                </td>
+
+                <td class="team">
+                    <img th:src="@{${r.logo}}" class="logo">
+                    <span th:text="${r.nome}"></span>
+                    <div th:if="${r.posizione == 1}" class="trophy">🏆</div>
+                </td>
+                <td th:text="${r.partiteGiocate}"></td>
+                <td th:text="${r.vittorie}"></td>
+                <td th:text="${r.golFatti}"></td>
+                <td th:text="${r.golSubiti}"></td>
+                <td th:text="${r.differenzaReti}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+    </section>
+
+    <!-- ================= TABELLONE PARTITE ================= -->
+    <section class="mini-tabellone">
+        <h2 class="mini-title">Percorso Tabellone</h2>
+
+        <div class="bracket">
+
+            <!-- ================= SEMIFINALE 1 ================= -->
+            <div class="match semi semi1">
+                <span class="match-label">SEMIFINALE 1</span>
+
+                <div class="team"
+                     th:classappend="${miniTabellone.semi1.home.winner} ? 'winner'">
+                    <div class="team-info">
+                        <img th:src="@{${miniTabellone.semi1.home.logo}}" alt="">
+                        <span class="main-score" th:text="${miniTabellone.semi1.home.gol}"></span>
+                    </div>
+                    <span class="penalty-score"
+                          th:if="${miniTabellone.semi1.home.rigori != null}"
+                          th:text="'(' + ${miniTabellone.semi1.home.rigori} + ')'">
+                    </span>
+                </div>
+
+                <div class="team"
+                     th:classappend="${miniTabellone.semi1.away.winner} ? 'winner'">
+                    <div class="team-info">
+                        <img th:src="@{${miniTabellone.semi1.away.logo}}" alt="">
+                        <span class="main-score" th:text="${miniTabellone.semi1.away.gol}"></span>
+                    </div>
+                    <span class="penalty-score"
+                          th:if="${miniTabellone.semi1.away.rigori != null}"
+                          th:text="'(' + ${miniTabellone.semi1.away.rigori} + ')'">
+                    </span>
+                </div>
+            </div>
+
+            <!-- ================= SEMIFINALE 2 ================= -->
+            <div class="match semi semi2">
+                <span class="match-label">SEMIFINALE 2</span>
+
+                <div class="team"
+                     th:classappend="${miniTabellone.semi2.home.winner} ? 'winner'">
+                    <div class="team-info">
+                        <img th:src="@{${miniTabellone.semi2.home.logo}}" alt="">
+                        <span class="main-score" th:text="${miniTabellone.semi2.home.gol}"></span>
+                    </div>
+                    <span class="penalty-score"
+                          th:if="${miniTabellone.semi2.home.rigori != null}"
+                          th:text="'(' + ${miniTabellone.semi2.home.rigori} + ')'">
+                    </span>
+
+                </div>
+
+                <div class="team"
+                     th:classappend="${miniTabellone.semi2.away.winner} ? 'winner'">
+                    <div class="team-info">
+                        <img th:src="@{${miniTabellone.semi2.away.logo}}" alt="">
+                        <span class="main-score" th:text="${miniTabellone.semi2.away.gol}"></span>
+                    </div>
+                    <span class="penalty-score"
+                          th:if="${miniTabellone.semi2.away.rigori != null}"
+                          th:text="'(' + ${miniTabellone.semi2.away.rigori} + ')'">
+                    </span>
+                </div>
+            </div>
+
+            <!-- ================= FINALE ================= -->
+            <div class="match finale">
+                <span class="match-label">FINALE</span>
+
+                <div class="team"
+                     th:classappend="${miniTabellone.finale.home.winner} ? 'winner'">
+                    <div class="team-info">
+                        <img th:src="@{${miniTabellone.finale.home.logo}}" alt="">
+                        <span class="main-score" th:text="${miniTabellone.finale.home.gol}"></span>
+                    </div>
+                    <span class="penalty-score"
+                          th:if="${miniTabellone.finale.home.rigori != null}"
+                          th:text="'(' + ${miniTabellone.finale.home.rigori} + ')'">
+                    </span>
+                </div>
+
+                <div class="team"
+                     th:classappend="${miniTabellone.finale.away.winner} ? 'winner'">
+                    <div class="team-info">
+                        <img th:src="@{${miniTabellone.finale.away.logo}}" alt="">
+                        <span class="main-score" th:text="${miniTabellone.finale.away.gol}"></span>
+                    </div>
+                    <span class="penalty-score"
+                          th:if="${miniTabellone.finale.away.rigori != null}"
+                          th:text="'(' + ${miniTabellone.finale.away.rigori} + ')'">
+                    </span>
+                </div>
+            </div>
+
+            <!-- ================= FINALE 3° / 4° POSTO ================= -->
+            <div class="match finalina">
+                <span class="match-label">FINALE 3°-4° POSTO</span>
+
+                <div class="team"
+                     th:classappend="${miniTabellone.finalina.home.winner} ? 'winner'">
+                    <div class="team-info">
+                        <img th:src="@{${miniTabellone.finalina.home.logo}}" alt="">
+                        <span class="main-score" th:text="${miniTabellone.finalina.home.gol}"></span>
+                    </div>
+                    <span class="penalty-score"
+                          th:if="${miniTabellone.finalina.home.rigori != null}"
+                          th:text="'(' + ${miniTabellone.finalina.home.rigori} + ')'">
+                    </span>
+                </div>
+
+                <div class="team"
+                     th:classappend="${miniTabellone.finalina.away.winner} ? 'winner'">
+                    <div class="team-info">
+                        <img th:src="@{${miniTabellone.finalina.away.logo}}" alt="">
+                        <span class="main-score" th:text="${miniTabellone.finalina.away.gol}"></span>
+                    </div>
+                    <span class="penalty-score"
+                          th:if="${miniTabellone.finalina.away.rigori != null}"
+                          th:text="'(' + ${miniTabellone.finalina.away.rigori} + ')'">
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <div class="button-row" style="margin-bottom: 50px">
+        <button onclick="tornaIndietro()">Indietro</button>
+    </div>
+
+</div>
+
+<footer>
+    <p>&copy; 2024 Sprint Football Simulation - Generation Sport</p>
+</footer>
+
+<script>
+    function tornaIndietro() {
+        // Controlla se esiste una pagina di provenienza nel browser
+        if (document.referrer && document.referrer !== "" && !document.referrer.includes('/loginadmin')) {
+            // Torna alla pagina esatta da cui l'utente è arrivato
+            window.location.href = document.referrer;
+        } else {
+            // Se non c'è una provenienza (es. accesso diretto all'URL), vai alla Home
+            window.location.href = '/';
+        }
+    }
+</script>
+
+</body>
+</html>
