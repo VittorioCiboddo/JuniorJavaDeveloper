@@ -28,6 +28,8 @@ public class DettaglioTorneoController {
         model.addAttribute("stats", torneoService.getStatsTorneo(idTorneo.intValue()));
         model.addAttribute("classifica", torneoService.getClassificaTorneoDettagliata(idTorneo.intValue()));
         model.addAttribute("miniTabellone", torneoService.getMiniTabellone(idTorneo.intValue()));
+        model.addAttribute("classificaMarcatori", torneoService.getClassificaMarcatoriDettagliata(idTorneo.intValue()));
+        model.addAttribute("classificaPortieri", torneoService.getClassificaPortieriDettagliata(idTorneo.intValue()));
 
 
         return "dettaglio-torneo";
