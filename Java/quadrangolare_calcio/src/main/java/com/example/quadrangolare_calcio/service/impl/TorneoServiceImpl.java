@@ -881,6 +881,7 @@ public class TorneoServiceImpl implements TorneoService {
         return result;
     }
 
+
     // Metodo helper per recuperare logo tramite nome squadra
     private String getLogoSquadra(String nomeSquadra) {
         try {
@@ -907,6 +908,295 @@ public class TorneoServiceImpl implements TorneoService {
 
         // path
         return logo.startsWith("/") ? logo : "/" + logo;
+    }
+
+
+    @Override
+    public List<ClassificaMarcatoriDTO> getClassificaMarcatoriDettagliata(int idTorneo) {
+
+        List<TabellinoPartita> tabellini =
+                tabellinoPartitaRepository.findByPartitaTorneoIdTorneo(idTorneo);
+
+        // 👉 USIAMO GLI ID, NON LE ENTITY
+        Map<Long, int[]> stats = new HashMap<>(); // idGiocatore -> [golTotali, rigori]
+        Map<Long, Giocatore> giocatoriMap = new HashMap<>();
+
+        for (TabellinoPartita tp : tabellini) {
+
+            Giocatore g = tp.getGiocatore();
+            EventoPartita ev = tp.getEventoPartita();
+
+            if (g == null || ev == null) continue;
+
+            // escludi portieri
+            String categoria = g.getRuolo()
+                    .getTipologia()
+                    .getCategoria();
+            if ("PORTIERE".equalsIgnoreCase(categoria)) continue;
+
+            String tipo = ev.getTipoEvento();
+            String esito = ev.getEsitoEvento();
+
+            boolean golNormale =
+                    "Tiro".equalsIgnoreCase(tipo) &&
+                            "Goal".equalsIgnoreCase(esito);
+
+            boolean rigoreInPartita =
+                    "Rigore_regolare".equalsIgnoreCase(tipo) &&
+                            "Goal".equalsIgnoreCase(esito);
+
+            if (!golNormale && !rigoreInPartita) continue;
+
+            long idGiocatore = g.getIdGiocatore();
+
+            stats.putIfAbsent(idGiocatore, new int[]{0, 0});
+            giocatoriMap.putIfAbsent(idGiocatore, g);
+
+            stats.get(idGiocatore)[0]++; // gol totali
+            if (rigoreInPartita) {
+                stats.get(idGiocatore)[1]++; // rigori
+            }
+        }
+
+        // costruzione DTO
+        List<ClassificaMarcatoriDTO> lista = new ArrayList<>();
+
+        for (Map.Entry<Long, int[]> entry : stats.entrySet()) {
+
+            Giocatore g = giocatoriMap.get(entry.getKey());
+            int gol = entry.getValue()[0];
+            int rigori = entry.getValue()[1];
+
+            if (gol == 0) continue;
+
+            ClassificaMarcatoriDTO dto = new ClassificaMarcatoriDTO();
+            dto.setNomeCompleto(g.getNome() + " " + g.getCognome());
+            dto.setSquadra(g.getSquadra().getNome());
+            dto.setTipologia(g.getRuolo().getTipologia().getCategoria());
+            dto.setGol(gol);
+            dto.setRigori(rigori);
+            dto.setMediaGol((double) gol / 2); // partite sempre 2
+
+            lista.add(dto);
+        }
+
+        // ordinamento
+        lista.sort(
+                Comparator.comparingInt(ClassificaMarcatoriDTO::getGol).reversed()
+                        .thenComparing(dto ->
+                                        dto.getNomeCompleto()
+                                                .substring(dto.getNomeCompleto().lastIndexOf(" ") + 1),
+                                String.CASE_INSENSITIVE_ORDER
+                        )
+        );
+
+        // gestione ex-aequo
+        int posizione = 1;
+        Integer golPrecedenti = null;
+
+        for (int i = 0; i < lista.size(); i++) {
+            ClassificaMarcatoriDTO dto = lista.get(i);
+
+            if (golPrecedenti != null && dto.getGol() == golPrecedenti) {
+                dto.setPosizione(0); // "="
+            } else {
+                posizione = i + 1;
+                dto.setPosizione(posizione);
+                golPrecedenti = dto.getGol();
+            }
+        }
+
+        return lista;
+    }
+
+    @Override
+    public List<ClassificaPortieriDTO> getClassificaPortieriDettagliata(int idTorneo) {
+
+        List<Partita> partite =
+                partitaRepository.findByTorneoIdTorneo(idTorneo);
+
+        List<TabellinoPartita> tabellini =
+                tabellinoPartitaRepository.findByPartitaTorneoIdTorneo(idTorneo);
+
+        // ==========================
+        // MAPPE STATISTICHE
+        // ==========================
+        Map<Long, Integer> rigoriParati = new HashMap<>();
+        Map<Long, Integer> rigoriLotteriaParati = new HashMap<>();
+        Map<Long, Integer> partiteAiRigori = new HashMap<>();
+        Map<Long, Integer> cleanSheet = new HashMap<>();
+        Map<Long, Giocatore> portieriMap = new HashMap<>();
+
+
+    /* ==========================
+       1️⃣ PARTITE DECISE AI RIGORI
+       ========================== */
+
+        // 1️⃣ Inizializza TUTTI i portieri
+        for (Partita p : partite) {
+            for (Squadra s : List.of(p.getSquadraHome(), p.getSquadraAway())) {
+                Giocatore portiere = s.getGiocatori().stream()
+                        .filter(g -> "PORTIERE".equalsIgnoreCase(
+                                g.getRuolo().getTipologia().getCategoria()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (portiere != null) {
+                    long id = portiere.getIdGiocatore();
+                    portieriMap.putIfAbsent(id, portiere);
+
+                    rigoriParati.putIfAbsent(id, 0);
+                    rigoriLotteriaParati.putIfAbsent(id, 0);
+                    partiteAiRigori.putIfAbsent(id, 0);
+                    cleanSheet.putIfAbsent(id, 0);
+                }
+            }
+        }
+
+        // 2️⃣ Incrementa solo quando partita ai rigori
+        for (Partita p : partite) {
+            if (!p.isRigori()) continue;
+
+            for (Squadra s : List.of(p.getSquadraHome(), p.getSquadraAway())) {
+                Giocatore portiere = s.getGiocatori().stream()
+                        .filter(g -> "PORTIERE".equalsIgnoreCase(
+                                g.getRuolo().getTipologia().getCategoria()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (portiere != null) {
+                    long id = portiere.getIdGiocatore();
+                    partiteAiRigori.merge(id, 1, Integer::sum);
+                }
+            }
+        }
+
+
+
+    /* ==========================
+       2️⃣ RIGORI PARATI (TABELLINO)
+       ========================== */
+        for (TabellinoPartita tp : tabellini) {
+
+            Giocatore g = tp.getGiocatore();
+            EventoPartita ev = tp.getEventoPartita();
+
+            if (g == null || ev == null) continue;
+
+            if (!"PORTIERE".equalsIgnoreCase(
+                    g.getRuolo().getTipologia().getCategoria())) continue;
+
+            long id = g.getIdGiocatore();
+            portieriMap.putIfAbsent(id, g);
+
+            if ("Rigore_regolare".equalsIgnoreCase(ev.getTipoEvento())
+                    && "Parato".equalsIgnoreCase(ev.getEsitoEvento())) {
+
+                rigoriParati.merge(id, 1, Integer::sum);
+            }
+
+            if ("Rigore_lotteria".equalsIgnoreCase(ev.getTipoEvento())
+                    && "Parato".equalsIgnoreCase(ev.getEsitoEvento())) {
+
+                rigoriLotteriaParati.merge(id, 1, Integer::sum);
+            }
+        }
+
+
+    /* ==========================
+       3️⃣ CLEAN SHEET
+       ========================== */
+        for (Partita p : partite) {
+
+            String[] score = p.getRisultatoRegular().split("-");
+            int golHome = Integer.parseInt(score[0]);
+            int golAway = Integer.parseInt(score[1]);
+
+            if (golAway == 0) {
+                Giocatore gk = p.getSquadraHome().getGiocatori().stream()
+                        .filter(g -> "PORTIERE".equalsIgnoreCase(
+                                g.getRuolo().getTipologia().getCategoria()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (gk != null) {
+                    long id = gk.getIdGiocatore();
+                    cleanSheet.merge(id, 1, Integer::sum);
+                    portieriMap.putIfAbsent(id, gk);
+                }
+            }
+
+            if (golHome == 0) {
+                Giocatore gk = p.getSquadraAway().getGiocatori().stream()
+                        .filter(g -> "PORTIERE".equalsIgnoreCase(
+                                g.getRuolo().getTipologia().getCategoria()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (gk != null) {
+                    long id = gk.getIdGiocatore();
+                    cleanSheet.merge(id, 1, Integer::sum);
+                    portieriMap.putIfAbsent(id, gk);
+                }
+            }
+        }
+
+
+    /* ==========================
+       4️⃣ COSTRUZIONE DTO
+       ========================== */
+        List<ClassificaPortieriDTO> lista = new ArrayList<>();
+
+        for (Giocatore g : portieriMap.values()) {
+
+            long id = g.getIdGiocatore();
+
+            ClassificaPortieriDTO dto = new ClassificaPortieriDTO();
+            dto.setNomeCompleto(g.getNome() + " " + g.getCognome());
+            dto.setSquadra(g.getSquadra().getNome());
+
+            dto.setRigoriParati(rigoriParati.getOrDefault(id, 0));
+            dto.setRigoriLotteriaParati(rigoriLotteriaParati.getOrDefault(id, 0));
+            dto.setPartiteAiRigori(partiteAiRigori.getOrDefault(id, 0));
+            dto.setCleanSheet(cleanSheet.getOrDefault(id, 0));
+
+            lista.add(dto);
+        }
+
+
+    /* ==========================
+       5️⃣ ORDINAMENTO + EX-AEQUO
+       ========================== */
+        lista.sort(
+                Comparator
+                        .comparingInt(ClassificaPortieriDTO::getCleanSheet).reversed()
+                        .thenComparing(ClassificaPortieriDTO::getRigoriParati, Comparator.reverseOrder())
+                        .thenComparing(dto ->
+                                        dto.getNomeCompleto()
+                                                .substring(dto.getNomeCompleto().lastIndexOf(" ") + 1),
+                                String.CASE_INSENSITIVE_ORDER
+                        )
+        );
+
+        int posizione = 1;
+        Integer csPrev = null;
+        Integer rigPrev = null;
+
+        for (ClassificaPortieriDTO dto : lista) {
+
+            if (csPrev != null &&
+                    dto.getCleanSheet() == csPrev &&
+                    dto.getRigoriParati() == rigPrev) {
+
+                dto.setPosizione(0); // "="
+            } else {
+                dto.setPosizione(posizione++);
+                csPrev = dto.getCleanSheet();
+                rigPrev = dto.getRigoriParati();
+            }
+        }
+
+        return lista;
     }
 
 
