@@ -190,7 +190,7 @@
         <table class="ranking-table">
             <thead>
             <tr>
-                <th>#</th>
+                <th></th>
                 <th>Squadra</th>
                 <th>Partite Giocate</th>
                 <th>Vittorie</th>
@@ -350,6 +350,76 @@
             </div>
 
         </div>
+
+    </section>
+
+
+    <!-- ================= CLASSIFICA MARCATORI ================= -->
+    <section class="archivio-section">
+        <h2 class="section-title">
+            <img th:src="@{/images/marcatore.png}" class="icon-ranking" alt="Classifica marcatori">
+            Classifica Marcatori
+        </h2>
+
+        <table class="ranking-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Giocatore</th>
+                <th>Squadra</th>
+                <th>Tipologia</th>
+                <th>Gol</th>
+                <th>Rigori Partita</th>
+                <th>Media Gol</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${classificaMarcatori}">
+                <td th:text="${r.posizione == 0 ? '=' : r.posizione}"></td>
+                <td th:text="${r.nomeCompleto}"></td>
+                <td th:text="${r.squadra}"></td>
+                <td th:text="${r.tipologia}"></td>
+                <td th:text="${r.gol}"></td>
+                <td th:text="${r.rigori}"></td>
+                <td th:text="${r.mediaGol}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+    </section>
+
+
+    <!-- ================= CLASSIFICA PORTIERI ================= -->
+    <section class="archivio-section">
+        <h2 class="section-title">
+            <img th:src="@{/images/portiere.png}" class="icon-ranking" alt="Classifica portieri">
+            Classifica Portieri
+        </h2>
+
+        <table class="ranking-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Portiere</th>
+                <th>Squadra</th>
+                <th>Rigori Parati</th>
+                <th>Clean Sheet</th>
+                <th>Partite Decise ai Rigori</th>
+                <th>Rigori Lotteria Parati</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${classificaPortieri}">
+                <td th:text="${r.posizione == 0 ? '=' : r.posizione}"></td>
+                <td th:text="${r.nomeCompleto}"></td>
+                <td th:text="${r.squadra}"></td>
+                <td th:text="${r.rigoriParati}"></td>
+                <td th:text="${r.cleanSheet}"></td>
+                <td th:text="${r.partiteAiRigori}"></td>
+                <td th:text="${r.rigoriLotteriaParati}"></td>
+            </tr>
+            </tbody>
+        </table>
 
     </section>
 
