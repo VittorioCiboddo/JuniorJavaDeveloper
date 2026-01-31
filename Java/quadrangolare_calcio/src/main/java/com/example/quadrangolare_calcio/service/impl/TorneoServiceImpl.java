@@ -1,5 +1,6 @@
 package com.example.quadrangolare_calcio.service.impl;
 
+import com.example.quadrangolare_calcio.dao.TorneoDao;
 import com.example.quadrangolare_calcio.dto.*;
 import com.example.quadrangolare_calcio.model.*;
 import com.example.quadrangolare_calcio.repository.*;
@@ -15,6 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class TorneoServiceImpl implements TorneoService {
+
+    @Autowired
+    private TorneoDao torneoDao;
 
     @Autowired
     private PartitaRepository partitaRepository;
@@ -48,6 +52,34 @@ public class TorneoServiceImpl implements TorneoService {
 
     @Autowired
     private ArchivioGiocatoreRepository archivioGiocatoreRepository;
+
+    @Override
+    public List<Torneo> getAllTornei() {
+        return (List<Torneo>) torneoDao.findAll();
+    }
+
+    @Override
+    public Torneo dettaglioTorneo(Long idTorneo) {
+        Optional<Torneo> torneoOptional = torneoDao.findById((long) idTorneo);
+        if(torneoOptional.isPresent())
+            return torneoOptional.get();
+        return null;
+    }
+
+    @Override
+    public void salvaTorneo(Torneo torneo) {
+        torneoDao.save(torneo);
+
+    }
+
+    @Override
+    @Transactional
+    public void eliminaTorneo(Long idTorneo) {
+        Torneo torneo = torneoDao.findById(idTorneo)
+                .orElseThrow(() -> new RuntimeException("Torneo non trovato"));
+
+        torneoDao.delete(torneo);
+    }
 
     @Override
     @Transactional
