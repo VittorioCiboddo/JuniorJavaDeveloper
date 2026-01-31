@@ -1,13 +1,23 @@
 package com.example.quadrangolare_calcio.service;
 
 import com.example.quadrangolare_calcio.dto.*;
+import com.example.quadrangolare_calcio.model.Allenatore;
 import com.example.quadrangolare_calcio.model.Squadra;
+import com.example.quadrangolare_calcio.model.Stadio;
 import com.example.quadrangolare_calcio.model.Torneo;
 
 import java.util.List;
 import java.util.Map;
 
 public interface TorneoService {
+
+    List<Torneo> getAllTornei();
+
+    Torneo dettaglioTorneo(Long idTorneo);
+
+    void salvaTorneo(Torneo torneo);
+
+    void eliminaTorneo(Long idTorneo);
 
     void salvaTorneoIntero(TorneoSalvataggioDTO dto);
 
