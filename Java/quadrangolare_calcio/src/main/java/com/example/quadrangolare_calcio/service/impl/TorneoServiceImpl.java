@@ -128,9 +128,18 @@ public class TorneoServiceImpl implements TorneoService {
                         if ("Tiro".equalsIgnoreCase(tipoEv) && "Goal".equalsIgnoreCase(esitoEv)) {
                             ag.setGolTotali(ag.getGolTotali() + 1);
                         }
+                        // RIGORE REGOLARE SEGNATO
+                        else if ("Rigore_regolare".equalsIgnoreCase(tipoEv) && "Goal".equalsIgnoreCase(esitoEv)) {
+                            ag.setGolTotali(ag.getGolTotali() + 1);          // conta anche nel totale gol
+                            ag.setRigoriRegolariSegnati(ag.getRigoriRegolariSegnati() + 1); // incremento rigori segnati
+                        }
                         // RIGORE REGOLARE PARATO (dal portiere)
                         else if ("Rigore_regolare".equalsIgnoreCase(tipoEv) && "Parato".equalsIgnoreCase(esitoEv)) {
                             ag.setRigoriRegolariParati(ag.getRigoriRegolariParati() + 1);
+                        }
+                        // RIGORE REGOLARE SEGNATO
+                        else if ("Rigore_lotteria".equalsIgnoreCase(tipoEv) && "Goal".equalsIgnoreCase(esitoEv)) {
+                            ag.setRigoriLotteriaSegnati(ag.getRigoriLotteriaSegnati() + 1); // incremento rigori segnati lotteria
                         }
                         // RIGORE LOTTERIA PARATO (dal portiere)
                         else if ("Rigore_lotteria".equalsIgnoreCase(tipoEv) && "Parato".equalsIgnoreCase(esitoEv)) {
@@ -726,6 +735,172 @@ public class TorneoServiceImpl implements TorneoService {
                 });
 
         return hall;
+    }
+
+
+    @Override
+    public List<Map<String, Object>> getClassificaPortieriAllTime() {
+
+        List<ArchivioGiocatore> archivi = archivioGiocatoreRepository.findAll();
+        List<Map<String, Object>> lista = new ArrayList<>();
+
+        for (ArchivioGiocatore ag : archivi) {
+            Giocatore g = ag.getGiocatore();
+
+            // SOLO portieri
+            if (!"PORTIERE".equalsIgnoreCase(g.getRuolo().getTipologia().getCategoria())) continue;
+
+            // Rigori parati e rigori lotteria parati
+            int rigoriParati = ag.getRigoriRegolariParati();
+            int rigoriLotteriaParati = ag.getRigoriLotteriaParati();
+
+            // Squadra e tornei partecipati
+            Squadra squadra = g.getSquadra();
+            int torneiPartecipati = 0;
+            if (squadra != null) {
+                Optional<ArchivioSquadra> as = archivioSquadraRepository.findBySquadra(squadra);
+                if (as.isPresent()) {
+                    torneiPartecipati = as.get().getTorneiPartecipati();
+                }
+            }
+
+            int partiteGiocate = 2 * torneiPartecipati; // sempre 2 partite per torneo
+
+            // --- CALCOLO CLEAN SHEETS E PARTITE DECIDE AI RIGORI ---
+            int cleanSheets = 0;
+            int partiteDeciseRigori = 0;
+
+            // Recupera tutte le partite in cui questo portiere ha giocato
+            List<Partita> partite = partitaRepository.findAllBySquadra(squadra);
+
+            for (Partita p : partite) {
+                boolean home = p.getSquadraHome().equals(squadra);
+                boolean away = p.getSquadraAway().equals(squadra);
+
+                if (!home && !away) continue;
+
+                String risultato = p.getRisultatoRegular(); // esempio "4-1"
+                String[] parts = risultato.split("-");
+                int golHome = Integer.parseInt(parts[0]);
+                int golAway = Integer.parseInt(parts[1]);
+
+                int golSubiti = home ? golAway : golHome;
+
+                if (golSubiti == 0) cleanSheets++;
+
+                if (p.isRigori()) partiteDeciseRigori++;
+            }
+
+            Map<String, Object> row = new HashMap<>();
+            row.put("nomeCompleto", g.getNome() + " " + g.getCognome());
+            row.put("squadra", squadra != null ? squadra.getNome() : "-");
+            row.put("partiteGiocate", partiteGiocate);
+            row.put("rigoriParati", rigoriParati);
+            row.put("cleanSheets", cleanSheets);
+            row.put("partiteDeciseRigori", partiteDeciseRigori);
+            row.put("rigoriLotteriaParati", rigoriLotteriaParati);
+
+            lista.add(row);
+        }
+
+        // ordinamento: prima rigoriParati decrescente, poi cleanSheets, poi nome
+        lista.sort(
+                Comparator
+                        .comparingInt((Map<String, Object> m) ->
+                                (int) m.get("rigoriParati") + (int) m.get("rigoriLotteriaParati")
+                        )
+                        .reversed()
+                        .thenComparing(
+                                Comparator.comparingInt(
+                                        (Map<String, Object> m) -> (int) m.get("cleanSheets")
+                                ).reversed()
+                        )
+                        .thenComparing(m -> (String) m.get("nomeCompleto"))
+        );
+
+
+
+        // Posizione con ex-aequo
+        int pos = 1;
+        Integer rigoriPrev = null;
+        for (Map<String, Object> r : lista) {
+            int rp = (int) r.get("rigoriParati");
+            if (rigoriPrev != null && rp == rigoriPrev) {
+                r.put("posizione", 0); // "="
+            } else {
+                r.put("posizione", pos++);
+                rigoriPrev = rp;
+            }
+        }
+
+        return lista;
+    }
+
+
+
+    @Override
+    public List<Map<String, Object>> getClassificaMarcatoriAllTime() {
+
+        List<ArchivioGiocatore> archivi = archivioGiocatoreRepository.findAll();
+        List<Map<String, Object>> lista = new ArrayList<>();
+
+        for (ArchivioGiocatore ag : archivi) {
+            Giocatore g = ag.getGiocatore();
+
+            // solo giocatori di movimento
+            if ("PORTIERE".equalsIgnoreCase(g.getRuolo().getTipologia().getCategoria())) continue;
+
+            int gol = ag.getGolTotali();
+            if (gol == 0) continue;
+
+            int rigori = ag.getRigoriRegolariSegnati();
+
+            // Recuperiamo i tornei partecipati della squadra del giocatore dall'archivio_squadra
+            Optional<ArchivioSquadra> archivioSquadra = archivioSquadraRepository.findBySquadra(g.getSquadra());
+            int torneiPartecipati = (archivioSquadra.isPresent()) ? archivioSquadra.get().getTorneiPartecipati() : 0;
+
+            // Calcolo media gol: gol totali diviso (2 partite per torneo × tornei partecipati)
+            double mediaGol = (torneiPartecipati > 0) ? ((double) gol) / (2 * torneiPartecipati) : 0;
+            mediaGol = Math.round(mediaGol * 100.0) / 100.0;
+
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("nomeCompleto", g.getNome() + " " + g.getCognome());
+            row.put("squadra", g.getSquadra().getNome());
+            row.put("tipologia", g.getRuolo().getTipologia().getCategoria());
+            row.put("partecipazioni", 2 * torneiPartecipati);
+            row.put("gol", gol);
+            row.put("rigori", rigori);
+            row.put("mediaGol", mediaGol);
+
+            lista.add(row);
+        }
+
+        // ordinamento: prima per gol, poi per cognome
+        lista.sort(
+                Comparator
+                        .comparingInt((Map<String, Object> m) -> (int) m.get("gol"))
+                        .reversed()
+                        .thenComparing(m ->
+                                        ((String) m.get("nomeCompleto"))
+                                                .substring(((String) m.get("nomeCompleto")).lastIndexOf(" ") + 1),
+                                String.CASE_INSENSITIVE_ORDER
+                        )
+        );
+
+        // posizione con ex-aequo
+        int pos = 1;
+        Integer golPrev = null;
+        for (Map<String, Object> r : lista) {
+            int g = (int) r.get("gol");
+            if (golPrev != null && g == golPrev) {
+                r.put("posizione", 0); // "="
+            } else {
+                r.put("posizione", pos++);
+                golPrev = g;
+            }
+        }
+
+        return lista;
     }
 
     @Override
