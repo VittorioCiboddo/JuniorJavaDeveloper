@@ -155,6 +155,80 @@
         </div>
     </section>
 
+
+    <!-- CLASSIFICA MARCATORI ALL TIME -->
+    <section class="archivio-section">
+        <h2 class="section-title">
+            <img th:src="@{/images/marcatore_all_time.png}" class="icon-ranking" alt="Marcatori all time">
+            Marcatori All Time
+        </h2>
+
+        <table class="ranking-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Giocatore</th>
+                <th>Squadra</th>
+                <th>Tipologia</th>
+                <th>Partite Giocate</th>
+                <th>Gol Totali</th>
+                <th>Rigori in Partita</th>
+                <th>Media Gol</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="giocatore, stat : ${classificaMarcatori}">
+                <td th:text="${giocatore['posizione'] != 0 ? giocatore['posizione'] : '='}">1</td>
+                <td th:text="${giocatore['nomeCompleto']}">Nome Cognome</td>
+                <td th:text="${giocatore['squadra']}">Squadra</td>
+                <td th:text="${giocatore['tipologia']}">Tipologia</td>
+                <td th:text="${giocatore['partecipazioni']}">Partite Giocate</td>
+                <td th:text="${giocatore['gol']}">Gol totali</td>
+                <td th:text="${giocatore['rigori']}">Rigori segnati</td>
+                <td th:text="${giocatore['mediaGol']}">Media gol/partite</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </section>
+
+
+    <!-- CLASSIFICA PORTIERI ALL TIME -->
+    <section class="archivio-section">
+        <h2 class="section-title">
+            <img th:src="@{/images/guanto_oro.png}" class="icon-ranking" alt="Portieri all time">
+            Migliori Portieri All Time
+        </h2>
+
+        <table class="ranking-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Portiere</th>
+                <th>Squadra</th>
+                <th>Partite Giocate</th>
+                <th>Rigori Totali Parati</th>
+                <th>Clean Sheets Totali</th>
+                <th>Partite decise ai rigori</th>
+                <th>Rigori Lotteria Totali Parati</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="portiere, stat : ${classificaPortieri}">
+                <td th:text="${portiere['posizione'] != 0 ? portiere['posizione'] : '='}">1</td>
+                <td th:text="${portiere['nomeCompleto']}">Nome Cognome</td>
+                <td th:text="${portiere['squadra']}">Squadra</td>
+                <td th:text="${portiere['partiteGiocate']}">Partite Giocate</td>
+                <td th:text="${portiere['rigoriParati']}">Rigori Parati in partita</td>
+                <td th:text="${portiere['cleanSheets']}">Clean Sheets</td>
+                <td th:text="${portiere['partiteDeciseRigori']}">Partite Lotteria Rigori</td>
+                <td th:text="${portiere['rigoriLotteriaParati']}">Rigori Parati in lotteria</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </section>
+
     <div class="button-row" style="margin-bottom: 50px">
         <button onclick="tornaIndietro()">Indietro</button>
     </div>
