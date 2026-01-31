@@ -27,6 +27,8 @@ public class ArchivioTorneiController {
             model.addAttribute("alboDOro", torneoService.getAlboDOro());           // List<Map<String,String>>
             model.addAttribute("rankingSquadre", torneoService.getMedagliereStorico()); // List<Map<String,Object>>
             model.addAttribute("hallOfFame", torneoService.getHallOfFame());       // Map<String,Object>
+            model.addAttribute("classificaMarcatori", torneoService.getClassificaMarcatoriAllTime());
+            model.addAttribute("classificaPortieri", torneoService.getClassificaPortieriAllTime());
         }
 
         return "archivio-tornei";
