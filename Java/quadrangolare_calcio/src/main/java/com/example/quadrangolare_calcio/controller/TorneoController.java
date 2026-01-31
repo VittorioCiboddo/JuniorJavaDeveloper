@@ -79,4 +79,15 @@ public class TorneoController {
         return ResponseEntity.ok(torneoService.getHallOfFame());
     }
 
+    @GetMapping("/classifica-marcatori")
+    public ResponseEntity<List<Map<String, Object>>> getClassificaMarcatoriAllTime() {
+        return ResponseEntity.ok(torneoService.getClassificaMarcatoriAllTime());
+    }
+
+    @GetMapping("/classifica-portieri")
+    public ResponseEntity<List<Map<String, Object>>> getClassificaPortieriAllTime() {
+        return ResponseEntity.ok(torneoService.getClassificaPortieriAllTime());
+    }
+
+
 }
