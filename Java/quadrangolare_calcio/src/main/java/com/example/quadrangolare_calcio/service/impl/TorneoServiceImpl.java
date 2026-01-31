@@ -686,7 +686,7 @@ public class TorneoServiceImpl implements TorneoService {
             hall.put("Muro Difensivo", nomiDifesa + " (" + minGolSubiti + " subiti)");
         }
 
-        // 3. PICHICHI STORICO (Giocatore con più gol totali)
+        // 3. PICHICHI STORICO (Giocatore con più gol totali + gestione ex-aequo)
         int maxGol = archivioGiocatoreRepository.findAll().stream()
                 .mapToInt(ArchivioGiocatore::getGolTotali)
                 .max()
@@ -701,18 +701,43 @@ public class TorneoServiceImpl implements TorneoService {
             hall.put("Pichichi Storico", nomiPichichi + " (" + maxGol + " gol)");
         }
 
-        // 4. SARACINESCA (Solo tra i giocatori che sono Portieri)
-        archivioGiocatoreRepository.findAll().stream()
-                .filter(ag -> ag.getGiocatore().getRuolo() != null &&
-                        "Portiere".equalsIgnoreCase(ag.getGiocatore().getRuolo().getTipologia().getCategoria()))
-                .max(Comparator.comparingInt(ag -> ag.getRigoriRegolariParati() + ag.getRigoriLotteriaParati()))
-                .ifPresent(ag -> {
-                    int totali = ag.getRigoriRegolariParati() + ag.getRigoriLotteriaParati();
-                    hall.put("Para rigori", ag.getGiocatore().getCognome()
-                            + " -" + ag.getGiocatore().getSquadra().getNome()
-                            + " (" + totali + " rigori parati)");
+        // 4. SARACINESCA (Solo tra i giocatori che sono Portieri + caso ex-aequo)
+        List<ArchivioGiocatore> portieri = archivioGiocatoreRepository.findAll().stream()
+                .filter(ag ->
+                        ag.getGiocatore().getRuolo() != null &&
+                                "Portiere".equalsIgnoreCase(
+                                        ag.getGiocatore().getRuolo().getTipologia().getCategoria()
+                                )
+                )
+                .toList();
 
-                });
+        int maxRigoriParati = portieri.stream()
+                .mapToInt(ag ->
+                        ag.getRigoriRegolariParati() + ag.getRigoriLotteriaParati()
+                )
+                .max()
+                .orElse(0);
+
+        if (maxRigoriParati > 0) {
+
+            List<String> migliori = portieri.stream()
+                    .filter(ag ->
+                            ag.getRigoriRegolariParati() + ag.getRigoriLotteriaParati()
+                                    == maxRigoriParati
+                    )
+                    .map(ag ->
+                            ag.getGiocatore().getCognome()
+                                    + " - " + ag.getGiocatore().getSquadra().getNome()
+                    )
+                    .toList();
+
+            hall.put(
+                    "Para rigori",
+                    String.join(", ", migliori)
+                            + " (" + maxRigoriParati + " rigori parati)"
+            );
+        }
+
 
         // 5. PARTITA SPETTACOLO (Più gol segnati in un solo match)
         // Nota: assumendo che 'risultato_regular' sia in formato "3-2"
