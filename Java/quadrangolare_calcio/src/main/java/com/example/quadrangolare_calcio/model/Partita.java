@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,6 +43,9 @@ public class Partita {
     @ManyToOne
     @JoinColumn(name = "fk_id_torneo", referencedColumnName = "id_torneo")
     private Torneo torneo;
+
+    @OneToMany(mappedBy = "partita", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TabellinoPartita> tabellini;
 
 
 }
