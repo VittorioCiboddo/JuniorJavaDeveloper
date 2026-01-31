@@ -58,14 +58,17 @@
                             </a>
             </td>
             <td>
-                <span th:if="${squadra.capitano != null and
-                              !#strings.isEmpty(squadra.capitano) and
-                              nomiGiocatoriPerSquadra[squadra.idSquadra]?.contains(squadra.capitano)}"
+                <span th:if="${
+                            squadra.capitano != null
+                            and !#strings.isEmpty(squadra.capitano)
+                            and nomiGiocatoriPerSquadra.containsKey(squadra.idSquadra)
+                            and nomiGiocatoriPerSquadra[squadra.idSquadra].contains(squadra.capitano)}"
                       th:text="${squadra.capitano}">Nome Capitano</span>
 
-                <a th:if="${squadra.capitano == null or
-                           #strings.isEmpty(squadra.capitano) or
-                           !nomiGiocatoriPerSquadra[squadra.idSquadra]?.contains(squadra.capitano)}"
+                <a th:if="${squadra.capitano == null
+                            or #strings.isEmpty(squadra.capitano)
+                            or !nomiGiocatoriPerSquadra.containsKey(squadra.idSquadra)
+                            or !nomiGiocatoriPerSquadra[squadra.idSquadra].contains(squadra.capitano)}"
                    th:href="@{'/areaadmin/squadra/modifica?id=' + ${squadra.idSquadra}}"
                    class="btn btn-outline-warning btn-sm">
                     Scegli Capitano
