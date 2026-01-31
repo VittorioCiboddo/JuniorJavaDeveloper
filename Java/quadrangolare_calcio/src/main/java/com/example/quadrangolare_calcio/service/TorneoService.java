@@ -41,6 +41,10 @@ public interface TorneoService {
     // Restituisce la "Squadra Record" (chi ha più vittorie, più gol, ecc.)
     Map<String, Object> getHallOfFame();
 
+    List<Map<String, Object>> getClassificaMarcatoriAllTime();
+
+    List<Map<String, Object>> getClassificaPortieriAllTime();
+
     Map<String, MiniMatchDTO> getMiniTabellone(int idTorneo);
 
     List<ClassificaSquadraDTO> getClassificaTorneoDettagliata(int idTorneo);
